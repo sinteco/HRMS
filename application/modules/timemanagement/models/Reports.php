@@ -97,9 +97,10 @@ class Timemanagement_Model_Reports extends Zend_Db_Table_Abstract
 		$tableFields = array(
 					//'action'=>'Action',
 					'userfullname' => 'Employee',
-					//'project_type' => 'Project Type',
-					
-					//'duration' => 'Hours',
+					// 'project_type' => 'Project Type',
+					// 'duration' => 'Hours',
+					'task' => 'Task',
+					'project_name' => 'Project Name'
 		);
 //===========================================================================================
 //===========================================================================================
@@ -107,7 +108,7 @@ class Timemanagement_Model_Reports extends Zend_Db_Table_Abstract
 
 $select = $this->select()
             ->setIntegrityCheck(false)
-            ->from(array('e'=>'tm_tasks'), array('task'=>'e.task'));
+            ->from(array('e'=>'tm_tasks'), array('id','task'=>'e.task'));
             //->where("e.isactive = 1 ")
            // ->order("e.userfullname ASC")
            // ->distinct('e.id');
@@ -117,8 +118,9 @@ $select = $this->select()
         $i=1;
        foreach($tasks as $task)
        {
-          // echo $task['task'];
-           $tableFields['task_id_'.$i]=$task['task'];
+		//   var_dump($task);
+		// var_dump($tableFields);
+        //    $tableFields['task_id_'.$i]=$task['task'];
            $i++;
        }
       // var_dump($tableFields);
@@ -266,16 +268,31 @@ $select = $this->select()
 		$db = Zend_Db_Table::getDefaultAdapter();
 		$select = $this->select()
 			   		   ->setIntegrityCheck(false)
-					   ->from(array('et' => 'tm_emp_timesheets'),array('e.userfullname','p.project_type','userId'=>'et.emp_id',
+					   ->from(array('et' => 'tm_emp_timesheets'),array('t.task','p.project_name','e.userfullname','p.project_type','userId'=>'et.emp_id',
 				                                'duration'=>$duration,'duration_sort'=>$duration_sort))  
 					   ->joinInner(array('pt'=>'tm_project_tasks'), 'pt.id = et.project_task_id',array())
+					   ->joinInner(array('t'=>'tm_tasks'), 't.id = pt.task_id',array())
 					   ->joinInner(array('p'=>'tm_projects'), 'p.id = pt.project_id',array())
 					   ->joinInner(array('e'=>'main_employees_summary'), 'e.user_id = et.emp_id',array())
+					   ->joinLeft(array('pm'=>'tm_project_employees'), 'p.id = pm.project_id and pm.emp_id = et.emp_id ',array())
 					   ->where('et.is_active=1 and pt.is_active =1 and p.is_active = 1 and e.isactive = 1'.$andwhere)
 					   ->order("$by $sort")
-					   ->group('et.emp_id')
+					   ->group('t.id')->group('e.id')->group('p.id')->order('e.firstname')
 					   ->limitPage($pageNo, $perPage);
 					   //echo $select;
+
+		// $select = $this->select()
+		// ->setIntegrityCheck(false)
+		// ->from(array('et' => 'tm_emp_timesheets'),array('p.project_name','t.task',
+        //                         'duration'=>$duration))  
+		// ->joinInner(array('pt'=>'tm_project_tasks'), 'pt.id = et.project_task_id',array())
+		// ->joinInner(array('t'=>'tm_tasks'), 't.id = pt.task_id',array())
+		// ->joinInner(array('p'=>'tm_projects'), 'p.id = pt.project_id and p.id = et.project_id',array())
+		// ->joinInner(array('e'=>'main_employees_summary'), 'e.user_id = et.emp_id',array())
+		// ->joinLeft(array('pm'=>'tm_project_employees'), 'p.id = pm.project_id and pm.emp_id = et.emp_id ',array())
+		// ->where('et.is_active=1 and p.id='.$project_id.' '.$andwhere)
+		// ->group('t.id');
+		
 		if(!empty($flag))
 		{
 			return $this->fetchAll($select)->toArray(); 

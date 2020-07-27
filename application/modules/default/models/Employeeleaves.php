@@ -37,7 +37,7 @@ class Default_Model_Employeeleaves extends Zend_Db_Table_Abstract
 						   ->where($where)
     					   ->order("$by $sort") 
     					   ->limitPage($pageNo, $perPage);
-	
+		print_r($empskillsData);
 		return $empskillsData;       		
 	}
 	

@@ -192,6 +192,17 @@ if($controllerName == "leaverequest")
 ?>
 
 <?php 
+if($controllerName == "leaveplan")
+{
+?>
+    <link rel="stylesheet" type="text/css" href="<?php echo MEDIA_PATH; ?>css/fullcalendar.css" />
+    <link rel="stylesheet" type="text/css" href="<?php echo MEDIA_PATH; ?>css/fullcalendar.print.css" media='print'/>
+    <script type="text/javascript" src="<?php echo MEDIA_PATH;?>jquery/js/fullcalendar.js"></script>
+<?php 
+}
+?>
+
+<?php 
 if($controllerName == "reports")
 {
 ?>

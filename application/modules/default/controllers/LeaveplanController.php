@@ -28,7 +28,7 @@ class Default_LeaveplanController extends Zend_Controller_Action
 	 
 			 $ajaxContext = $this->_helper->getHelper('AjaxContext');
 			 $ajaxContext->addActionContext('gethalfdaydetails', 'json')->initContext();
-			 $ajaxContext->addActionContext('saveleaverequestdetails', 'json')->initContext();
+			 $ajaxContext->addActionContext('saveleaveplandetails', 'json')->initContext();
 			 $ajaxContext->addActionContext('updateleavedetails', 'json')->initContext();
 		
 	}
@@ -46,9 +46,9 @@ class Default_LeaveplanController extends Zend_Controller_Action
 			$loginUserId = $auth->getStorage()->read()->id;
 			$loginUserdepartment_id = $auth->getStorage()->read()->department_id;
 		}
-		$leaverequestform = new Default_Form_leaverequest();
-		$leaverequestform->setAttrib('action',BASE_URL.'leaverequest');
-		$leaverequestmodel = new Default_Model_Leaverequest();
+		$leaverequestform = new Default_Form_leaveplan();
+		$leaverequestform->setAttrib('action',BASE_URL.'leaveplan');
+		$leaverequestmodel = new Default_Model_Leaveplan();
 		$employeeleavetypemodel = new Default_Model_Employeeleavetypes();
 		$leavemanagementmodel = new Default_Model_Leavemanagement();
 		$usersmodel = new Default_Model_Users();
@@ -251,7 +251,7 @@ class Default_LeaveplanController extends Zend_Controller_Action
 		$this->view->messages = $this->_helper->flashMessenger->getMessages();
     }
 	
-	public function saveleaverequestdetailsAction()
+	public function saveleaveplandetailsAction()
 	{
 	  $this->_helper->layout->disableLayout();
 	  $auth = Zend_Auth::getInstance();
@@ -279,8 +279,8 @@ class Default_LeaveplanController extends Zend_Controller_Action
 		$employeeDepartmentId = '';
 		$reportingmanagerId = '';
 		$leavetypeArr = array();
-		$leaverequestform = new Default_Form_leaverequest();
-		$leaverequestmodel = new Default_Model_Leaverequest();
+		$leaverequestform = new Default_Form_leaveplan();
+		$leaverequestmodel = new Default_Model_Leaveplan();
 		$employeeleavetypesmodel = new Default_Model_Employeeleavetypes();
 		$leavemanagementmodel = new Default_Model_Leavemanagement();
 		$usersmodel = new Default_Model_Users();
@@ -582,14 +582,14 @@ class Default_LeaveplanController extends Zend_Controller_Action
 						$where = '';
 						$actionflag = 1;
 					}
-					$Id = $leaverequestmodel->SaveorUpdateLeaveRequest($data, $where);
-					/** 
-					leave request history 
-					**/
+					$Id = $leaverequestmodel->SaveorUpdateLeaveplan($data, $where);
+					// 
+					//leave plan history 
+					//
 					if($Id != 'update')
 					{
-						$history = 'Leave Request has been sent for Manager Approval by ';
-						 $leaverequesthistory_model = new Default_Model_Leaverequesthistory();
+						$history = 'Leave plan has been sent for Manager Approval by ';
+						 $leaverequesthistory_model = new Default_Model_Leaveplanhistory();
 						 $leave_history = array(											
 										'leaverequest_id' =>$Id,
 										'description' => $history,
@@ -600,18 +600,18 @@ class Default_LeaveplanController extends Zend_Controller_Action
 										'createddate' =>gmdate("Y-m-d H:i:s"),
 										'modifieddate'=> gmdate("Y-m-d H:i:s"),
 									);
-					      $where = '';
+					     $where = '';
 						$leavehistory = $leaverequesthistory_model->saveOrUpdateLeaveRequestHistory($leave_history,$where); 
 					}
 					if($Id == 'update')
 					{
 					   $tableid = $id;
-					   $this->_helper->getHelper("FlashMessenger")->addMessage(array("success"=>"Leave request updated successfully."));
+					   $this->_helper->getHelper("FlashMessenger")->addMessage(array("success"=>"Leave plan updated successfully."));
 					}   
 					else
 					{
                        $tableid = $Id; 	
-                       $this->_helper->getHelper("FlashMessenger")->addMessage(array("success"=>"Leave request added successfully."));
+                       $this->_helper->getHelper("FlashMessenger")->addMessage(array("success"=>"Leave plan added successfully."));
                             /** MAILING CODE **/
 							//$hremail = explode(",",HREMAIL);
 							/* Mail to Reporting manager */
@@ -621,8 +621,8 @@ class Default_LeaveplanController extends Zend_Controller_Action
 							$toemailArr = $reportingManageremail; //$employeeemail
 							if(!empty($toemailArr))
 							{
-								$options['subject'] = 'Leave request for approval';
-								$options['header'] = 'Leave Request';
+								$options['subject'] = 'Leave plan for approval';
+								$options['header'] = 'Leave plan';
 								$options['toEmail'] = $toemailArr;
 								$options['toName'] = $reportingmanagerName;
 								$options['message'] = '<div>
@@ -669,8 +669,8 @@ class Default_LeaveplanController extends Zend_Controller_Action
 							/* Mail to HR */
                             if (defined('LV_HR_'.$businessunitid) && $businessunitid !='')
 						    {
-							    $options['subject'] = 'Leave request for approval';
-								$options['header'] = 'Leave Request ';
+							    $options['subject'] = 'Leave plan for approval';
+								$options['header'] = 'Leave plan ';
 								$options['toEmail'] = constant('LV_HR_'.$businessunitid);
 								$options['toName'] = 'Leave management';
 								$options['message'] = '<div>
@@ -719,13 +719,13 @@ class Default_LeaveplanController extends Zend_Controller_Action
 							/* END */
 							/* Mail to the applied employee*/
 								$toemailArr = $employeeemail;
-								$options['subject'] = 'Leave request for approval';
-								$options['header'] = 'Leave Request';
+								$options['subject'] = 'Leave plan for approval';
+								$options['header'] = 'Leave plan';
 								$options['toEmail'] = $toemailArr;
 								$options['toName'] = $userfullname;
 								$options['message'] = '<div>
 												<div>Hi,</div>
-												<div>A leave request raised by you is sent for your managers approval.</div>
+												<div>A leave plan raised by you is sent for your managers approval.</div>
 <div>
                 <table width="50%" cellspacing="0" cellpadding="5" border="0" style="border:3px solid #BBBBBB; font-size:12px; font-family:Arial, Helvetica, sans-serif; margin:10px 0 10px 0;" bgcolor="#ffffff">
                       <tbody><tr>
@@ -763,7 +763,7 @@ class Default_LeaveplanController extends Zend_Controller_Action
 					$menuID = LEAVEREQUEST;
 					$result = sapp_Global::logManager($menuID,$actionflag,$loginUserId,$tableid);
                     $this->_helper->json(array('result'=>'saved',
-												'message'=>'Leave request applied successfully.',
+												'message'=>'Leave plan applied successfully.',
 												'controller'=>'pendingleaves'
 										));						
 			}
@@ -953,8 +953,8 @@ class Default_LeaveplanController extends Zend_Controller_Action
 		if($id == '')
 		$id = $loginUserId;
 		
-		$leaverequestmodel = new Default_Model_Leaverequest();
-		$leaverequestform = new Default_Form_leaverequest();
+		$leaverequestmodel = new Default_Model_Leaveplan();
+		$leaverequestform = new Default_Form_leaveplan();
 		$user_logged_in = 'true';
 		$manager_logged_in = 'false';
 		$cancel_flag = 'true';
@@ -996,7 +996,7 @@ class Default_LeaveplanController extends Zend_Controller_Action
  		}
  		
 		$this->view->form = $leaverequestform;
-		$this->view->controllername = 'leaverequest';
+		$this->view->controllername = 'leaveplan';
 		$this->view->leave_details = $leave_details;
 		$this->view->user_logged_in = $user_logged_in;
 		$this->view->manager_logged_in = $manager_logged_in;
@@ -1028,7 +1028,7 @@ class Default_LeaveplanController extends Zend_Controller_Action
 		$id = $this->_request->getParam('id');
 		$status = $this->_request->getParam('status');
 		$comments = $this->_request->getParam('comments');
-		$leaverequestmodel = new Default_Model_Leaverequest();
+		$leaverequestmodel = new Default_Model_Leaveplan();
 		$employeeleavetypesmodel = new Default_Model_Employeeleavetypes();
 		$usersmodel = new Default_Model_Users();
 		if($id && is_numeric($id) && $id>0)
@@ -1047,8 +1047,8 @@ class Default_LeaveplanController extends Zend_Controller_Action
 							  	}
 							}
 						}
-						$successmsg ='Leave request cancelled succesfully.';
-						$subject = 'Leave request cancelled';						
+						$successmsg ='Leave plan cancelled succesfully.';
+						$subject = 'Leave plan cancelled';						
 						$message = '<div>Hi,</div><div>The below leave(s) has been cancelled.</div>';
 					}
 				}elseif($leave_details['rep_mang_id']==$loginUserId || ($leave_details['hr_id']==$loginUserId )) {
@@ -1061,8 +1061,8 @@ class Default_LeaveplanController extends Zend_Controller_Action
 							  	}
 							}
 						}
-						$successmsg ='Leave request cancelled succesfully.';
-						$subject = 'Leave request cancelled';
+						$successmsg ='Leave plan cancelled succesfully.';
+						$subject = 'Leave plan cancelled';
 						$message = '<div>Hi,</div><div>The below leave(s) has been cancelled.</div>';
 					}elseif(sapp_Global::_decrypt($status)=='Approved'){
 						$leavestatus =2;
@@ -1071,13 +1071,13 @@ class Default_LeaveplanController extends Zend_Controller_Action
 							  	$updateemployeeleave = $leaverequestmodel->updateemployeeleaves($leave_details['appliedleavescount'],$leave_details['user_id']);
 							  }
 						}
-						$successmsg ='Leave request approved succesfully.';
-						$subject = 'Leave request approved';
+						$successmsg ='Leave plan approved succesfully.';
+						$subject = 'Leave plan approved';
 						$message = '<div>Hi,</div><div>The below leave(s) has been approved.</div>';
 					}elseif(sapp_Global::_decrypt($status)=='Rejected'){
 						$leavestatus = 3;
-						$successmsg ='Leave request rejected succesfully.';
-						$subject = 'Leave request rejected';
+						$successmsg ='Leave plan rejected succesfully.';
+						$subject = 'Leave plan rejected';
 						$message = '<div>Hi,</div><div>The below leave(s) has been rejected.</div>';
 					}	
 					$manager_logged_in = 'true';
@@ -1094,7 +1094,7 @@ class Default_LeaveplanController extends Zend_Controller_Action
 					
 					
 					/** 
-					leave request history 
+					leave plan history 
 					**/
 					if($Id == 'update')
 					{
@@ -1111,8 +1111,8 @@ class Default_LeaveplanController extends Zend_Controller_Action
 						{
 							$leavestatus='Cancelled';
 						}
-						$history = 'Leave Request has been '.$leavestatus.' by ';
-						$leaverequesthistory_model = new Default_Model_Leaverequesthistory();
+						$history = 'Leave plan has been '.$leavestatus.' by ';
+						$leaverequesthistory_model = new Default_Model_Leaveplanhistory();
 						$leave_history = array(											
 										'leaverequest_id' =>$id ,
 										'description' => $history,
@@ -1152,7 +1152,7 @@ class Default_LeaveplanController extends Zend_Controller_Action
 						}
 						
 						if($toEmail!='' && $toName!='') {
-							$options['header'] = 'Leave Request';
+							$options['header'] = 'Leave plan';
 							$options['toEmail'] = $toEmail;
 							$options['toName'] = $toName;
 							$options['subject'] = $subject;

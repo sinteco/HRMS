@@ -154,7 +154,7 @@
 									draggable:false, 
 									resizable: false,
 									height:'auto',
-									title: "Create: Leave request",
+									title: "Create: Leave Plan request",
 									modal: true, 
 									close: function( event, ui ) {
 									      closedialog('');
@@ -163,7 +163,7 @@
 
 								if(response['availableleaves'] !='' && response['days'] > response['availableleaves'])
 								{
-									 jAlert("Applied leaves exceed the available annual leaves count. Additional leaves will be considered as Loss of Pay.");
+									 jAlert("Applied leaves exceed the available leaves count. Additional leaves will be considered as Loss of Pay.");
 								}
                             }  							
 					}
@@ -552,7 +552,7 @@ Click on a date to apply for 1 day of leave. Click and drag on the desired dates
         <div class="total-form-controller">
 		      
 		    <div class="new-form-ui">
-			  <label class="required">Available Annual Leaves</label>
+			  <label class="required">Available Leaves</label>
 			<div class="division"><?php echo $this->form->no_of_days; ?></div>
 			<?php if(isset($this->msgarray['no_of_days'])){?>
 			   <span class="errors" id="errors-<?php echo $this->form->no_of_days->getId(); ?>"><?php echo $this->msgarray['no_of_days'];?></span>
@@ -560,7 +560,7 @@ Click on a date to apply for 1 day of leave. Click and drag on the desired dates
 			</div>
 			
 			<div class="new-form-ui">
-			  <label class="required">Select Leave Type</label>
+			  <label class="required">Leave Type</label>
 			<div class="division"><?php echo $this->form->leavetypeid; ?></div>
 			<?php if(isset($this->msgarray['leavetypeid'])){?>
 			   <span class="errors" id="errors-<?php echo $this->form->leavetypeid->getId(); ?>"><?php echo $this->msgarray['leavetypeid'];?></span>

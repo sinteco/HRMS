@@ -803,7 +803,15 @@ protected function _getAcl()
                                     $acl->allow('manager','default:leaverequest', array('index','saveleaverequestdetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request','edit'));
 
                                 else
-                                    $acl->allow('manager','default:leaverequest', array('index','saveleaverequestdetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
+									$acl->allow('manager','default:leaverequest', array('index','saveleaverequestdetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
+									
+		$acl->addResource(new Zend_Acl_Resource('default:leaveplan'));
+                            $leaveplan_add = 'yes';
+                                if($this->id_param == '' && $leaveplan_add == 'yes')
+                                    $acl->allow('manager','default:leaveplan', array('index','saveleaveplandetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request','edit'));
+
+                                else
+                                    $acl->allow('manager','default:leaveplan', array('index','saveleaveplandetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
 
                                 
 		 $acl->addResource(new Zend_Acl_Resource('default:manageremployeevacations'));
@@ -982,7 +990,14 @@ protected function _getAcl()
 
                                 else
                                     $acl->allow('hrmanager','default:leaverequest', array('index','saveleaverequestdetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
+		
+		$acl->addResource(new Zend_Acl_Resource('default:leaveplan'));
+                            $leaveplan_add = 'yes';
+                                if($this->id_param == '' && $leaveplan_add == 'yes')
+                                    $acl->allow('hrmanager','default:leaveplan', array('index','saveleaveplandetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request','edit'));
 
+                                else
+                                    $acl->allow('hrmanager','default:leaveplan', array('index','saveleaveplandetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
                                 
 		 $acl->addResource(new Zend_Acl_Resource('default:manageremployeevacations'));
                             $acl->allow('hrmanager', 'default:manageremployeevacations', array('index','edit','view','Employee Leave'));
@@ -1145,7 +1160,14 @@ protected function _getAcl()
 
                                 else
                                     $acl->allow('employee','default:leaverequest', array('index','saveleaverequestdetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
+		
+		$acl->addResource(new Zend_Acl_Resource('default:leaveplan'));
+                            $leaveplan_add = 'yes';
+                                if($this->id_param == '' && $leaveplan_add == 'yes')
+                                    $acl->allow('employee','default:leaveplan', array('index','saveleaveplandetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request','edit'));
 
+                                else
+                                    $acl->allow('employee','default:leaveplan', array('index','saveleaveplandetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
                                 
 		 $acl->addResource(new Zend_Acl_Resource('default:manageremployeevacations'));
                             $acl->allow('employee', 'default:manageremployeevacations', array('index','edit','view','Employee Leave'));
@@ -1360,7 +1382,15 @@ protected function _getAcl()
                                     $acl->allow('sysadmin','default:leaverequest', array('index','saveleaverequestdetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request','edit'));
 
                                 else
-                                    $acl->allow('sysadmin','default:leaverequest', array('index','saveleaverequestdetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
+									$acl->allow('sysadmin','default:leaverequest', array('index','saveleaverequestdetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
+									
+		$acl->addResource(new Zend_Acl_Resource('default:leaveplan'));
+                            $leaveplan_add = 'yes';
+                                if($this->id_param == '' && $leaveplan_add == 'yes')
+                                    $acl->allow('sysadmin','default:leaveplan', array('index','saveleaveplandetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request','edit'));
+
+                                else
+                                    $acl->allow('sysadmin','default:leaveplan', array('index','saveleaveplandetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
 
                                 
 		 $acl->addResource(new Zend_Acl_Resource('default:licensetype'));
@@ -1553,7 +1583,15 @@ protected function _getAcl()
                                     $acl->allow('lead','default:leaverequest', array('index','saveleaverequestdetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request','edit'));
 
                                 else
-                                    $acl->allow('lead','default:leaverequest', array('index','saveleaverequestdetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
+									$acl->allow('lead','default:leaverequest', array('index','saveleaverequestdetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
+									
+		$acl->addResource(new Zend_Acl_Resource('default:leaveplan'));
+                            $leaveplan_add = 'yes';
+                                if($this->id_param == '' && $leaveplan_add == 'yes')
+                                    $acl->allow('lead','default:leaveplan', array('index','saveleaveplandetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request','edit'));
+
+                                else
+                                    $acl->allow('lead','default:leaveplan', array('index','saveleaveplandetails','gethalfdaydetails','editpopup','updateleavedetails','add','Leave Request'));
 
                                 
 		 $acl->addResource(new Zend_Acl_Resource('default:manageremployeevacations'));

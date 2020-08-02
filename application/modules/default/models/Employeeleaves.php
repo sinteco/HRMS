@@ -33,11 +33,12 @@ class Default_Model_Employeeleaves extends Zend_Db_Table_Abstract
 		
 		$empskillsData = $this->select()
     					   ->setIntegrityCheck(false)	 
-						   ->from(array('e' => 'main_employeeleaves'),array('id'=>'e.id','emp_leave_limit'=>'e.emp_leave_limit','used_leaves'=>'e.used_leaves','remainingleaves'=>new Zend_Db_Expr('e.emp_leave_limit - e.used_leaves'),'e.alloted_year'))
+						   ->from(array('e' => 'main_employeeleaves'),array('id'=>'e.id','emp_leave_limit'=>'IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+IF(FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)>=14,14,FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12))','used_leaves'=>'e.used_leaves','remainingleaves'=>new Zend_Db_Expr('IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+IF(FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)>=14,14,FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)) - e.used_leaves'),'e.alloted_year'))
+						   ->join(array('u'=>'main_employees_summary'),'u.user_id=e.user_id')
 						   ->where($where)
     					   ->order("$by $sort") 
     					   ->limitPage($pageNo, $perPage);
-		print_r($empskillsData);
+		// die($empskillsData);
 		return $empskillsData;       		
 	}
 	

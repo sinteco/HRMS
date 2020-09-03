@@ -42,7 +42,7 @@ class Default_Model_Addemployeeleaves extends Zend_Db_Table_Abstract
                                 ->setIntegrityCheck(false)	                                
                                 ->from(array('e' => 'main_employees_summary'),array('id'=>'e.user_id','e.firstname','e.lastname','e.employeeId'))
                                 ->joinLeft(array('r'=>'main_roles'), 'e.emprole=r.id',array())  
-                                ->joinLeft(array('el'=>'main_employeeleaves'), 'el.user_id=e.user_id',array('el.used_leaves','IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+IF(FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)>=14,14,FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)) as emp_leave_limit','el.alloted_year','el.createddate','el.isleavetrasnferset','remainingleaves'=>new Zend_Db_Expr('IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+IF(FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)>=14,14,FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)) - el.used_leaves')))                                        
+                                ->joinLeft(array('el'=>'main_employeeleaves'), 'el.user_id=e.user_id',array('el.used_leaves','IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+IF(FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)>=14,14,FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)) as emp_leave_limit','(IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+IF(FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)>=14,14,FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)))/12 * MONTH(CURRENT_TIMESTAMP) as leaveX','el.alloted_year','el.createddate','el.isleavetrasnferset','remainingleaves'=>new Zend_Db_Expr('((IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+IF(FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)>=14,14,FLOOR((DATEDIFF(now(),e.date_of_joining)/30)/12)))/12 * MONTH(CURRENT_TIMESTAMP)) - el.used_leaves')))                                        
                                 ->where($where)
                                 ->order("$by $sort") 
                                 ->limitPage($pageNo, $perPage);
@@ -76,7 +76,7 @@ class Default_Model_Addemployeeleaves extends Zend_Db_Table_Abstract
 				        
 			
         $tableFields = array('action'=>'Action','firstname'=>'First Name','lastname'=>'Last Name',
-                             'employeeId' =>'Employee ID','emp_leave_limit'=>'Allotted Leave Limit',
+                             'employeeId' =>'Employee ID','emp_leave_limit'=>'Allotted Leave Limit','leaveX'=>'leaveX',
                              'used_leaves'=>'Used Leaves','remainingleaves'=>'Leave Balance','alloted_year'=>'Allotted Year');
 		   
         $tablecontent = $this->getEmployeesData($sort,$by,$pageNo,$perPage,$searchQuery,'',$exParam1);  

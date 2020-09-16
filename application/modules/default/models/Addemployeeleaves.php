@@ -33,7 +33,7 @@ class Default_Model_Addemployeeleaves extends Zend_Db_Table_Abstract
         $employeesData="";                             
         $where = "  e.isactive = 1 AND e.user_id != ".$loginUserId." 
         			and r.group_id NOT IN (".MANAGEMENT_GROUP.",".USERS_GROUP.")
-        			AND el.alloted_year = year(now()) ";  
+        			";  
        
         if($searchQuery != '')
             $where .= " AND ".$searchQuery;
@@ -42,11 +42,11 @@ class Default_Model_Addemployeeleaves extends Zend_Db_Table_Abstract
                                 ->setIntegrityCheck(false)	                                
                                 ->from(array('e' => 'main_employees_summary'),array('id'=>'e.user_id','e.firstname','e.lastname','e.employeeId'))
                                 ->joinLeft(array('r'=>'main_roles'), 'e.emprole=r.id',array())  
-                                ->joinLeft(array('el'=>'main_employeeleaves'), 'el.user_id=e.user_id',array('el.used_leaves','ROUND(IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(now(),e.date_of_joining)/365.25)-1,2) as emp_leave_limit','ROUND((DATEDIFF(now(),e.date_of_joining)/365.25),2) as serviceyear','ROUND((IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(now(),e.date_of_joining)/365.25))/12 * MONTH(CURRENT_TIMESTAMP)-1,2) as leaveX','el.alloted_year','IF(el.isleavetrasnferset=1,el.emp_leave_limit,0) as transfer','el.createddate','el.isleavetrasnferset','remainingleaves'=>new Zend_Db_Expr('ROUND(((IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(now(),e.date_of_joining)/365.25))/12 * MONTH(CURRENT_TIMESTAMP))-1,2) - el.used_leaves')))                                        
+                                ->joinLeft(array('el'=>'main_employeeleaves'), 'el.user_id=e.user_id',array('el.used_leaves','ROUND(IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(now(),e.date_of_joining)/365.25)-1,2) as emp_leave_limit','ROUND((DATEDIFF(now(),e.date_of_joining)/365.25),2) as serviceyear','ROUND((IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(now(),e.date_of_joining)/365.25))/12 * MONTH(CURRENT_TIMESTAMP)-1,2) as leaveX','DATE_FORMAT(CURRENT_TIMESTAMP,  "%Y" ) as alloted_year','IF(el.alloted_year<year(now()),(IF(month(now())<=3, IF((ROUND(((IF(((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-09-16 03:30:48 "),e.date_of_joining)/30))>=12,20,((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-09-16 03:30:48 "),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-09-16 03:30:48 "),e.date_of_joining)/365.25))/12 * MONTH(CURRENT_TIMESTAMP))-1,2)) - el.used_leaves > 10,10,(ROUND(((IF(((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-09-16 03:30:48 "),e.date_of_joining)/30))>=12,20,((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-09-16 03:30:48 "),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-09-16 03:30:48 "),e.date_of_joining)/365.25))/12 * MONTH(CURRENT_TIMESTAMP))-1,2)) - el.used_leaves), 0)),0) as transfer','el.createddate','el.isleavetrasnferset','(IF(el.alloted_year<year(now()),(IF(month(now())<=3, IF((ROUND(((IF(((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-09-16 03:30:48 "),e.date_of_joining)/30))>=12,20,((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-09-16 03:30:48 "),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-09-16 03:30:48 "),e.date_of_joining)/365.25))/12 * MONTH(CURRENT_TIMESTAMP))-1,2)) - el.used_leaves > 10,10,(ROUND(((IF(((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-09-16 03:30:48 "),e.date_of_joining)/30))>=12,20,((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-09-16 03:30:48 "),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-09-16 03:30:48 "),e.date_of_joining)/365.25))/12 * MONTH(CURRENT_TIMESTAMP))-1,2)) - el.used_leaves), 0)),0)) + (ROUND((IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(now(),e.date_of_joining)/365.25))/12 * MONTH(CURRENT_TIMESTAMP)-1,2)) as totalavailableleave','remainingleaves'=>new Zend_Db_Expr('ROUND(((IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(now(),e.date_of_joining)/365.25))/12 * MONTH(CURRENT_TIMESTAMP))-1,2) - el.used_leaves')))                                        
                                 ->where($where)
                                 ->order("$by $sort") 
                                 ->limitPage($pageNo, $perPage);
-                                // die($employeesData);
+                                //die($employeesData);
         return $employeesData;       		
     }
 	
@@ -76,7 +76,7 @@ class Default_Model_Addemployeeleaves extends Zend_Db_Table_Abstract
 				        
 			
         $tableFields = array('action'=>'Action','firstname'=>'First Name','lastname'=>'Last Name',
-                             'employeeId' =>'Employee ID','emp_leave_limit'=>'Allotted Leave Limit','serviceyear'=>'Service Year','leaveX'=>'Entitled','transfer'=>'Transfer',
+                             'employeeId' =>'Employee ID','emp_leave_limit'=>'Allotted Leave Limit','serviceyear'=>'Service Year','leaveX'=>'Entitled','transfer'=>'Transfer','totalavailableleave'=>'Total Available Leave',
                              'used_leaves'=>'Used Leaves','remainingleaves'=>'Leave Balance','alloted_year'=>'Allotted Year');
 		   
         $tablecontent = $this->getEmployeesData($sort,$by,$pageNo,$perPage,$searchQuery,'',$exParam1);  

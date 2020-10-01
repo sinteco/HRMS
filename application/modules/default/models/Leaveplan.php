@@ -29,8 +29,12 @@ class Default_Model_Leaveplan extends Zend_Db_Table_Abstract
 	{
 	 	$select = $this->select()
     					   ->setIntegrityCheck(false)	
-                           ->from(array('e'=>'main_employeeleaves'),array('leavelimit'=>'e.emp_leave_limit','remainingleaves'=>new Zend_Db_Expr('e.emp_leave_limit - e.used_leaves')))
-						   ->where('e.user_id='.$loginUserId.' AND e.alloted_year = now() AND e.isactive = 1');  		   					   				
+                        //    ->from(array('e'=>'main_employeeleaves'),array('leavelimit'=>'e.emp_leave_limit','remainingleaves'=>new Zend_Db_Expr('e.emp_leave_limit - e.used_leaves')))
+						//    ->where('e.user_id='.$loginUserId.' AND e.alloted_year = now() AND e.isactive = 1');
+						   ->from(array('el'=>'main_employeeleaves'),array('leavelimit'=>'el.emp_leave_limit','remainingleaves'=>new Zend_Db_Expr('ROUND(IF((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/30)>=12,(IF(month(now())<=3, IF((ROUND(((IF(((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/30))>=12,20,((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/365.25))/12 *12)-1,2)) - el.used_leaves > 10,10,(ROUND(((IF(((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/30))>=12,20,((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/365.25))/12 * 12)-1,2)) - el.used_leaves), 0)),IF(ROUND((IF(((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/30))>=12,20,((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/365.25))/12 * 12-1,2)<0,0,(ROUND((IF(((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/30))>=12,20,((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/365.25))/12 * 12-1,2)))) + (ROUND((IF(((DATEDIFF(now(),e.date_of_joining)/30))>=12,20,((DATEDIFF(now(),e.date_of_joining)/30)*(20/12)))+(DATEDIFF(now(),e.date_of_joining)/365.25))/12 * MONTH(CURRENT_TIMESTAMP)-1,2)),2) - el.used_leaves')))
+						   ->joinLeft(array('e'=>'main_employees_summary'), 'el.user_id=e.user_id',array('userid'=>'el.user_id'))
+						   ->where('e.user_id='.$loginUserId.' AND e.isactive = 1');
+						   //die($select);  		   					   				
 		return $this->fetchAll($select)->toArray();   
 	
 	}

@@ -81,8 +81,8 @@ class Default_Model_Addemployeeleaves extends Zend_Db_Table_Abstract
 				        
 			
         $tableFields = array('action'=>'Action','firstname'=>'First Name','lastname'=>'Last Name',
-                             'employeeId' =>'Employee ID','emp_leave_limit'=>'Allotted Leave Limit','serviceyear'=>'Service Year','leaveX'=>'Entitled','transfer'=>'Transfer','totalavailableleave'=>'Total Available Leave',
-                             'used_leaves'=>'Used Leaves','remainingleaves'=>'Leave Balance','alloted_year'=>'Date Of Joining');
+                             'employeeId' =>'Employee ID','emp_leave_limit'=>'leave entitlement per year','serviceyear'=>'Service Year','leaveX'=>'Accrued Leave as of today','transfer'=>'BBF (Balance Brought Forward)','totalavailableleave'=>'Balance as of today',
+                             'used_leaves'=>'Used Leaves','remainingleaves'=>'Leave Balance','alloted_year'=>'Date of joining');
 		   
         $tablecontent = $this->getEmployeesData($sort,$by,$pageNo,$perPage,$searchQuery,'',$exParam1);  
 			

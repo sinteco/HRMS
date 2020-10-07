@@ -87,11 +87,51 @@ if($this->call == 'ajaxcall'){
 } else { 
 	$div = '<div id="grid_'.$this->dataArray[0]['objectname'].'" class="all-grid-control">'; $endDiv = '</div>';
 }
-	echo $div.'<div id="msg" style="display:none;font-style: oblique; font-weight: bold; color: green;""></div>'.$this->employeegrid($this->dataArray[0]).$endDiv;
+	echo $div.'<div id="msg" style="display:none;font-style: oblique; font-weight: bold; color: green;""></div><div id="meme">'.$this->employeegrid($this->dataArray[0]).'</div>'.$endDiv;
 ?>
 <?php	}	?>
 <script type='text/javascript'>
 $(document).ready(function(){
+	$("a:contains(leave entitlement per year)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(Service Year)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(Accrued Leave as of today)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(BBF (Balance Brought Forward))").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(Balance as of today)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(Used Leaves)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(Leave Balance)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(Date of joining)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
 <?php if (count($this->messages)) {?>
       setTimeout(function(){
 			$('#dispmsgemp').fadeOut('slow');

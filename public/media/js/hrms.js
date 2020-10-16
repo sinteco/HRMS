@@ -2882,7 +2882,11 @@ function validateselecteddate(ele)
 							  			
 							  		}
 							  		if(response['days'] > response['availableleaves'])
-									 jAlert("Applied leaves exceed the available annual leaves count. Additional leaves will be considered as Loss of Pay.");
+									{
+										 jAlert("Applied leaves exceed the available annual leaves count.");
+										 $("#to_date").val(null);
+										 $("#appliedleavesdaycount").val(null);
+									}
 								}
 							}
 							if(response['result'] == 'error' && response['result'] !='' && response['message'] !='')

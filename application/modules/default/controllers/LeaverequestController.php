@@ -210,7 +210,10 @@ class Default_LeaverequestController extends Zend_Controller_Action
 				if(sizeof($leavetype) > 0)
 				{
 					foreach ($leavetype as $leavetyperes){
-						$leaverequestform->leavetypeid->addMultiOption($leavetyperes['id'].'!@#'.$leavetyperes['numberofdays'].'!@#'.$leavetyperes['leavepreallocated'].'!@#'.utf8_encode($leavetyperes['leavetype']),utf8_encode($leavetyperes['leavetype']));
+						$loginUserId = $auth->getStorage()->read()->id;
+						$leavebalanceforleavetype = $employeeleavetypemodel->getleavebalance($leavetyperes['id'],$loginUserId);
+						$leavebalance = $leavetyperes['numberofdays'] - $leavebalanceforleavetype[0]['leavebalance'];
+						$leaverequestform->leavetypeid->addMultiOption($leavetyperes['id'].'!@#'.$leavetyperes['numberofdays'].'!@#'.$leavetyperes['leavepreallocated'].'!@#'.$leavebalance.'!@#'.utf8_encode($leavetyperes['leavetype']),utf8_encode($leavetyperes['leavetype']));
 					}
 				}
 			}

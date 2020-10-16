@@ -2817,7 +2817,8 @@ function validateselecteddate(ele)
   var leavetypeid = leavetypeselectedstr[0];
   var leavetypelimit = leavetypeselectedstr[1];
   var leavepreallocated = leavetypeselectedstr[2];
-  var leavetypetext = leavetypeselectedstr[3];
+  var leavebalance = leavetypeselectedstr[3];
+  var leavetypetext = leavetypeselectedstr[4];
   var dayselected =  $('#leaveday :selected').val();
   var fromdateval = $('#from_date').val();
   var todateval = $('#to_date').val();
@@ -2863,7 +2864,7 @@ function validateselecteddate(ele)
 		$.ajax({
 					url: base_url+"/index/calculatebusinessdays/format/json",   
 					type : 'POST',	
-					data : 'fromDate='+fromdateval+'&toDate='+todateval+'&dayselected='+dayselected+'&leavepreallocated='+leavepreallocated+'&leavetypelimit='+leavetypelimit+'&leavetypetext='+leavetypetext+'&ishalfday='+ishalfday+'&context='+context+'&selectorid='+selectorid+'&leavetypeid='+leavetypeid,
+					data : 'fromDate='+fromdateval+'&toDate='+todateval+'&dayselected='+dayselected+'&leavebalance='+leavebalance+'&leavepreallocated='+leavepreallocated+'&leavetypelimit='+leavetypelimit+'&leavetypetext='+leavetypetext+'&ishalfday='+ishalfday+'&context='+context+'&selectorid='+selectorid+'&leavetypeid='+leavetypeid,
 					dataType: 'json',
 					beforeSend: function ()
 					{
@@ -2886,6 +2887,10 @@ function validateselecteddate(ele)
 										 jAlert("Applied leaves exceed the available annual leaves count.");
 										 $("#to_date").val(null);
 										 $("#appliedleavesdaycount").val(null);
+									}
+									if(true)
+									{
+										//
 									}
 								}
 							}

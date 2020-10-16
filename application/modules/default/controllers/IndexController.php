@@ -790,6 +790,7 @@ class Default_IndexController extends Zend_Controller_Action
 		$dayselected = $this->_request->getParam('dayselected');
 		$leavetypelimit = $this->_request->getParam('leavetypelimit');
 		$leavetypetext = $this->_request->getParam('leavetypetext');
+		$leavebalance = $this->_request->getParam('leavebalance');
 		$leavepreallocated = $this->_request->getParam('leavepreallocated');
 		$ishalfday = $this->_request->getParam('ishalfday');
 		$context = $this->_request->getParam('context');
@@ -884,6 +885,20 @@ class Default_IndexController extends Zend_Controller_Action
 						$result['result'] = 'error';
 						$result['days'] = '';
 						$result['message'] = $leavetypetext.' leave type permits maximum of '.$leavetypelimit.' leaves.';
+						$result['availableleaves'] = $availableleaves;
+					}
+					//check with leave balance
+					if($leavebalance >= $noOfDays || $leavepreallocated==2)
+					{
+						$result['result'] = 'success';
+						$result['days'] = $noOfDays;
+						$result['message'] = '';
+						$result['availableleaves'] = $availableleaves;
+					}else
+					{
+						$result['result'] = 'error';
+						$result['days'] = '';
+						$result['message'] = $leavetypetext.' leave type permits maximum of '.$leavetypelimit.' leaves and you have balance of '.$leavebalance;
 						$result['availableleaves'] = $availableleaves;
 					}
 

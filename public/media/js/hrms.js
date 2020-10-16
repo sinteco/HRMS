@@ -2816,7 +2816,8 @@ function validateselecteddate(ele)
   var leavetypeselectedstr = leavetypeselectedval.split('!@#'); 
   var leavetypeid = leavetypeselectedstr[0];
   var leavetypelimit = leavetypeselectedstr[1];
-  var leavetypetext = leavetypeselectedstr[2];
+  var leavepreallocated = leavetypeselectedstr[2];
+  var leavetypetext = leavetypeselectedstr[3];
   var dayselected =  $('#leaveday :selected').val();
   var fromdateval = $('#from_date').val();
   var todateval = $('#to_date').val();
@@ -2862,7 +2863,7 @@ function validateselecteddate(ele)
 		$.ajax({
 					url: base_url+"/index/calculatebusinessdays/format/json",   
 					type : 'POST',	
-					data : 'fromDate='+fromdateval+'&toDate='+todateval+'&dayselected='+dayselected+'&leavetypelimit='+leavetypelimit+'&leavetypetext='+leavetypetext+'&ishalfday='+ishalfday+'&context='+context+'&selectorid='+selectorid+'&leavetypeid='+leavetypeid,
+					data : 'fromDate='+fromdateval+'&toDate='+todateval+'&dayselected='+dayselected+'&leavepreallocated='+leavepreallocated+'&leavetypelimit='+leavetypelimit+'&leavetypetext='+leavetypetext+'&ishalfday='+ishalfday+'&context='+context+'&selectorid='+selectorid+'&leavetypeid='+leavetypeid,
 					dataType: 'json',
 					beforeSend: function ()
 					{

@@ -82,7 +82,7 @@ class Default_Model_Employeeleavetypes extends Zend_Db_Table_Abstract
 	{
 	 	$select = $this->select()
     					   ->setIntegrityCheck(false)	
-                           ->from(array('e'=>'main_employeeleavetypes'),array('e.id','e.leavetype','e.numberofdays','e.leavepredeductable'))
+                           ->from(array('e'=>'main_employeeleavetypes'),array('e.id','e.leavetype','e.numberofdays','e.leavepredeductable','e.leavepreallocated'))
 						   ->where('e.isactive = 1');  		   					   				
 		return $this->fetchAll($select)->toArray();   
 	

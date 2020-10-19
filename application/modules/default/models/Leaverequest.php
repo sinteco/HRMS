@@ -290,7 +290,7 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
 				$tableFields = array('action'=>'Action','userfullname' => 'Employee','leavetype' => 'Leave Type',
                     'from_date' => 'From','to_date' => 'To','appliedleavescount' => 'Days','leavestatus' => 'Leave Status');
 		
-		        $leave_arr = array('' => 'All',1 =>'Full Day',2 => 'Half Day');
+		        $leave_arr = array('' => 'All',1 =>'Full Day',2 => 'Half Day',3 => '1 Hour');
 
                 $tablecontent = $this->getEmployeeLeaveRequest($sort, $by, $pageNo, $perPage,$searchQuery,$loginUserId);      				
 				$dataTmp = array(
@@ -375,7 +375,7 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
             'leavetype' => 'Leave Type','from_date' => 'From Date','to_date' => 'To Date',
             'appliedleavescount' => 'Leave Count','applieddate' => 'Applied On');						 
 				 
-			$leave_arr = array('' => 'All',1 =>'Full Day',2 => 'Half Day');	 
+			$leave_arr = array('' => 'All',1 =>'Full Day',2 => 'Half Day',3 => '1 Hour');	 
 			
 			$search_filters = array(
 										'from_date' =>array('type'=>'datepicker'),
@@ -476,7 +476,7 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
 							'from_date' => 'From Date','to_date' => 'To Date','appliedleavescount' => 'Days',
 							'applieddate' => 'Applied On','modifieddate' => 'Approved/Rejected On');
 				}	
-				$leave_arr = array('' => 'All',1 =>'Full Day',2 => 'Half Day');	
+				$leave_arr = array('' => 'All',1 =>'Full Day',2 => 'Half Day',3 => '1 Hour');	
 				
 				$tablecontent = $this->getLeaveStatusHistory($sort, $by, $pageNo, $perPage,$searchQuery,$queryflag,$loginUserId);    
 				

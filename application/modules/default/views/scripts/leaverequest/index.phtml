@@ -363,7 +363,7 @@
 								},
 						 <?php }}?>	
 				  ],// END - plan event 
-				  color: 'Red',     // an option!
+				  		color: 'Red',     // an option!
             	        textColor: 'white'
 				},{ // END - plan eventsource
 					 // First enent source
@@ -406,6 +406,8 @@
 								},
 						 <?php }}?>	
 				  ],// END - First event 
+				  		color: 'Green',     // an option!
+            	        textColor: 'white'
 				}, // END - First eventsource 
 				 {   			// Second event source
 						events: [  // Second event to display pending or approved leaves of employees reporting to logged in user
@@ -560,7 +562,10 @@ function applyFilter() {
 			</div>
 </form>
 <?php } ?>
-
+	<div style="display:inline-block;">
+		<div style="background-color:green;">&nbsp;</div>Leave Request
+		<div style="background-color:red;">&nbsp;</div>Leave Plan
+	</div>
 <div class="info_div">
 Click on a date to apply for 1 day of leave. Click and drag on the desired dates to apply for multiple days of leave.
 </div>

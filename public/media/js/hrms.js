@@ -2749,6 +2749,35 @@ function hidetodatecalender()
 							}
 					}
 				});
+	}
+	else if(dayselected == 3)
+	{
+			$.ajax({
+					url: base_url+"/leaverequest/gethalfdaydetails/format/json",   
+					type : 'POST',	
+					dataType: 'json',
+					success : function(response){
+							if(response['result'] == 1)
+							{
+							    $("#todatediv").hide();
+								$('#to_date').val('');
+								$('#from_date').val(fromdate);
+								$("#appliedleavesdaycount").val('0.0');
+							}
+							else if(response['result'] == 2)
+							{
+							   $('#s2id_leaveday .select2-choice span').html('Full Day');
+							   $('#leaveday').val(1);
+							   jAlert("Half day leave cannot be applied.");
+							}
+							else if($.trim(response['result']) == 'error')
+							{
+							   $('#s2id_leaveday .select2-choice span').html('Full Day');
+							   $('#leaveday').val(1);
+							   jAlert("Half day leave cannot be applied.");
+							}
+					}
+				});
 	}			
 
 }

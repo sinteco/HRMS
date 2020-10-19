@@ -153,9 +153,13 @@ class Default_ManageremployeevacationsController extends Zend_Controller_Action
 								{
 								  $managerleaverequestform->leaveday->addMultiOption($data['leaveday'],'Full Day');		   
 								}
-								else 
+								else if($data['leaveday'] == 2) 
 								{
 								  $managerleaverequestform->leaveday->addMultiOption($data['leaveday'],'Half Day');
+								}
+								else if($data['leaveday'] == 3)
+								{
+								  $managerleaverequestform->leaveday->addMultiOption($data['leaveday'],'1 Hour');
 								}					
 							   
 								$employeenameArr = $usersmodel->getUserDetailsByID($data['user_id']);	

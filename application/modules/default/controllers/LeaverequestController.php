@@ -270,7 +270,7 @@ class Default_LeaverequestController extends Zend_Controller_Action
 		$errorflag = 'true';
 		$msgarray = array();
 		$leavetypecount = '';
-		$leavedayArr = array(1,2);
+		$leavedayArr = array(1,2,3);
 		$availableleaves = '';
 		$rep_mang_id = '';
 		$employeeemail = '';
@@ -546,6 +546,8 @@ class Default_LeaverequestController extends Zend_Controller_Action
 		 $appliedleavescount =  0.5;
 		else if($leaveday == 1)
 		 $appliedleavescount = ($days !=''?$days:$appliedleavesdaycount);
+		else if($leaveday == 3)
+		 $appliedleavescount =  0.0;
 		 
 
 		//get hr_id from leavemanagemnt table based on login user dept id

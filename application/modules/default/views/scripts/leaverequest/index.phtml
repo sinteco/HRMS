@@ -322,8 +322,52 @@
 			/* Event sources allows multiple events to be attached to calender with comma separated events
 			  and we can add different colors to different event so that we can differentiate events  */
 			eventSources: [
-				 {   			// First enent source
-					events: [  // First event to display pending or approved leaves
+				 {   			
+					 // plan enent source
+					events: [  // plan event to display pending or approved leaves 
+							<?php if(!empty($this->leaveplandetails)){
+							  foreach($this->leaveplandetails as $val)
+							  {
+							        if($val['from_date'] !='' && $val['to_date'] !='' && $val['to_date'] != NULL)
+									{
+									   $from_date = explode("-",$val['from_date']);
+									   $from_date_year = $from_date[0];
+									   $from_date_month = $from_date[1];
+									   $from_date_day = $from_date[2];
+									   
+									   $to_date = explode("-",$val['to_date']);
+									   $to_date_year = $to_date[0];
+									   $to_date_month = $to_date[1];
+									   $to_date_day = $to_date[2];
+									}
+									else if($val['to_date'] =='' || $val['to_date'] == NULL)
+									{
+									   $from_date = explode("-",$val['from_date']);
+									   $from_date_year = $from_date[0];
+									   $from_date_month = $from_date[1];
+									   $from_date_day = $from_date[2];
+									   
+									   $to_date = explode("-",$val['from_date']);
+									   $to_date_year = $to_date[0];
+									   $to_date_month = $to_date[1];
+									   $to_date_day = $to_date[2];
+									}
+							?>
+								
+								{
+									title: '<?php echo $this->userfullname.', Leave, ('.$val['status'].')';?>',
+									start: new Date(<?php echo $from_date_year; ?>, <?php echo $from_date_month - 1; ?>,<?php echo $from_date_day; ?>),
+									end: new Date(<?php echo $to_date_year; ?>, <?php echo $to_date_month - 1; ?>,<?php echo $to_date_day; ?>),
+									id: <?php echo $val['id'];?>,
+									
+								},
+						 <?php }}?>	
+				  ],// END - plan event 
+				  color: 'Red',     // an option!
+            	        textColor: 'white'
+				},{ // END - plan eventsource
+					 // First enent source
+					events: [  // First event to display pending or approved leaves 
 							<?php if(!empty($this->leaverequestdetails)){
 							  foreach($this->leaverequestdetails as $val)
 							  {

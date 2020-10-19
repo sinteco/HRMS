@@ -184,7 +184,7 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
 	public function getEmployeeLeaveRequest($sort, $by, $pageNo, $perPage,$searchQuery,$loginUserId)
 	{	
 		//$where = "l.isactive = 1 AND l.leavestatus IN(1,2) AND u.isactive=1 AND l.rep_mang_id=".$loginUserId." ";
-        $where = "l.isactive = 1 AND l.leavestatus IN(1,2) AND u.isactive=1 AND (l.rep_mang_id=".$loginUserId." OR l.hr_id=".$loginUserId." ) and l.user_id!=".$loginUserId." ";
+        $where = "l.isactive = 1 AND l.leavestatus IN(1,2) AND u.isactive=1 AND (l.rep_mang_id=".$loginUserId." OR l.hr_id=".$loginUserId." ) and l.user_id!=".$loginUserId." and IF(l.leavestatus = 'Pending For Approval',DATE(l.from_date) >= DATE(NOW()),DATE(l.from_date) >= DATE(NOW()) OR DATE(l.from_date) <= DATE(NOW()))";
 		
 		if($searchQuery)
 			$where .= " AND ".$searchQuery;
@@ -202,7 +202,8 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
 						   ->joinLeft(array('u'=>'main_users'), 'u.id=l.user_id',array('userfullname'=>'u.userfullname'))						   						 		   						   
 						   ->where($where)
     					   ->order("$by $sort") 
-    					   ->limitPage($pageNo, $perPage);
+						   ->limitPage($pageNo, $perPage);
+						//    die($employeeleaveData);
 		
 		return $employeeleaveData;       		
 	}

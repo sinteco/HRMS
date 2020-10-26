@@ -2886,6 +2886,12 @@ function validateselecteddate(ele)
 	 
 	  var date = new Date();
 	  var y = date.getFullYear();
+	  var escapeholiday = false;
+	  if(leavetypeid=="11"||leavetypeid=="10"){
+		escapeholiday = true;
+	  }else{
+		  escapeholiday = false;
+	  }
 	
     if(fromdateval != '' && todateval != '' && leavetypeselectedval !='' && todate <= y )	
 	  {
@@ -2893,7 +2899,7 @@ function validateselecteddate(ele)
 		$.ajax({
 					url: base_url+"/index/calculatebusinessdays/format/json",   
 					type : 'POST',	
-					data : 'fromDate='+fromdateval+'&toDate='+todateval+'&dayselected='+dayselected+'&leavebalance='+leavebalance+'&leavepreallocated='+leavepreallocated+'&leavetypelimit='+leavetypelimit+'&leavetypetext='+leavetypetext+'&ishalfday='+ishalfday+'&context='+context+'&selectorid='+selectorid+'&leavetypeid='+leavetypeid,
+					data : 'escapeholiday='+escapeholiday+'&fromDate='+fromdateval+'&toDate='+todateval+'&dayselected='+dayselected+'&leavebalance='+leavebalance+'&leavepreallocated='+leavepreallocated+'&leavetypelimit='+leavetypelimit+'&leavetypetext='+leavetypetext+'&ishalfday='+ishalfday+'&context='+context+'&selectorid='+selectorid+'&leavetypeid='+leavetypeid,
 					dataType: 'json',
 					beforeSend: function ()
 					{

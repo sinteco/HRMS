@@ -775,6 +775,13 @@ class Default_IndexController extends Zend_Controller_Action
 		$weekend2 = '';
 		$availableleaves = '';
 		$holidayDatesArr = array();
+		$leavetypeid = $this->_request->getParam('leavetypeid');
+		if($leavetypeid=="10"||$leavetypeid=="11"){
+			$eskipholiday = true;
+		}else{
+			$eskipholiday = false;
+		}
+		// $eskipholiday = $this->_request->getParam('escapeholiday');
 		$fromDatejs = $this->_request->getParam('fromDate');
 		$fromDate = sapp_Global::change_date($fromDatejs,'database');
 
@@ -856,7 +863,7 @@ class Default_IndexController extends Zend_Controller_Action
 						{
 							if(count($holidayDatesArr)>0)
 							{
-								if($weekDay != $weekend1 && $weekDay != $weekend2 && (!in_array($fromDate,$holidayDatesArr)))
+								if($eskipholiday || $weekDay != $weekend1 && $weekDay != $weekend2 && (!in_array($fromDate,$holidayDatesArr)))
 								{
 									$noOfDays++;
 								}

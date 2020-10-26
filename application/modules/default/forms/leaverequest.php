@@ -81,8 +81,8 @@ class Default_Form_leaverequest extends Zend_Form
         $reason->setAttrib('rows', 10);
         $reason->setAttrib('cols', 50);
 		$reason ->setAttrib('maxlength', '300');
-		// $reason->setRequired(true);
-        // $reason->addValidator('NotEmpty', false, array('messages' => 'Please enter reason.'));
+		$reason->setRequired(true);
+        $reason->addValidator('NotEmpty', false, array('messages' => 'Please enter reason.'));
 		
 		$leavestatus = new Zend_Form_Element_Text('leavestatus');
         $leavestatus->setAttrib('readonly', 'true');

@@ -212,6 +212,7 @@ class Default_LeaveplanController extends Zend_Controller_Action
 					$allowed = array(15,16, 10, 13);
 					foreach ($leavetype as $leavetyperes){
 						if(in_array($leavetyperes['id'],$allowed)){
+							
 							// $leaverequestform->leavetypeid->addMultiOption($leavetyperes['id'].'!@#'.$leavetyperes['numberofdays'].'!@#'.utf8_encode($leavetyperes['leavetype']),utf8_encode($leavetyperes['leavetype']));
 							$loginUserId = $auth->getStorage()->read()->id;
 							$leavebalanceforleavetype = $employeeleavetypemodel->getleavebalance($leavetyperes['id'],$loginUserId);

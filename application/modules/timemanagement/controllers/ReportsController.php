@@ -224,6 +224,148 @@ class Timemanagement_ReportsController extends Zend_Controller_Action
 			
 	}
 
+	//===for add leave
+	public function addemployeeleavereportsAction(){
+
+		$reportsmodel = new Timemanagement_Model_Reports();
+		$projid = ($this->_request->getParam('projectId') != "undefined" && $this->_request->getParam('projectId') != "all")?$this->_request->getParam('projectId'):"";
+		$year_first_day = '01-01-'.date('Y');
+		$today = date('m-d-Y');
+		$start_date = ($this->_getParam('start_date')!='' && $this->_getParam('start_date')!='undefined')? $this->_getParam('start_date'):$year_first_day;
+		$end_date = ($this->_getParam('end_date')!='' && $this->_getParam('end_date')!='undefined')? $this->_getParam('end_date'):date('Y-m-d');
+		$start_date = sapp_Global::change_date($start_date,'database');
+		$end_date = sapp_Global::change_date($end_date,'database');
+		$org_start_date = $start_date;
+		$org_end_date = $end_date;
+		//pdf and excel flags 
+		$is_pdf = ($this->_getParam('is_pdf')!='' && $this->_getParam('is_pdf')!='undefined')? $this->_getParam('is_pdf'):"";
+		$is_excel = ($this->_getParam('is_excel')!='' && $this->_getParam('is_excel')!='undefined')? $this->_getParam('is_excel'):"";
+		$call = $this->_getParam('call');
+
+		if($call == 'ajaxcall')
+		$this->_helper->layout->disableLayout();
+
+		$view = Zend_Layout::getMvcInstance()->getView();
+		$objname = $this->_getParam('objname');
+		$refresh = $this->_getParam('refresh');
+		$dashboardcall = $this->_getParam('dashboardcall');
+		$data = array();
+		$searchQuery = '';
+		$searchArray = array();
+		$tablecontent='';
+
+		if($refresh == 'refresh')
+		{
+			if($dashboardcall == 'Yes')
+			$perPage = DASHBOARD_PERPAGE;
+			else
+			$perPage = PERPAGE;
+			$sort = 'DESC'; $by = 'e.userfullname'; $pageNo = 1; $searchData = ''; $searchQuery = '';$searchArray='';
+		}
+		else
+		{
+			$sort = ($this->_getParam('sort') !='')? $this->_getParam('sort'):'DESC';
+			$by = ($this->_getParam('by')!='')? $this->_getParam('by'):'e.userfullname';
+			if($dashboardcall == 'Yes')
+			$perPage = $this->_getParam('per_page',DASHBOARD_PERPAGE);
+			else
+			$perPage = $this->_getParam('per_page',PERPAGE);
+
+			$pageNo = $this->_getParam('page', 1);
+			/** search from grid - START **/
+			$searchData = $this->_getParam('searchData');
+			$searchData = rtrim($searchData,',');
+			/** search from grid - END **/
+		}
+
+		$param = $this->_getParam('selected_period_hidden');
+		//if pdf or excel
+		if(!empty($is_pdf) || !empty($is_excel))
+		{
+			//sorting order, sorting column and pagination parameters
+			$sort = ($this->_getParam('sort_order') !='')? $this->_getParam('sort_order'):'DESC';
+			$by = ($this->_getParam('sort_by')!='')? $this->_getParam('sort_by'):'e.userfullname';
+			$perPage = $this->_getParam('per_page',PERPAGE);
+			$pageNo = $this->_getParam('page_no', 1);
+			$searchData = $this->_getParam('search_data_pdf');
+			$searchData = rtrim($searchData,',');
+			$searchQuery = '';
+			$searchArray = array();
+			//build search parameters
+			if($searchData != '' && $searchData!='undefined')
+			{
+				$searchValues = json_decode($searchData);
+				foreach($searchValues as $key => $val)
+				{
+					$searchQuery .= " ".$key." like '%".$val."%' AND ";
+					$searchArray[$key] = $val;
+				}
+				$searchQuery = rtrim($searchQuery," AND");
+			}
+			$this->_helper->layout->disableLayout();
+			//getting the employee reports data
+			$result = $reportsmodel->getLeaveReportsData($sort, $by, $pageNo, $perPage, $searchQuery,$start_date, $end_date, $projid, $param,1);	
+			//for pdf
+			// print_r($result[1]);
+			// die('hay hoo');
+			if(!empty($is_pdf))
+			{
+				$view = $this->getHelper('ViewRenderer')->view;
+	            $this->view->reportsdata = $result;
+	            $text = $view->render('reports/addleavereport.phtml');
+	            require_once 'application/modules/default/library/MPDF57/mpdf.php';
+	            $mpdf=new mPDF('', 'A4-L', 12, 'Arial', 10, 10, 12, 12, 6, 6);
+	            $mpdf->SetDisplayMode('fullpage');
+	            $mpdf->list_indent_first_level = 0;
+	            $mpdf->SetDisplayMode('fullpage');
+	            $mpdf->pagenumSuffix = '';
+	            $mpdf->nbpgPrefix = ' of ';
+	            $mpdf->nbpgSuffix = '';
+	            $mpdf->AddPage();
+	            $mpdf->WriteHTML($text);
+	            $mpdf->Output('leavereport'.'.pdf','D');
+			}
+		
+//===============================================================================================================				
+//===============================================================================================================	
+//============Is excel function to display the project codes else if condition====================================				
+
+			else if(!empty($is_excel))
+			{
+				//$cols_param_arr = array('userfullname' => 'Employee','duration' => 'Hours');
+				//sapp_Global::export_to_excel($result,$cols_param_arr,"EmployeesReport.xlsx");
+				
+				/* added or commented by PSI */
+        		//$cols_param_arr = array('userfullname' => 'Employee','duration' => 'Hours');
+
+                $cols_param_arr= $reportsmodel->employeeReportHeader();
+                /* modification by PSI ends here */
+        		sapp_Global::export_to_excel($result,$cols_param_arr,"LeaveReport.xlsx");
+			}
+			
+//================Ends here===============================================================================================			
+//===============================================================================================================				
+//===============================================================================================================	
+			
+            exit;
+		}
+		else //for report grid
+		{
+			$projectsdata = $reportsmodel->getEmployeeReportsbyProjectId($sort, $by, $perPage, $pageNo, $searchData,
+			$call, $dashboardcall, $start_date, $end_date, $projid,$org_start_date,$org_end_date,$param);
+			array_push($data,$projectsdata);
+			$this->view->dataArray = $data;
+			$this->view->call = $call ;
+			$this->view->start_date = ($this->_getParam('start_date')!='')? $this->_getParam('start_date'):$year_first_day;
+			$this->view->end_date = ($this->_getParam('end_date')!='')? $this->_getParam('end_date'):$today;
+			$this->view->selcetedproj =$projid;
+			$this->view->sort =$sort;
+			$this->view->by =$by;
+			$this->view->selected_period_hidden = ($this->_getParam('selected_period_hidden')!='')? $this->_getParam('selected_period_hidden'):'';
+		}
+			
+	}
+
 	public function projectsreportsAction(){
 
 		$reportsmodel = new Timemanagement_Model_Reports();

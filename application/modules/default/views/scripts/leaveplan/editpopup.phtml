@@ -129,7 +129,7 @@
 	sapp_Helper::viewHeader();
 	sapp_Helper::viewBody('nor','Employee',$this->leave_details['user_name'],'Leave Type',$this->leave_details['leavetype_name']);
 	sapp_Helper::viewBody('alt','From',sapp_Global::change_date($this->leave_details['from_date'],'view'),'To',sapp_Global::change_date($this->leave_details['to_date'],'view'));
-	sapp_Helper::viewBody('nor','Leave For',$this->leave_details['leaveday']==1?'Full Day':'Half day','Days',$this->leave_details['appliedleavescount']);
+	sapp_Helper::viewBody('nor','Leave For',$this->leave_details['leaveday']==1?'Full Day':$this->leave_details['leaveday']==2?'Half day':'1 Hour','Days',$this->leave_details['appliedleavescount']);
 	if($this->leave_details['leavestatus']=='Approved') {
 		sapp_Helper::viewBody('alt','Approved On',sapp_Global::change_date($this->leave_details['modifieddate'],'view'),'Comments',$this->leave_details['approver_comments']);
 	}else if($this->leave_details['leavestatus']=='Pending for approval') {

@@ -49,6 +49,7 @@ class Default_LeaverequestController extends Zend_Controller_Action
 		$leaverequestform = new Default_Form_leaverequest();
 		$leaverequestform->setAttrib('action',BASE_URL.'leaverequest');
 		$leaverequestmodel = new Default_Model_Leaverequest();
+		$leaveplanmodel = new Default_Model_Leaveplan();
 		$employeeleavetypemodel = new Default_Model_Employeeleavetypes();
 		$leavemanagementmodel = new Default_Model_Leavemanagement();
 		$usersmodel = new Default_Model_Users();
@@ -155,11 +156,13 @@ class Default_LeaverequestController extends Zend_Controller_Action
 				    	
 				    	if($searchMeFlag == 'true')
 							$leaverequestdetails = $leaverequestmodel->getUserApprovedOrPendingLeavesData($loginUserId);
+							$leaveplandetails = $leaveplanmodel->getUserApprovedOrPendingLeavesData($loginUserId);
 						/* Start -For Checking if logged in user is reporting manager */
 						$isReportingManager = $employeesmodel->CheckIfReportingManager($loginUserId);
 						if(!empty($isReportingManager) && $isReportingManager[0]['count']>0) {
 							if($searchRepFlag=='true')
 								$managerrequestdetails = $leaverequestmodel->getManagerApprovedOrPendingLeavesData($loginUserId);
+								$managerplandetails = $leaveplanmodel->getManagerApprovedOrPendingLeavesData($loginUserId);
 							$isReportingManagerFlag = 'true';
 						}
 						/* End */	
@@ -185,6 +188,7 @@ class Default_LeaverequestController extends Zend_Controller_Action
 						$this->view->hremailgroup = $hremailgroup;
 						$this->view->dateofjoiningArr = $dateofjoiningArr;
 						$this->view->leaverequestdetails = !empty($leaverequestdetails)?$leaverequestdetails:array();
+						$this->view->leaveplandetails = !empty($leaveplandetails)?$leaveplandetails:array();
 						$this->view->holidayDateslistArr = $holidayDateslistArr;																								
 						$this->view->managerrequestdetails = !empty($managerrequestdetails)?$managerrequestdetails:array();
 						$this->view->isReportingManagerFlag = $isReportingManagerFlag;
@@ -210,7 +214,10 @@ class Default_LeaverequestController extends Zend_Controller_Action
 				if(sizeof($leavetype) > 0)
 				{
 					foreach ($leavetype as $leavetyperes){
-						$leaverequestform->leavetypeid->addMultiOption($leavetyperes['id'].'!@#'.$leavetyperes['numberofdays'].'!@#'.utf8_encode($leavetyperes['leavetype']),utf8_encode($leavetyperes['leavetype']));
+						$loginUserId = $auth->getStorage()->read()->id;
+						$leavebalanceforleavetype = $employeeleavetypemodel->getleavebalance($leavetyperes['id'],$loginUserId);
+						$leavebalance = $leavetyperes['numberofdays'] - $leavebalanceforleavetype[0]['leavebalance'];
+						$leaverequestform->leavetypeid->addMultiOption($leavetyperes['id'].'!@#'.$leavetyperes['numberofdays'].'!@#'.$leavetyperes['leavepreallocated'].'!@#'.$leavebalance.'!@#'.utf8_encode($leavetyperes['leavetype']),utf8_encode($leavetyperes['leavetype']));
 					}
 				}
 			}
@@ -263,7 +270,7 @@ class Default_LeaverequestController extends Zend_Controller_Action
 		$errorflag = 'true';
 		$msgarray = array();
 		$leavetypecount = '';
-		$leavedayArr = array(1,2);
+		$leavedayArr = array(1,2,3);
 		$availableleaves = '';
 		$rep_mang_id = '';
 		$employeeemail = '';
@@ -539,6 +546,8 @@ class Default_LeaverequestController extends Zend_Controller_Action
 		 $appliedleavescount =  0.5;
 		else if($leaveday == 1)
 		 $appliedleavescount = ($days !=''?$days:$appliedleavesdaycount);
+		else if($leaveday == 3)
+		 $appliedleavescount =  0.0;
 		 
 
 		//get hr_id from leavemanagemnt table based on login user dept id

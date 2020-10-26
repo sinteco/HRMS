@@ -29,8 +29,13 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
 	{
 	 	$select = $this->select()
     					   ->setIntegrityCheck(false)	
-                           ->from(array('e'=>'main_employeeleaves'),array('leavelimit'=>'e.emp_leave_limit','remainingleaves'=>new Zend_Db_Expr('e.emp_leave_limit - e.used_leaves')))
-						   ->where('e.user_id='.$loginUserId.' AND e.alloted_year = now() AND e.isactive = 1');  		   					   				
+                        //    ->from(array('e'=>'main_employeeleaves'),array('leavelimit'=>'e.emp_leave_limit','remainingleaves'=>new Zend_Db_Expr('e.emp_leave_limit - e.used_leaves')))
+						//    ->where('e.user_id='.$loginUserId.' AND e.alloted_year = now() AND e.isactive = 1');
+						   ->from(array('el'=>'main_employeeleaves'),array('leavelimit'=>'el.emp_leave_limit','remainingleaves'=>new Zend_Db_Expr('ROUND(IF(e.date_of_joining <= concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),DATEDIFF(now(),concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "))/365.25, DATEDIFF(now(),e.date_of_joining)/365.25)*(20+(ROUND((DATEDIFF(now(),e.date_of_joining)/365.25),2))-1),2) + IF((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/30)>=12,IF(MONTH(now())>3,0,IF(((DATEDIFF(now(),concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "))/365.25)*(20+(ROUND((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/365.25),2))-1))-el.used_leaves<10,10,((DATEDIFF(now(),concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "))/365.25)*(20+(ROUND((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/365.25),2))-1))-el.used_leaves)),IF((DATEDIFF(now(),e.date_of_joining)/30)>=12&&MONTH(now())>3,0,IF((ROUND((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/365.25)*(20+(ROUND((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/365.25),2))-1),2)-el.used_leaves)>0,(ROUND((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/365.25)*(20+(ROUND((DATEDIFF(concat(year(now() - INTERVAL 1 YEAR), "-12-31 03:30:48 "),e.date_of_joining)/365.25),2))-1),2)-el.used_leaves),0))) - COALESCE(SUM(IF(lr.leavestatus="Approved" and lr.leavetypeid=15 and lr.from_date BETWEEN CAST(CONCAT(YEAR(now()),"-01-01") AS DATE) AND CAST(CONCAT(YEAR(now()),"-12-31") AS DATE) and lr.to_date BETWEEN CAST(CONCAT(YEAR(now()),"-01-01") AS DATE) AND CAST(CONCAT(YEAR(now()),"-12-31") AS DATE),lr.appliedleavescount,0)),0)')))
+						   ->joinLeft(array('e'=>'main_employees_summary'), 'el.user_id=e.user_id',array('userid'=>'el.user_id'))
+						   ->joinLeft(array('lr'=>'main_leaverequest'), 'lr.user_id=e.user_id')
+						   ->where('e.user_id='.$loginUserId.' AND e.isactive = 1');
+						   //die($select);  		   					   				
 		return $this->fetchAll($select)->toArray();   
 	
 	}
@@ -179,7 +184,7 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
 	public function getEmployeeLeaveRequest($sort, $by, $pageNo, $perPage,$searchQuery,$loginUserId)
 	{	
 		//$where = "l.isactive = 1 AND l.leavestatus IN(1,2) AND u.isactive=1 AND l.rep_mang_id=".$loginUserId." ";
-        $where = "l.isactive = 1 AND l.leavestatus IN(1,2) AND u.isactive=1 AND (l.rep_mang_id=".$loginUserId." OR l.hr_id=".$loginUserId." ) and l.user_id!=".$loginUserId." ";
+        $where = "l.isactive = 1 AND l.leavestatus IN(1,2) AND u.isactive=1 AND (l.rep_mang_id=".$loginUserId." OR l.hr_id=".$loginUserId." ) and l.user_id!=".$loginUserId." and IF(l.leavestatus = 'Pending For Approval',DATE(l.from_date) > DATE(NOW()),DATE(l.from_date) >= DATE(NOW()) OR DATE(l.from_date) <= DATE(NOW()))";
 		
 		if($searchQuery)
 			$where .= " AND ".$searchQuery;
@@ -197,7 +202,8 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
 						   ->joinLeft(array('u'=>'main_users'), 'u.id=l.user_id',array('userfullname'=>'u.userfullname'))						   						 		   						   
 						   ->where($where)
     					   ->order("$by $sort") 
-    					   ->limitPage($pageNo, $perPage);
+						   ->limitPage($pageNo, $perPage);
+						//    die($employeeleaveData);
 		
 		return $employeeleaveData;       		
 	}
@@ -284,7 +290,7 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
 				$tableFields = array('action'=>'Action','userfullname' => 'Employee','leavetype' => 'Leave Type',
                     'from_date' => 'From','to_date' => 'To','appliedleavescount' => 'Days','leavestatus' => 'Leave Status');
 		
-		        $leave_arr = array('' => 'All',1 =>'Full Day',2 => 'Half Day');
+		        $leave_arr = array('' => 'All',1 =>'Full Day',2 => 'Half Day',3 => '1 Hour');
 
                 $tablecontent = $this->getEmployeeLeaveRequest($sort, $by, $pageNo, $perPage,$searchQuery,$loginUserId);      				
 				$dataTmp = array(
@@ -369,7 +375,7 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
             'leavetype' => 'Leave Type','from_date' => 'From Date','to_date' => 'To Date',
             'appliedleavescount' => 'Leave Count','applieddate' => 'Applied On');						 
 				 
-			$leave_arr = array('' => 'All',1 =>'Full Day',2 => 'Half Day');	 
+			$leave_arr = array('' => 'All',1 =>'Full Day',2 => 'Half Day',3 => '1 Hour');	 
 			
 			$search_filters = array(
 										'from_date' =>array('type'=>'datepicker'),
@@ -470,7 +476,7 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
 							'from_date' => 'From Date','to_date' => 'To Date','appliedleavescount' => 'Days',
 							'applieddate' => 'Applied On','modifieddate' => 'Approved/Rejected On');
 				}	
-				$leave_arr = array('' => 'All',1 =>'Full Day',2 => 'Half Day');	
+				$leave_arr = array('' => 'All',1 =>'Full Day',2 => 'Half Day',3 => '1 Hour');	
 				
 				$tablecontent = $this->getLeaveStatusHistory($sort, $by, $pageNo, $perPage,$searchQuery,$queryflag,$loginUserId);    
 				

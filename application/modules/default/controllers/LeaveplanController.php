@@ -209,8 +209,11 @@ class Default_LeaveplanController extends Zend_Controller_Action
 		    {
 				if(sizeof($leavetype) > 0)
 				{
+					$allowed = array(15,16, 10, 13);
 					foreach ($leavetype as $leavetyperes){
-						$leaverequestform->leavetypeid->addMultiOption($leavetyperes['id'].'!@#'.$leavetyperes['numberofdays'].'!@#'.utf8_encode($leavetyperes['leavetype']),utf8_encode($leavetyperes['leavetype']));
+						if(in_array($leavetyperes['id'],$allowed)){
+							$leaverequestform->leavetypeid->addMultiOption($leavetyperes['id'].'!@#'.$leavetyperes['numberofdays'].'!@#'.utf8_encode($leavetyperes['leavetype']),utf8_encode($leavetyperes['leavetype']));
+						}
 					}
 				}
 			}

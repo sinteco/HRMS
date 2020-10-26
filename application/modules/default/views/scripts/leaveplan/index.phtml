@@ -136,7 +136,7 @@
 					dataType: 'json',
 					success : function(response){
 					    var superadminid = <?php echo SUPERADMIN;?>;
-					        if(response['days'] == 0 && response['loginUserId'] != superadminid)
+					        if(response['days']  == 0 && response['loginUserId'] != superadminid)
 							{
 							    jAlert("You cannot apply leave on Weekend/Holidays.");
 							}else

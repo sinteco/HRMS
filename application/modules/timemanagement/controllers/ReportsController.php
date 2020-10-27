@@ -254,6 +254,9 @@ class Timemanagement_ReportsController extends Zend_Controller_Action
 		$searchArray = array();
 		$tablecontent='';
 
+		$datefrom = $this->_request->getParam('datefrom');
+		$dateto = $this->_request->getParam('dateto');
+
 		if($refresh == 'refresh')
 		{
 			if($dashboardcall == 'Yes')
@@ -304,7 +307,7 @@ class Timemanagement_ReportsController extends Zend_Controller_Action
 			}
 			$this->_helper->layout->disableLayout();
 			//getting the employee reports data
-			$result = $reportsmodel->getLeaveReportsData($sort, $by, $pageNo, $perPage, $searchQuery,$start_date, $end_date, $projid, $param,1);	
+			$result = $reportsmodel->getLeaveReportsData($sort, $by, $pageNo, $perPage, $searchQuery,$start_date, $end_date, $projid, $param,1, $datefrom, $dateto);	
 			//for pdf
 			// print_r($result[1]);
 			// die('hay hoo');

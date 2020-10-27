@@ -299,7 +299,7 @@ $select = $this->select()
 		}
 		return $select;
 	}
-	public function getLeaveReportsData($sort, $by, $pageNo, $perPage, $searchQuery,$start_date, $end_date, $projid, $param="",$flag="")
+	public function getLeaveReportsData($sort, $by, $pageNo, $perPage, $searchQuery,$start_date, $end_date, $projid, $param="",$flag="",$datefrom,$dateto)
 	{
 		//the below code is used to get data of employees from summary table.
         $employeesData="";                             
@@ -322,7 +322,7 @@ $select = $this->select()
                                 ->group(array ("e.user_id"))
                                 ->order("$by $sort"); 
                                 // ->limitPage($pageNo, $perPage);
-								// die($employeesData);
+								die($employeesData);
 			if(!empty($flag))
 			{
 				return $this->fetchAll($employeesData)->toArray(); 

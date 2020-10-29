@@ -256,6 +256,8 @@ class Timemanagement_ReportsController extends Zend_Controller_Action
 
 		$datefrom = $this->_request->getParam('datefrom');
 		$dateto = $this->_request->getParam('dateto');
+		// var_dump($dateto);
+		// die($dateto);
 
 		if($refresh == 'refresh')
 		{

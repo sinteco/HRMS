@@ -165,7 +165,11 @@ $(document).ready(function(){
 		var per_page = $('#per_page').val();
 		var search_data_pdf = $('#search_data_pdf').val();
 		var datefrom = $('#fromdatepicker').val();
-		var dateto = $('#todatepicker').val();	
+		var dateto = $('#todatepicker').val();
+		datefrom = "-"+new Date(datefrom).getDay()+"-"+new Date(datefrom).getDate();
+		dateto = "-"+new Date(dateto).getDay()+"-"+new Date(dateto).getDate();
+		// alert(datefrom);
+		// alert(start_date);
 		$('#is_pdf').val('0');
 		$('#is_excel').val('0');
 		$('#sort_order').val('');

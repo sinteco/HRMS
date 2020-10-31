@@ -518,7 +518,8 @@
           //	print_r($holidayDates);      
           	$leavedData = $this->leavesData;
          
-        	$leavesArray = array();
+			$leavesArray = array();
+			$approvedLeaves = array();
         	foreach($leavedData as $leavesRow) {
 	        	$from = $leavesRow['from_date'];
         		$to = $leavesRow['to_date'];
@@ -541,7 +542,8 @@
         				if(!in_array($t, $holidayDates)) {
         					if($leaveStatus == 'Approved') { 
         					   $leaveT = ($leaveType == '1')?'L':'HD';
-        					   $leaveReqId = 'L';
+							   $leaveReqId = 'L';
+							   $approvedLeaves[] = (int)date("d",strtotime($t));
         					}else if($leaveStatus == 'Pending for approval'){
         					   $leaveT = 'P';
         					   if($leaveDay == 2){
@@ -629,8 +631,8 @@
 							//
 						}
 						$duration = ($weekData != "")?$weekData[strtolower($dayName).'_duration']:"0:00";
-						// var_dump($weekData);
-						// var_dump($selectedYrMon);die($duration);
+						// var_dump($holidayNames);
+						// die($duration);
           				//$duration = ($weekData != "")?$weekData[strtolower($dayName).'_duration']:"00:00";
           				$status = ($weekData != "")?$weekData[strtolower($dayName).'_status']:'no_entry'; 
           				$rejectNote = ($weekData != "")?$weekData[strtolower($dayName).'_reject_note']:"";            				
@@ -780,12 +782,21 @@
           		}
           	?>
           			</tr>
-          	<?php
+          	<?php 
           	}
           ?>
         
         </tbody>
-      </table>
+	  </table><?php 
+	  	for ($x = 0; $x <= count($holidayDates); $x++) {
+			echo $holidayDates[$x].' - '.$holidayNames[$x];
+		  }
+		  ?><br/> Leaves - <?php
+		for ($x = 0; $x <= count($approvedLeaves); $x++) {
+		echo $approvedLeaves[$x].',';
+		}
+		//   die('e');
+	   ?>
     </div>
     <!-- 
     <div class="right_container" >

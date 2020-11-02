@@ -560,7 +560,7 @@
         		$holidayDates[$k] =  ($holDay != '')?date("d",strtotime($holDay)):'';
         	}
         	//print_r($holidayDates);
-          	$weekdays = array( 'Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat','Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
+          	$weekdays = array( 'Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
           	$statusClasses = array('no_entry'=>'no_entry','saved'=>'yet_to_submit','approved'=>'approved',
           		'submitted'=>'for_approval','enabled'=>'enabled','rejected'=>'rejected','blocked'=>'blocked');
           	$statusText = array('no_entry'=>'No Entry','saved'=>'Yet to submit','approved'=>'Approved',
@@ -692,14 +692,14 @@
           		<?php } else {           
    						  if(Zend_Registry::get( 'tm_role' ) !='Admin') {  			
           			?>          			
-          		 	<td  style="cursor: pointer; cursor: hand;" onclick="getWeekData('',<?php  echo $i;?>,<?php echo $calWeek;?>,<?php echo $dayCounter;?>);" id="id_day_<?php echo  $dayCounter; ?>" <?php echo $tdClass; ?> >
+          		 	<td  style="cursor: pointer; cursor: hand; height:72!important" onclick="getWeekData('',<?php  echo $i;?>,<?php echo $calWeek;?>,<?php echo $dayCounter;?>);" id="id_day_<?php echo  $dayCounter; ?>" <?php echo $tdClass; ?> >
           		 	<?php }else {?>
           			<td <?php echo $tdClass; ?> >
           		 	<?php } 
           				}
           		 	?>
           		 	          		 	
-          		 	<span class="date"><?php echo  $dayCounter; ?></span><div class="hrs_displ"><span class="hrs_txt">Hours</span><span class="time_disp"><?php echo (!strpos($tdClass, 'inactive_td'))?$duration:'';?></span></div>
+          		 	<span class="date"><?php echo  $dayCounter; ?></span><div class="hrs_displ"><span class="hrs_txt">Hours</span><span class="time_disp" style="font-size: 15px!important"><?php echo (!strpos($tdClass, 'inactive_td'))?$duration:'';?></span></div>
           		 	<?php  
           		 	//$leave = (in_array($dayCounter, $leavesArray))?"L":"";
           		 	$leave = "";

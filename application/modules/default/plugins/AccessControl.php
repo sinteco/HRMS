@@ -170,6 +170,9 @@ protected function _getAcl()
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:employeeprojects'));
 									$acl->allow($tmroleText[$role], 'timemanagement:employeeprojects', array('index','view','emptasksgrid'));
 
+		$acl->addResource(new Zend_Acl_Resource('timemanagement:timesheetreport'));
+									$acl->allow($tmroleText[$role], 'timemanagement:timesheetreport', array('index','week','save','submit','eraseweek','getstates','getapprovedtimesheet','closeapprovealert','converdate'));
+
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:notifications'));
 									$acl->allow($tmroleText[$role], 'timemanagement:notifications', array('getnotifications','index'));
 

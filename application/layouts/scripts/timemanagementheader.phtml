@@ -954,6 +954,7 @@ if($loginuserRole == SUPERADMINROLE)
 
 <ul class="reports-ctrl" id="scroller">
 	<li class="reports-div active" id="indexli"><a href="<?php echo $this->baseUrl("/index.php/timemanagement");?>"><span class="menu_icon"><i class="fa fa-calendar fa-2"></i></span><p class="one-line">Timesheet</p></a></li>
+	<li class="reports-div active" id="timesheetreportli"><a href="<?php echo $this->baseUrl("/index.php/timemanagement/timesheetreport/");?>"><span class="menu_icon"><i class="fa fa-calendar fa-2"></i></span><p class="one-line">Timesheet Report</p></a></li>
 	
 	<?php if(Zend_Registry::get( 'tm_role' )!='Admin'){?>
 	<!--<li class="reports-div active" id="weekli"><a href="<?php //echo $this->baseUrl("/index.php/timemanagement/index/week?flag=time");?>"><span class="menu_icon"><i class="fa fa-clock-o fa-2"></i></span><p class="one-line">Enter Time</p></a></li> -->

@@ -220,6 +220,7 @@ a.weekly_view_butt{ width:200px; height:33px; background:#67c4c9; margin:0 auto;
 .month_view tr:nth-child(7n+1) td{border-top:none; background:#ddd54e;}
 /*.month_view tr td.weekend_td{ background:#efefef;}*/
 .month_view tr td.inactive_td,.weekend{background:#efefef;}
+.month_view tr td.inactive_td_black,.weekend{background:black}
 
 .month_view tr td:last-child{ border-right:none;}
 .month_view tr td.td_first{ border-left: 1px solid #e0e0e0;}

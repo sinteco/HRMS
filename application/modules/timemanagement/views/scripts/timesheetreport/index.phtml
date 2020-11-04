@@ -246,7 +246,7 @@
 		//$YrMonths = $this->YrMonths;
 		//$this->empDoj;
 ?>
-	<div class="full_container">
+	<div class="full_container" style="padding:1px">
 	 <input type="hidden" name="empDoj" id="empDoj" value="<?php  echo $this->empDoj;?>"/>
 	 <input type="hidden" name="empid" id="empid" value="<?php  echo $this->empid;?>"/>
 	 <input type="hidden" name="calSelYrMonth" id="calSelYrMonth" />
@@ -461,7 +461,7 @@
       <?php } ?>
         <tbody>
           <tr>          
-           <th class="month_name_dsp" colspan="15"><span class="month_name_disp">
+           <th class="month_name_dsp" colspan="32"><span class="month_name_disp">
 		   <span class="control_option cal_single_view flt_lft">
 		   <div class="new-form-ui month_picker">
 			<div class="division">
@@ -560,7 +560,7 @@
         		$holidayDates[$k] =  ($holDay != '')?date("d",strtotime($holDay)):'';
         	}
         	//print_r($holidayDates);
-          	$weekdays = array( 'Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
+          	$weekdays = array( 'Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat','Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat','Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat','Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat','Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
           	$statusClasses = array('no_entry'=>'no_entry','saved'=>'yet_to_submit','approved'=>'approved',
           		'submitted'=>'for_approval','enabled'=>'enabled','rejected'=>'rejected','blocked'=>'blocked');
           	$statusText = array('no_entry'=>'No Entry','saved'=>'Yet to submit','approved'=>'Approved',
@@ -624,8 +624,13 @@
           			if($dayName == $day)  {
           				
 							//==========HH:MM   TO 	H:MM =================================================			
-						
+						if(true)
+						{
+							//
+						}
 						$duration = ($weekData != "")?$weekData[strtolower($dayName).'_duration']:"0:00";
+						// var_dump($weekData);
+						// var_dump($selectedYrMon);die($duration);
           				//$duration = ($weekData != "")?$weekData[strtolower($dayName).'_duration']:"00:00";
           				$status = ($weekData != "")?$weekData[strtolower($dayName).'_status']:'no_entry'; 
           				$rejectNote = ($weekData != "")?$weekData[strtolower($dayName).'_reject_note']:"";            				
@@ -699,7 +704,7 @@
           				}
           		 	?>
           		 	          		 	
-          		 	<span class="date"><?php echo  $dayCounter; ?></span><div class="hrs_displ"><span class="hrs_txt">Hours</span><span class="time_disp" style="font-size: 15px!important"><?php echo (!strpos($tdClass, 'inactive_td'))?$duration:'';?></span></div>
+          		 	<span class="date"><?php echo  $dayCounter; ?></span><div class="hrs_displ" style="right:4px!important"><span class="hrs_txt">Hours</span><span class="time_disp" style="font-size: 15px!important"><?php echo (!strpos($tdClass, 'inactive_td'))?$duration:'';?></span></div>
           		 	<?php  
           		 	//$leave = (in_array($dayCounter, $leavesArray))?"L":"";
           		 	$leave = "";

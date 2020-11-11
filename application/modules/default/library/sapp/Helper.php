@@ -1689,6 +1689,11 @@ public static function createNew($loginUserId)
 				{
 					$editpermission='Yes';
 				}
+			}else if($controllername=='tmsheetconfigration'){
+				if(Zend_Registry::get('tm_role')=='Admin')
+				{
+					$editpermission='Yes';
+				}
 			}
 			
 		}

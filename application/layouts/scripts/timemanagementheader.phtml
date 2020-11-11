@@ -979,6 +979,10 @@ if($loginuserRole == SUPERADMINROLE)
 	<?php if(Zend_Registry::get( 'tm_role' )=='Admin'){?>
 	<li class="reports-div" id="configurationli"><a href="<?php echo $this->baseUrl("/index.php/timemanagement/configuration/");?>"><span class="menu_icon"><i class="fa fa-cogs fa-2"></i></span><p class="one-line">Configuration</p></a></li>
 	<?php }?>
+
+	<?php if(Zend_Registry::get( 'tm_role' )=='Admin'){?>
+	<li class="reports-div" id="tmsheetconfigrationli"><a href="<?php echo $this->baseUrl("/index.php/timemanagement/tmsheetconfigration/");?>"><span class="menu_icon"><i class="fa fa-cogs fa-2"></i></span><p class="one-line">Time Sheet Report Configuration</p></a></li>
+	<?php }?>
 	
 	<!-- li class="reports-div" id="videoli"><a href="javascript:void(0);"  onclick="showVideoTutorial();"><span class="menu_icon"><i class="fa fa-video-camera fa-2"></i></span><p class="one-line">Video Tutorial</p></a></li -->
 	

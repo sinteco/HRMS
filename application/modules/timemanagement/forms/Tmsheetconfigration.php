@@ -19,92 +19,43 @@
  *  Sentrifugo Support <support@sentrifugo.com>
  ********************************************************************************/
 
-class Timemanagement_Form_tmsheetconfigrations extends Zend_Form
+class Timemanagement_Model_Tmsheetconfigrations extends Zend_Form
 {
 	public function init()
 	{
 		$this->setMethod('post');
-		$this->setAttrib('action',BASE_URL.'tmsheetconfigrations/edit');
+		$this->setAttrib('action',BASE_URL.'timemanagement/tmsheetconfigration/edit');
 		$this->setAttrib('id', 'formid');
-		$this->setAttrib('name', 'tmsheetconfigrations');
+		$this->setAttrib('name', 'tmsheetconfigration');
 
 
         $id = new Zend_Form_Element_Hidden('id');
-		$emptyflag = new Zend_Form_Element_Hidden('emptyFlag');
 		
-		$tmsheetconfigrationcode = new Zend_Form_Element_Text('tmsheetconfigrationcode');
-        $tmsheetconfigrationcode->setAttrib('maxLength', 20);
-        $tmsheetconfigrationcode->setRequired(true);
-        $tmsheetconfigrationcode->addValidator('NotEmpty', false, array('messages' => 'Please enter job title code.'));
-		$tmsheetconfigrationcode->addValidator("regex",true,array(
-                           'pattern'=>'/^[a-zA-Z][a-zA-Z0-9\s]*$/', 
-                           'messages'=>array(
-                               'regexNotMatch'=>'Please enter valid job title code.'
-                           )
-        	));
-        $tmsheetconfigrationcode->addValidator(new Zend_Validate_Db_NoRecordExists(
-                                              array('table'=>'main_tmsheetconfigrations',
-                                                        'field'=>'tmsheetconfigrationcode',
-                                                      'exclude'=>'id!="'.Zend_Controller_Front::getInstance()->getRequest()->getParam('id').'" and isactive=1',    
+		$task = new Zend_Form_Element_Text('task');
+        $task->setAttrib('maxLength', 100);
+        
+        $task->setRequired(true);
+        $task->addValidator('NotEmpty', false, array('messages' => 'Please enter default task.'));
+		$task->addValidator("regex",true,array(
+									'pattern'=> '/^(?=.*[a-zA-Z])([a-zA-Z0-9& ]*)$/',
+								    'messages'=>array(
+									     'regexNotMatch'=>'Please enter a valid default task.'
+								     )
+					       ));	
+        $task->addValidator(new Zend_Validate_Db_NoRecordExists(
+                                              array('table'=>'tm_tasks',
+                                                     'field'=>'task',
+                                                     'exclude'=>'id!="'.Zend_Controller_Front::getInstance()->getRequest()->getParam('id').'" and is_active=1',    
                                                  ) )  
                                     );
-        $tmsheetconfigrationcode->getValidator('Db_NoRecordExists')->setMessage('Job title code already exists.'); 		
+        $task->getValidator('Db_NoRecordExists')->setMessage('Default task already exists.');	
+        	
       
-		$tmsheetconfigrationname = new Zend_Form_Element_Text('tmsheetconfigrationname');
-        $tmsheetconfigrationname->setAttrib('maxLength', 50);
-        $tmsheetconfigrationname->setRequired(true);
-        $tmsheetconfigrationname->addValidator('NotEmpty', false, array('messages' => 'Please enter job title.'));  
-		$tmsheetconfigrationname->addValidator("regex",true,array(
-                           'pattern'=>'/^[a-zA-Z][a-zA-Z0-9\-\&\s]*$/', 
-                           'messages'=>array(
-                               'regexNotMatch'=>'Please enter valid job title.'
-                           )
-        	));
-	
-		$jobdescription = new Zend_Form_Element_Textarea('jobdescription');
-        $jobdescription->setAttrib('rows', 10);
-        $jobdescription->setAttrib('cols', 50);
-		$jobdescription ->setAttrib('maxlength', '200');
-		
-		$minexperiencerequired = new Zend_Form_Element_Text('minexperiencerequired');
-        $minexperiencerequired->setAttrib('maxLength', 4);
-        $minexperiencerequired->addFilter(new Zend_Filter_StringTrim());
-		$minexperiencerequired->addValidators(array(
-						 array(
-							 'validator'   => 'Regex',
-							 'breakChainOnFailure' => true,
-							 'options'     => array( 
-							 'pattern'=>'/^[0-9]\d{0,1}(\.\d*)?$/', 
-							  'messages' => array(
-							  'regexNotMatch'=>'Please enter only numeric characters.'
-								 )
-							 )
-						 )
-					 )); 
-        		
-		$jobpaygradecode = new Zend_Form_Element_Text('jobpaygradecode');
-        $jobpaygradecode->setAttrib('maxLength', 20);
-        $jobpaygradecode->addFilter(new Zend_Filter_StringTrim());
-        $jobpaygradecode->setRequired(true);
-        $jobpaygradecode->addValidator('NotEmpty', false, array('messages' => 'Please enter job pay grade code.')); 
-		
-		$jobpayfrequency = new Zend_Form_Element_Select('jobpayfrequency');
-        $jobpayfrequency->setLabel('Job pay frequency');
-        $jobpayfrequency->addMultiOption('','Select Pay Frequency');		
-		$jobpayfrequency->setRequired(true);
-		$jobpayfrequency->addValidator('NotEmpty', false, array('messages' => 'Please select job pay frequency.')); 				
-		$jobpayfrequency->setRegisterInArrayValidator(false);	
-      		
-		$comments = new Zend_Form_Element_Textarea('comments');
-        $comments->setAttrib('rows', 10);
-        $comments->setAttrib('cols', 50);
-		$comments ->setAttrib('maxlength', '200');
-
-        $submit = new Zend_Form_Element_Submit('submit');
+		$submit = new Zend_Form_Element_Submit('submit');
 		$submit->setAttrib('id', 'submitbutton');
 		$submit->setLabel('Save');
 
-		 $this->addElements(array($id,$tmsheetconfigrationcode,$tmsheetconfigrationname,$jobdescription,$minexperiencerequired,$emptyflag,$jobpaygradecode,$jobpayfrequency,$comments,$submit));
+		 $this->addElements(array($id,$task,$submit));
          $this->setElementDecorators(array('ViewHelper')); 
 	}
 }

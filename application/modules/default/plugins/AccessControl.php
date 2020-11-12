@@ -111,7 +111,7 @@ protected function _getAcl()
 									$acl->allow($tmroleText[$role], 'timemanagement:configuration', array('index','add'));
 
 		$acl->addResource(new Zend_Acl_Resource('timemanagement:tmsheetconfigration'));
-									$acl->allow($tmroleText[$role], 'timemanagement:tmsheetconfigration', array('index','add'));
+									$acl->allow($tmroleText[$role], 'timemanagement:tmsheetconfigration', array('index','edit','view','delete'));
 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:currency'));
 									$acl->allow($tmroleText[$role], 'timemanagement:currency', array('index'));

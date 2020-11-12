@@ -190,7 +190,7 @@ class Timemanagement_TmsheetconfigrationController extends Zend_Controller_Actio
 		if($callval == 'ajaxcall')
 		$this->_helper->layout->disableLayout();
 
-		$tmsheetconfigrationsform = new Timemanagement_Form_tmsheetconfigrations();
+		$tmsheetconfigrationsform = new Timemanagement_Form_Tmsheetconfigrations();
 		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigrations();
 		$payfrequencyModal = new Default_Model_Payfrequency();
 		$payfreqData = $payfrequencyModal->getActivePayFreqData();

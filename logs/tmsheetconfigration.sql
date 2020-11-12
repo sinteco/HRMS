@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `tmsheetconfigration`;
-CREATE TABLE IF NOT EXISTS `tmsheetconfigration` (
+DROP TABLE IF EXISTS `main_tmsheetconfigrations`;
+CREATE TABLE IF NOT EXISTS `main_tmsheetconfigrations` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `month` int(11) UNSIGNED DEFAULT NULL,
   `year` int(11) UNSIGNED DEFAULT NULL,

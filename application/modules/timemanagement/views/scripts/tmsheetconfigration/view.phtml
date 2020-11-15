@@ -18,12 +18,9 @@
  *
  *  Sentrifugo Support <support@sentrifugo.com>
  ********************************************************************************/
-
 ?>
 
-
-
-<?php 
+<?php 	
 if($this->ermsg !='')
 {
 ?>
@@ -31,34 +28,54 @@ if($this->ermsg !='')
 				<div class="style-1-icon info"></div>
 				No data found.
 	</div>
-<?php
+<?php 
 }
 else
-{ 
+{
 $baseUrl = $this->serverUrl().$this->baseUrl();
-echo $this->form->id;
-$msgtitle = $this->controllername.'_delete';
-sapp_Helper::editdeleteForView(JOBTITLES,$this->controllername,$this->id,$msgtitle); ?>
+$data = $this->data;
+ ?>
+        <div class="total-form-controller view-form-detail">
 
-<!--<div class="new_actions">
-    	<a class="edit_action_new"><i class="fa fa-remove"></i> Cancel</a>
-	    <span class="divider_new"></span>
-    	<a class="edit_action_new" ><i class="fa fa-trash"></i> Delete</a>
-	    <span class="divider_new"></span>
-    	<a class="edit_action_new" onclick="changeeditscreen('<?php //echo $this->controllername;?>',<?php// echo $this->id;?>);"><i class="fa fa-pencil"></i> Edit</a>
-</div>-->
-
-<?php 
-sapp_Helper::viewHeader();
-sapp_Helper::viewBody('nor','Job Title Code',$this->data['jobtitlecode'],'Job Title',$this->data['jobtitlename']);
-sapp_Helper::viewBody('alt','Job Description',(!empty($this->data['jobdescription']))?$this->data['jobdescription']:"...",'Min Experience Required',(!empty($this->data['minexperiencerequired']))?$this->data['minexperiencerequired']:"...");
-sapp_Helper::viewBody('nor','Job Pay Grade Code',$this->data['jobpaygradecode'],'Job Pay Frequency',$this->data['jobpayfrequency']);
-sapp_Helper::viewBody('alt','Comments',(!empty($this->data['comments']))?$this->data['comments']:"...",'','');
-sapp_Helper::viewFooter();
-?>
-        <!--<div class="new-form-ui-submit">
-			<input type="submit" onclick="changeeditscreen('<?php //echo $this->controllername;?>',<?php //echo $this->id;?>);" value="Edit" />
-			<button onclick="window.location.href='<?php //echo BASE_URL; ?>jobtitles';" type="button" >Cancel</button>
-		</div>-->
-    
-<?php	}	?>   
+		<div style="margin-left: 0px; padding-top: 0px; padding-bottom: 20px;  float: none;" class="cofig_title">Time Sheet Report Configration
+			<div style="margin-top: 0px; float: right; width: auto;" class="new-form-ui-submit ">
+			
+			
+				<!--<div style="position: relative; float: right; top: 0px;" class="back-to-page">
+					<input type="button" style="margin-right: 0px;" value="Back" name="Back" onclick="window.location.href='<?php //echo BASE_URL; ?>timemanagement/defaulttasks';">
+				</div>
+				<input type="button" class="fltright" onclick="window.location.href='<?php //echo BASE_URL; ?>timemanagement/defaulttasks/edit/id/<?php //echo $data[0]['id'];?>';" value="Edit" />-->
+				<?php 
+                $msgtitle = $this->controllername.'_delete';
+                sapp_Helper::editdeleteForView('',$this->controllername,$data[0]['id'],$msgtitle,$isfromTM=1); ?>
+				
+			</div>
+		 </div>
+		
+		<table width="100%" cellspacing="0" cellpadding="0" border="0" class="requisition-table view-table-data">
+				<tbody>
+				<tr class="req-bg-form">
+					<td width="40%"><span class="head_txt">Year</span></td>
+					<td width="60%"><?php echo $data[0]['year']; ?></td>					
+				</tr>
+				<tr class="req-bg-form">
+					<td width="40%"><span class="head_txt">Month</span></td>
+					<td width="60%"><?php echo $data[0]['month']; ?></td>					
+				</tr>
+				<tr class="req-bg-form">
+					<td width="40%"><span class="head_txt">Date From</span></td>
+					<td width="60%"><?php echo $data[0]['form']; ?></td>					
+				</tr>
+				<tr class="req-bg-form">
+					<td width="40%"><span class="head_txt">Date To</span></td>
+					<td width="60%"><?php echo $data[0]['to']; ?></td>					
+				</tr>
+			</tbody>
+		</table>
+</div>       
+<?php	}	?> 
+<script type="text/javascript" language="javascript">
+$(document).ready(function(){
+	$('.breadcrumbs').append("<span class='arrows'>&rsaquo;</span><a href='<?php echo BASE_URL; ?>timemanagement/tmsheetconfigration'>Time Sheet Configration</a><span class='arrows'>&rsaquo;</span><span>View</span>");
+});
+</script>  

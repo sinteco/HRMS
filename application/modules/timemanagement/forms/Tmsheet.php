@@ -19,7 +19,7 @@
  *  Sentrifugo Support <support@sentrifugo.com>
  ********************************************************************************/
 
-class Timemanagement_Model_Tmsheetconfigrations extends Zend_Form
+class Timemanagement_Form_Tmsheet extends Zend_Form
 {
 	public function init()
 	{
@@ -31,31 +31,39 @@ class Timemanagement_Model_Tmsheetconfigrations extends Zend_Form
 
         $id = new Zend_Form_Element_Hidden('id');
 		
-		$task = new Zend_Form_Element_Text('task');
-        $task->setAttrib('maxLength', 100);
-        
-        $task->setRequired(true);
-        $task->addValidator('NotEmpty', false, array('messages' => 'Please enter default task.'));
-		$task->addValidator("regex",true,array(
-									'pattern'=> '/^(?=.*[a-zA-Z])([a-zA-Z0-9& ]*)$/',
-								    'messages'=>array(
-									     'regexNotMatch'=>'Please enter a valid default task.'
-								     )
-					       ));	
-        $task->addValidator(new Zend_Validate_Db_NoRecordExists(
-                                              array('table'=>'tm_tasks',
-                                                     'field'=>'task',
-                                                     'exclude'=>'id!="'.Zend_Controller_Front::getInstance()->getRequest()->getParam('id').'" and is_active=1',    
-                                                 ) )  
-                                    );
-        $task->getValidator('Db_NoRecordExists')->setMessage('Default task already exists.');	
-        	
+        $from = new Zend_Form_Element_Text('from');
+		$from->setOptions(array('class' => 'fromdatePicker'));
+        //$date_of_leaving->setAttrib('onchange', 'validatejoiningdate(this)'); 		
+		// $from->setAttrib('readonly', 'true');
+		// $from->setAttrib('onfocus', 'this.blur()');
+		$from->setRequired(true);
+		
+		$to = new Zend_Form_Element_Text('to');
+		$to->setOptions(array('class' => 'todatePicker'));
+        //$date_of_leaving->setAttrib('onchange', 'validatejoiningdate(this)'); 		
+		// $to->setAttrib('readonly', 'true');
+		// $to->setAttrib('onfocus', 'this.blur()');
+		$to->setRequired(true);
       
 		$submit = new Zend_Form_Element_Submit('submit');
 		$submit->setAttrib('id', 'submitbutton');
 		$submit->setLabel('Save');
 
-		 $this->addElements(array($id,$task,$submit));
+		$year = new Zend_Form_Element_Text("year");
+		$year->setAttrib('maxLength', 4);
+		$year->setOptions(array('class'=>'date-picker-year'));
+		$year->addFilter(new Zend_Filter_StringTrim());
+		$year->addValidator("regex", false, array("/^([0-9]*\:?[0-9]{1,2})$/","messages"=>"Please enter a valid year."));
+		$year->setRequired(true);
+
+		$month = new Zend_Form_Element_Text("month");
+		$month->setAttrib('maxLength', 2);
+		$month->setOptions(array('class'=>'date-picker'));
+		$month->addFilter(new Zend_Filter_StringTrim());
+		$month->addValidator("regex", false, array("/^([0-9]*\:?[0-9]{1,2})$/","messages"=>"Please enter a valid month."));
+		$month->setRequired(true);
+
+		 $this->addElements(array($id,$from,$to,$submit,$year,$month));
          $this->setElementDecorators(array('ViewHelper')); 
 	}
 }

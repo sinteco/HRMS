@@ -105,54 +105,20 @@ class Timemanagement_TmsheetconfigrationController extends Zend_Controller_Actio
 		$callval = $this->getRequest()->getParam('call');
 		if($callval == 'ajaxcall')
 		$this->_helper->layout->disableLayout();
-		$objName = 'tmsheetconfigrations';
-		$tmsheetconfigrationsform = new Timemanagement_Form_tmsheetconfigrations();
-		$tmsheetconfigrationsform->removeElement("submit");
-		$elements = $tmsheetconfigrationsform->getElements();
-		if(count($elements)>0)
-		{
-			foreach($elements as $key=>$element)
-			{
-				if(($key!="Cancel")&&($key!="Edit")&&($key!="Delete")&&($key!="Attachments")){
-					$element->setAttrib("disabled", "disabled");
-				}
-			}
-		}
-		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigrations();
-		$payfrequencyModal = new Default_Model_Payfrequency();
+		$objName = 'tmsheetconfigration';
+
+		$taskModel = new Timemanagement_Model_Tmsheetconfigration();
 		try
 		{
 			if(is_numeric($id) && $id>0)
 			{
-				$data = $tmsheetconfigrationsmodel->getsingletmsheetconfigrationData($id);
-				$payfreqData = $payfrequencyModal->getActivePayFreqData($data[0]['jobpayfrequency']);
-				if(sizeof($payfreqData) > 0)
-				{
-					foreach ($payfreqData as $payfreqres){
-						$tmsheetconfigrationsform->jobpayfrequency->addMultiOption($payfreqres['id'],$payfreqres['freqtype']);
-					}
-				}
-				
-					
-				
+				$data = $taskModel->getsingleTMSCData($id);
 				if(!empty($data) && $data != "norows")
 				{
-					
-				if(!empty($data[0]['jobpayfrequency']))
-				{ 
-		          $jobPayFreq = $payfrequencyModal->getsinglePayfrequencyData($data[0]['jobpayfrequency']);
-					
-					if(!empty($jobPayFreq))
-					{
-						$data[0]['jobpayfrequency'] = $jobPayFreq[0]['freqtype'];
-				     }
-				 }
-					$tmsheetconfigrationsform->populate($data[0]);
-					$this->view->controllername = $objName;
 					$this->view->id = $id;
-					$this->view->data = $data[0];
+					$this->view->data = $data;
+					$this->view->controllername=$objName;
 					$this->view->ermsg = '';
-					$this->view->form = $tmsheetconfigrationsform;
 				}
 				else
 				{
@@ -163,13 +129,11 @@ class Timemanagement_TmsheetconfigrationController extends Zend_Controller_Actio
 			{
 				$this->view->ermsg = 'nodata';
 			}
-
 		}
-		catch(Exception $ex)
+		catch(Exception $e)
 		{
 			$this->view->ermsg = 'nodata';
 		}
-
 	}
 
 
@@ -178,52 +142,31 @@ class Timemanagement_TmsheetconfigrationController extends Zend_Controller_Actio
 		$auth = Zend_Auth::getInstance();
 		if($auth->hasIdentity()){
 			$loginUserId = $auth->getStorage()->read()->id;
-			$loginuserRole = $auth->getStorage()->read()->emprole;
-			$loginuserGroup = $auth->getStorage()->read()->group_id;
-		}		
-		$popConfigPermission = sapp_Global::_checkprivileges(PAYFREQUENCY,$loginuserGroup,$loginuserRole,'add');
-	    $this->view->popConfigPermission = $popConfigPermission;
-	    
-		$objName = 'tmsheetconfigrations';$emptyFlag=0;
+		}
+		$objName = 'tmsheetconfigration';
 		$id = $this->getRequest()->getParam('id');
 		$callval = $this->getRequest()->getParam('call');
 		if($callval == 'ajaxcall')
 		$this->_helper->layout->disableLayout();
 
-		$tmsheetconfigrationsform = new Timemanagement_Form_Tmsheetconfigrations();
-		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigrations();
-		$payfrequencyModal = new Default_Model_Payfrequency();
-		$payfreqData = $payfrequencyModal->getActivePayFreqData();
-		$msgarray = array();
-		if(sizeof($payfreqData) > 0)
-		{
-			foreach ($payfreqData as $payfreqres){
-				$tmsheetconfigrationsform->jobpayfrequency->addMultiOption($payfreqres['id'],$payfreqres['freqtype']);
-			}
-
-		}else
-		{
-			$msgarray['jobpayfrequency'] = 'Pay frequency is not configured yet.';
-			$emptyFlag++;
-
-		}
-		$this->view->msgarray = $msgarray;
-		$this->view->emptyFlag = $emptyFlag;
+		$taskForm = new Timemanagement_Form_Tmsheet();
+		$taskModel = new Timemanagement_Model_Tmsheetconfigration();
 		try
 		{
 			if($id)
-			{
+			{	//Edit Record...
 				if(is_numeric($id) && $id>0)
 				{
-					$data = $tmsheetconfigrationsmodel->getsingletmsheetconfigrationData($id);
+					$data = $taskModel->getsingleTMSCData($id);
 					if(!empty($data) && $data != "norows")
 					{
-						$tmsheetconfigrationsform->populate($data[0]);
-						$tmsheetconfigrationsform->submit->setLabel('Update');
-						$this->view->form = $tmsheetconfigrationsform;
-						$this->view->ermsg = '';
+						$taskForm->populate($data[0]);
+						$taskForm->submit->setLabel('Update');
+						$this->view->form = $taskForm;
 						$this->view->controllername = $objName;
 						$this->view->id = $id;
+						$this->view->ermsg = '';
+						$this->view->inpage = 'Edit';
 					}
 					else
 					{
@@ -232,45 +175,38 @@ class Timemanagement_TmsheetconfigrationController extends Zend_Controller_Actio
 				}
 				else
 				{
-					$this->view->ermsg = 'norecord';
+					$this->view->ermsg = 'nodata';
 				}
 			}
 			else
-			{
-				$this->view->form = $tmsheetconfigrationsform;
+			{	//Add Record...
 				$this->view->ermsg = '';
+				$this->view->form = $taskForm;
+				$this->view->inpage = 'Add';
 			}
 		}
-		catch(Exception $ex)
+		catch(Exception $e)
 		{
 			$this->view->ermsg = 'nodata';
 		}
 		if($this->getRequest()->getPost()){
-			if($tmsheetconfigrationsform->isValid($this->_request->getPost())){
+			if($taskForm->isValid($this->_request->getPost())){
 				$id = $this->_request->getParam('id');
-				$tmsheetconfigrationcode = $this->_request->getParam('tmsheetconfigrationcode');
-				$tmsheetconfigrationname = $this->_request->getParam('tmsheetconfigrationname');
-				$jobdescription = $this->_request->getParam('jobdescription');
-				$minexperiencerequired = $this->_request->getParam('minexperiencerequired');
-				$jobpaygradecode = $this->_request->getParam('jobpaygradecode');
-				$jobpayfrequency = $this->_request->getParam('jobpayfrequency');
-				$comments = $this->_request->getParam('comments');
+				$from= $this->_request->getParam('from');
+				$to= $this->_request->getParam('to');
+				$year= $this->_request->getParam('year');
+				$month= $this->_request->getParam('month');
 				$date = new Zend_Date();
-				$actionflag = '';
-				$tableid  = '';
-				$data = array('tmsheetconfigrationcode'=>trim($tmsheetconfigrationcode),
-				           'tmsheetconfigrationname'=>trim($tmsheetconfigrationname),
-						  'jobdescription'=>trim($jobdescription),
-						  'minexperiencerequired'=>trim($minexperiencerequired),
-						  'jobpaygradecode'=>trim($jobpaygradecode),
-						  'jobpayfrequency'=>trim($jobpayfrequency),
-						  'comments'=>trim($comments),
-						  'modifiedby'=>$loginUserId,
-						  'modifieddate'=>gmdate("Y-m-d H:i:s")
+
+				$data = array( 'form'=>trim($from),
+				               'to'=>trim($to),
+				               'year'=>trim($year),
+				               'month'=>trim($month),
+				   			   'modifiedby'=>$loginUserId,
+							   'modifieddate'=>gmdate("Y-m-d H:i:s")	
 				);
 				if($id!=''){
 					$where = array('id=?'=>$id);
-					$actionflag = 2;
 				}
 				else
 				{
@@ -278,25 +214,21 @@ class Timemanagement_TmsheetconfigrationController extends Zend_Controller_Actio
 					$data['createddate'] = gmdate("Y-m-d H:i:s");
 					$data['isactive'] = 1;
 					$where = '';
-					$actionflag = 1;
 				}
-				$Id = $tmsheetconfigrationsmodel->SaveorUpdatetmsheetconfigrationData($data, $where);
+				$Id = $taskModel->SaveorUpdateTMSCData($data, $where);
 				if($Id == 'update')
 				{
-					$tableid = $id;
-					$this->_helper->getHelper("FlashMessenger")->addMessage(array("success"=>"Job title updated successfully."));
+					$this->_helper->getHelper("FlashMessenger")->addMessage(array("success"=>"updated successfully."));
 				}
 				else
 				{
-					$tableid = $Id;
-					$this->_helper->getHelper("FlashMessenger")->addMessage(array("success"=>"Job title added successfully."));
+					$this->_helper->getHelper("FlashMessenger")->addMessage(array("success"=>"added successfully."));
 				}
-				$menuID = tmsheetconfigrationS;
-				$result = sapp_Global::logManager($menuID,$actionflag,$loginUserId,$tableid);
-				$this->_redirect('tmsheetconfigrations');
+					
+				$this->_redirect('timemanagement/tmsheetconfigration');
 			}else
 			{
-				$messages = $tmsheetconfigrationsform->getMessages();
+				$messages = $taskForm->getMessages();
 				foreach ($messages as $key => $val)
 				{
 					foreach($val as $key2 => $val2)
@@ -305,8 +237,6 @@ class Timemanagement_TmsheetconfigrationController extends Zend_Controller_Actio
 						break;
 					}
 				}
-				if(sizeof($payfreqData) < 1)
-				$msgarray['jobpayfrequency'] = 'Pay frequency not configured yet.';
 				$this->view->msgarray = $msgarray;
 					
 			}
@@ -431,32 +361,31 @@ class Timemanagement_TmsheetconfigrationController extends Zend_Controller_Actio
 		$actionflag = 3;
 		if($id)
 		{
-			$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigrations();
-			$positionsModel = new Default_Model_Positions();
+			$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
 			$data = array('isactive'=>0,'modifieddate'=>gmdate("Y-m-d H:i:s"));
 			$where = array('id=?'=>$id);
-			$job_data = $tmsheetconfigrationsmodel->getsingletmsheetconfigrationData($id);
-			$Id = $tmsheetconfigrationsmodel->SaveorUpdatetmsheetconfigrationData($data, $where);
+			$job_data = $tmsheetconfigrationsmodel->getsingleTMSCData($id);
+			$Id = $tmsheetconfigrationsmodel->SaveorUpdateTMSCData($data, $where);
 			if($Id == 'update')
 			{
-				$positionData = array('isactive'=>0,'modifieddate'=>gmdate("Y-m-d H:i:s"));
-				$positionsWhere = array('tmsheetconfigrationid=?'=>$id);
-				$positionsModel->SaveorUpdatePositionData($positionData, $positionsWhere);
-				sapp_Global::send_configuration_mail("Job Titles", $job_data[0]['tmsheetconfigrationname']);
-				$menuID = tmsheetconfigrationS;
-				$result = sapp_Global::logManager($menuID,$actionflag,$loginUserId,$id);
-				$messages['message'] = 'Job title deleted successfully.';
+				// $positionData = array('isactive'=>0,'modifieddate'=>gmdate("Y-m-d H:i:s"));
+				// $positionsWhere = array('tmsheetconfigrationid=?'=>$id);
+				// $positionsModel->SaveorUpdatePositionData($positionData, $positionsWhere);
+				// sapp_Global::send_configuration_mail("Job Titles", $job_data[0]['tmsheetconfigrationname']);
+				// $menuID = tmsheetconfigrationS;
+				// $result = sapp_Global::logManager($menuID,$actionflag,$loginUserId,$id);
+				$messages['message'] = 'deleted successfully.';
 				$messages['msgtype'] = 'success';
 			}
 			else
 			{
-				$messages['message'] = 'Job title cannot be deleted.';
+				$messages['message'] = 'cannot be deleted.';
 				$messages['msgtype'] = 'error';
 			}
 		}
 		else
 		{
-			$messages['message'] = 'Job title cannot be deleted.';
+			$messages['message'] = 'cannot be deleted.';
 			$messages['msgtype'] = 'error';
 		}
 		// delete success message after delete in view

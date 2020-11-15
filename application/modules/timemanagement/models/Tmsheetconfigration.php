@@ -42,7 +42,7 @@ class Timemanagement_Model_Tmsheetconfigration extends Zend_Db_Table_Abstract
 		
 		return $JobtitlesData;       		
 	}
-	public function getsingleJobTitleData($id)
+	public function getsingleTMSCData($id)
 	{
 		
 		$db = Zend_Db_Table::getDefaultAdapter();
@@ -56,21 +56,28 @@ class Timemanagement_Model_Tmsheetconfigration extends Zend_Db_Table_Abstract
 			return 'norows';
 	}
 	
-	public function SaveorUpdateJobTitleData($data, $where)
+	public function SaveorUpdateTMSCData($data, $where)
 	{
-	    if($where != ''){
-			$this->update($data, $where);
-			return 'update';
-		} else {
-			$this->insert($data);
-			$id=$this->getAdapter()->lastInsertId('main_tmsheetconfigrations');
-			return $id;
+		try{
+		    if($where != ''){
+				$this->update($data, $where);
+				return 'update';
+			} else {
+				$this->insert($data);
+				$id=$this->getAdapter()->lastInsertId('main_tmsheetconfigrations');
+				return $id;
+			}
+		}
+		catch(Exception $e)
+		{
+			var_dump($e);
+			die();
 		}
 		
 	
 	}
 	
-	public function getJobTitleList()
+	public function getTMSCList()
 	{
 		
 		$where = "j.isactive = 1";
@@ -83,6 +90,30 @@ class Timemanagement_Model_Tmsheetconfigration extends Zend_Db_Table_Abstract
 				   // ->order('j.jobtitlename');
 	
 	return $this->fetchAll($JobtitlesData)->toArray();
+	
+	}
+	public function getactiveleavetype()
+	{
+	 	$select = $this->select()
+    					   ->setIntegrityCheck(false)	
+                           ->from(array('e'=>'main_employeeleavetypes'),array('e.id','e.leavetype','e.numberofdays','e.leavepredeductable','e.leavepreallocated'))
+						   ->where('e.isactive = 1');  		   					   				
+		return $this->fetchAll($select)->toArray();   
+	
+	}
+	public function getTMSCWhere($where)
+	{
+		
+		// $where = "j.isactive = 1";
+	
+		$JobtitlesData = $this->select()
+				   ->setIntegrityCheck(false)	 
+				   ->from(array('j' => 'main_tmsheetconfigrations'),array('j.*'))
+				   // ->joinInner(array('p'=>'main_payfrequency'), 'j.jobpayfrequency=p.id', array('freqtype' => 'p.freqtype'))
+				   ->where($where);
+				   // ->order('j.jobtitlename');
+	
+		return $this->fetchAll($JobtitlesData)->toArray();
 	
 	}
 	public function getGrid($sort,$by,$perPage,$pageNo,$searchData,$call,$dashboardcall)

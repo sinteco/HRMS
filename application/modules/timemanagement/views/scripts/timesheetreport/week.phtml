@@ -1,6 +1,6 @@
 <?php
 
-function build_calendar($month,$year,$dateArray) {
+function build_calendar($month,$year,$dateArray,$TMSCData) {
 
      // Create array containing abbreviations of days of week.
      $daysOfWeek = array('S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S');
@@ -17,6 +17,8 @@ function build_calendar($month,$year,$dateArray) {
 
      // What is the name of the month in question?
      $monthName = $dateComponents['month'];
+     $monthNameL = date("F", strtotime($TMSCData[0]['form']));
+     $yearNameL = date("Y", strtotime($TMSCData[0]['form']));
 
      // What is the index value (0-6) of the first day of the
      // month in question.
@@ -25,7 +27,9 @@ function build_calendar($month,$year,$dateArray) {
      // Create the table tag opener and day headers
 
      $calendar = "<table class='calendar'>";
-     $calendar .= "<caption>$monthName $year Actual Time</caption>";
+     $calendar .= "<caption>$monthNameL $yearNameL Actual Time ";
+     $calendar .= "$monthName $year Actual Time ";
+     $calendar .= "$monthName $year Estimated Time</caption>";
      $calendar .= "<tr>";
 
      // Create the calendar headers
@@ -46,12 +50,48 @@ function build_calendar($month,$year,$dateArray) {
      // ensure that the calendar
      // display consists of exactly 7 columns.
 
-     if ($dayOfWeek > 0) { 
-          $calendar .= "<td colspan='$dayOfWeek'>&nbsp;</td>"; 
-     }
+     // if ($dayOfWeek > 0) { 
+     //      $calendar .= "<td colspan='$dayOfWeek'>&nbsp;</td>"; 
+     // }
      
      $month = str_pad($month, 2, "0", STR_PAD_LEFT);
-  
+
+     $currentDayL = date("d", strtotime($TMSCData[0]['form']));
+     $numberDaysL = date("t", strtotime($TMSCData[0]['form']));
+     $dayOfWeekL = 0;
+     $monthL = date("m", strtotime($TMSCData[0]['form']));
+     $yearL = date("Y", strtotime($TMSCData[0]['form']));
+     $calendarL = "<tr>";
+     // var_dump(date("F", strtotime($TMSCData[0]['form'])));
+
+     while ($currentDayL <= $numberDaysL) {
+
+          // Seventh column (Saturday) reached. Start a new row.
+
+          // if ($dayOfWeek == 30) {
+
+          //      $dayOfWeek = 0;
+          //      $calendar .= "</tr><tr>";
+
+          // }
+          
+          $currentDayRel = str_pad($currentDayL, 2, "0", STR_PAD_LEFT);
+          
+          $date = "$yearL-$monthL-$currentDayRel";
+          $get_name = date('l', strtotime($date)); //get week day
+          $day_name = substr($get_name, 0, 3); // Trim day name to 3 chars
+
+          $calendar .= "<td class='day $day_name' rel='$date'>$currentDayL</td>";
+          $calendarL .= "<td class='day $day_name' rel='$date'>$currentDayL</td>";
+
+          // Increment counters
+ 
+          $currentDayL++;
+          $dayOfWeekL++;
+
+     }
+
+
      while ($currentDay <= $numberDays) {
 
           // Seventh column (Saturday) reached. Start a new row.
@@ -70,6 +110,7 @@ function build_calendar($month,$year,$dateArray) {
           $day_name = substr($get_name, 0, 3); // Trim day name to 3 chars
 
           $calendar .= "<td class='day $day_name' rel='$date'>$currentDay</td>";
+          $calendarL .= "<td class='day $day_name' rel='$date'>$currentDay</td>";
 
           // Increment counters
  
@@ -82,14 +123,17 @@ function build_calendar($month,$year,$dateArray) {
 
      // Complete the row of the last week in month, if necessary
 
-     if ($dayOfWeek != 7) { 
+     // if ($dayOfWeek != 7) { 
      
-          $remainingDays = 7 - $dayOfWeek;
-          $calendar .= "<td colspan='$remainingDays'>&nbsp;</td>"; 
+     //      $remainingDays = 7 - $dayOfWeek;
+     //      $calendar .= "<td colspan='$remainingDays'>&nbsp;</td>"; 
 
-     }
+     // }
      
      $calendar .= "</tr>";
+     $calendarL .= "</tr>";
+
+     $calendar .= $calendarL;
 
      $calendar .= "</table>";
 
@@ -105,14 +149,16 @@ function build_calendar($month,$year,$dateArray) {
      $month = $dateComponents['mon'];                  
      $year = $dateComponents['year'];
 
-     echo build_calendar($month,$year,$dateArray);
+     echo build_calendar($month,$year,$dateArray,$this->TMSCData);
 
 ?>
 <style type="text/css">
      td.day.Sun{
-          background-color: blue;
+          background-color: black;
+          color: white;
      }
      td.day.Sat{
-          background-color: blue;
+          background-color: black;
+          color: white;
      }
 </style>

@@ -134,10 +134,41 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 			
 		$yrMon = explode('-', $selYrMon);
 		$empTSModel = new Timemanagement_Model_MyTimesheet();
-		$empMonthTSData = $empTSModel->getMonthTimesheetData($data->id, $yrMon[0],$yrMon[1]);
-		//print_r($empMonthTSData); exit;
+		$empMonthTSData = $empTSModel->getTimesheetData($data->id, $yrMon[0],$yrMon[1]);
+		// var_dump($empMonthTSData);
+		$sentTimesSheets = [];
+		for ($x = 0; $x < count($empMonthTSData); $x++) {
+			array_push($sentTimesSheets,array($empMonthTSData[$x]['sun_date']=>$empMonthTSData[$x]['sun_duration']));
+			array_push($sentTimesSheets,array($empMonthTSData[$x]['mon_date']=>$empMonthTSData[$x]['mon_duration']));
+			array_push($sentTimesSheets,array($empMonthTSData[$x]['tue_date']=>$empMonthTSData[$x]['tue_duration']));
+			array_push($sentTimesSheets,array($empMonthTSData[$x]['wen_date']=>$empMonthTSData[$x]['wen_duration']));
+			array_push($sentTimesSheets,array($empMonthTSData[$x]['the_date']=>$empMonthTSData[$x]['the_duration']));
+			array_push($sentTimesSheets,array($empMonthTSData[$x]['fri_date']=>$empMonthTSData[$x]['fri_duration']));
+			array_push($sentTimesSheets,array($empMonthTSData[$x]['sat_date']=>$empMonthTSData[$x]['sat_duration']));
+			array_push($sentTimesSheets,array('project_name'=>$empMonthTSData[$x]['project_name']));
+			array_push($sentTimesSheets,array('task'=>$empMonthTSData[$x]['task']));
+		}
+
+		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
+		$leaveTypes = $tmsheetconfigrationsmodel->getactiveleavetype();
+		// var_dump($sentTimesSheets);
+		// die();
+		$month = date("m");
+		$year = date("yy");
+		$where = "j.month=".$month." and j.year=".$year;
+		$TMSCData = $tmsheetconfigrationsmodel->getTMSCWhere($where);
+		$date_diff = date_diff(date_create($TMSCData[0]['form']),date_create($TMSCData[0]['to']));
+		$lastDateOfMonth = date("Y-m-t", strtotime($TMSCData[0]['form']));
+		$this->view->TMSCData = $TMSCData;
+		$this->view->sentTimesSheets = $sentTimesSheets;
+		$this->view->fullName = $data->userfullname;
+		$this->view->leaveTypes = $leaveTypes;
+		// var_dump($sentTimesSheets);
+		// var_dump($empMonthTSData);
+		// die();
 		$empHolidaysWeekendsData = $usersModel->getEmployeeHolidaysNWeekends($data->id, $yrMon[0],$yrMon[1]);
-		//print_r($empHolidaysWeekendsData); exit;
+		// var_dump($empHolidaysWeekendsData);
+		 // exit;
 			
 		//echo $selYrMon;
 		$firstday = $yrMon[0]."-".$yrMon[1].'-01';
@@ -145,6 +176,7 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 		$lastday =   $yrMon[0]."-".$yrMon[1]."-".$noOfDaysMonth;
 			
 		$empLeavesData = $usersModel->getEmpLeaves($data->id,$firstday,$lastday,'all');
+		// var_dump($empLeavesData);exit;
 
 		$cronDetails = $empTSModel->getCronDetailsForMonth($yrMon[0],$yrMon[1]);
 		$cronStartDay = "";
@@ -403,7 +435,17 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 
 	public function weekAction()
 	{
-
+		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
+		$month = date("m");
+		$year = date("yy");
+		$where = "j.month=".$month." and j.year=".$year;
+		$TMSCData = $tmsheetconfigrationsmodel->getTMSCWhere($where);
+		$date_diff = date_diff(date_create($TMSCData[0]['form']),date_create($TMSCData[0]['to']));
+		$lastDateOfMonth = date("Y-m-t", strtotime($TMSCData[0]['form']));
+		$this->view->TMSCData = $TMSCData;
+		// var_dump($lastDateOfMonth);
+		// var_dump($date_diff->format('%a'));
+		// die();
 		$usersModel = new Timemanagement_Model_Users();
 		$storage = new Zend_Auth_Storage_Session();
 		$now = new DateTime();

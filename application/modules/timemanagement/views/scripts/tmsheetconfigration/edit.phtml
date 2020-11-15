@@ -33,13 +33,7 @@ if($this->ermsg !='')
 else
 {
 sapp_Global::generateClientValidations($this->form);
-if($this->emptyFlag != 0)
-	{
-?>	 <div class="ml-alert-1-info m1-info-set">
-		<div class="style-1-icon info"></div>
-			Pay frequency is not configured yet.
-	</div>
-<?php	}	?>
+	?>
 <div id="error_message" style="display:none;"></div>
 
 <form name="<?php echo $this->form->getName(); ?>" id="<?php echo $this->form->getId(); ?>" action="<?php echo $this->form->getAction();?>" method="<?php echo $this->form->getMethod(); ?>">
@@ -48,74 +42,66 @@ if($this->emptyFlag != 0)
 		?>
         <div class="total-form-controller">
 		    <div class="new-form-ui">
-			  <label class="required">Job Title Code <img class="tooltip" title="Ex: SA" src="<?php echo MEDIA_PATH;?>images/help.png"></label>
-			<div class="division"><?php echo $this->form->jobtitlecode; ?></div>
-			<?php if(isset($this->msgarray['jobtitlecode'])){?>
-			   <span class="errors" id="errors-<?php echo $this->form->jobtitlecode->getId(); ?>"><?php echo $this->msgarray['jobtitlecode'];?></span>
-			<?php }?>
+				  <label>From</label>
+				<div class="division"><?php echo $this->form->from; ?>				
+				<?php if(isset($this->msgarray['from'])){?>
+				   <span class="errors" id="errors-<?php echo $this->form->from->getId(); ?>"><?php echo $this->msgarray['from'];?></span>
+				<?php }?>
+				</div>
 			</div>
-			
+
 			<div class="new-form-ui">
-			  <label class="required">Job Title <img class="tooltip" title="Ex: System Analyst" src="<?php echo MEDIA_PATH;?>images/help.png"></label>
-			<div class="division"><?php echo $this->form->jobtitlename; ?></div>
-			<?php if(isset($this->msgarray['jobtitlename'])){?>
-			   <span class="errors" id="errors-<?php echo $this->form->jobtitlename->getId(); ?>"><?php echo $this->msgarray['jobtitlename'];?></span>
-			<?php }?>
+				  <label>To</label>
+				<div class="division"><?php echo $this->form->to; ?>				
+				<?php if(isset($this->msgarray['to'])){?>
+				   <span class="errors" id="errors-<?php echo $this->form->to->getId(); ?>"><?php echo $this->msgarray['to'];?></span>
+				<?php }?>
+				</div>
 			</div>
 					
-			<div class="new-form-ui textareaheight">
-			  <label>Job Description</label>
-			<div class="division"><?php echo $this->form->jobdescription; ?></div>
+			<div class="new-form-ui clearb">
+			  <label>Year</label>
+			<div class="division"><?php echo $this->form->year; ?></div>
+			</div>
+
+			<div class="new-form-ui clearb">
+			  <label>Month</label>
+			<div class="division"><?php echo $this->form->month; ?></div>
 			</div>
 			
-			<div class="new-form-ui">
-			  <label>Min Experience Required <img class="tooltip" title="In years Ex: 1,2.5" src="<?php echo $this->baseUrl().'/public/media/';?>images/help.png"></label>
-			<div class="division"><?php echo $this->form->minexperiencerequired; ?></div>
-			<?php if(isset($this->msgarray['minexperiencerequired'])){?>
-			   <span class="errors" id="errors-<?php echo $this->form->minexperiencerequired->getId(); ?>"><?php echo $this->msgarray['minexperiencerequired'];?></span>
-			<?php }?>
-			</div>
-			
-			<div class="new-form-ui">
-			  <label class="required">Job Pay Grade Code <img class="tooltip" title="Ex: A, B, C" src="<?php echo $this->baseUrl().'/public/media/';?>images/help.png"></label>
-			<div class="division"><?php echo $this->form->jobpaygradecode; ?></div>
-			<?php if(isset($this->msgarray['jobpaygradecode'])){?>
-			   <span class="errors" id="errors-<?php echo $this->form->jobpaygradecode->getId(); ?>"><?php echo $this->msgarray['jobpaygradecode'];?></span>
-			<?php }?>			
-			</div>
-			
-			<div class="new-form-ui">
-			  <label class="required">Job Pay Frequency</label>
-			<div class="division"><?php echo $this->form->jobpayfrequency; ?>
-			<?php if(isset($this->msgarray['jobpayfrequency'])){?>
-			   <span class="errors" id="errors-<?php echo $this->form->jobpayfrequency->getId(); ?>"><?php echo $this->msgarray['jobpayfrequency'];?></span>
-			<?php }?>
-			
-			<?php if($this->popConfigPermission == 'Yes') { ?>	
-				<span class="add-coloum" onclick="displaydeptform('<?php echo BASE_URL.'payfrequency/addpopup' ?>','Pay Frequency');"> Add Pay Frequency</span>			
-		   	<?php } ?>
-			</div>
-			
-			</div>
-			
-			<div class="new-form-ui textareaheight">
-			  <label>Comments</label>
-			<div class="division"><?php echo $this->form->comments; ?></div>
-			</div>
-	
 		<div class="new-form-ui-submit">
 		<?php echo $this->form->submit; ?>
-		<button onclick="window.location.href='<?php echo BASE_URL; ?>jobtitles';" type="button" id="Cancel" name="Cancel">Cancel</button>
+		<button onclick="window.location.href='<?php echo BASE_URL; ?>timemanagement/tmsheetconfigration';" type="button" id="Cancel" name="Cancel">Cancel</button>
 		</div>
 </div>
 </form>
-
-<div id="payfrequencyContainer"  style="display: none; overflow: auto;">
-	<div class="heading">
-		<a href="javascript:void(0)">
-	    <img src="<?php echo $this->baseUrl().'/public/media/';?>images/close.png" name="" align="right" border="0" hspace="3" vspace="5" class="closeAttachPopup" style="margin: -24px 8px 0 0;"> </a>
-	</div>
-
-	<iframe id="payfrequencyCont" class="business_units_iframe" frameborder="0"></iframe>
-</div>
 <?php	}	?>
+<script type="text/javascript" language="javascript">
+$(document).ready(function(){
+	$(".breadcrumbs").append("<span class='arrows'>&rsaquo;</span><a href='<?php echo BASE_URL; ?>timemanagement/tmsheetconfigration'>timesheetconfigration</a><span class='arrows'>&rsaquo;</span><span><?php echo $this->inpage;?></span>");
+	$(".fromdatePicker").datepicker({dateFormat: 'yy-m-dd'});
+	$(".todatePicker").datepicker({dateFormat: 'yy-m-dd'});
+	$('.date-picker').datepicker( {
+        changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true,
+        dateFormat: 'm',
+        onClose: function(dateText, inst) { 
+            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+            $(this).datepicker('setDate', new Date(year, month, 1));
+        }
+    });
+    $('.date-picker-year').datepicker( {
+        changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true,
+        dateFormat: 'yy',
+        onClose: function(dateText, inst) { 
+            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+            $(this).datepicker('setDate', new Date(year, month, 1));
+        }
+    });
+});
+</script>

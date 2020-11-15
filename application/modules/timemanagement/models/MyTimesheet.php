@@ -336,6 +336,46 @@ class Timemanagement_Model_MyTimesheet extends Zend_Db_Table_Abstract
 			//echo $select; exit;	  	         
 		return $this->fetchAll($select)->toArray();
 	}
+	public function getTimesheetData($empId,$year,$month) {
+		$select = $this->select()
+				  ->setIntegrityCheck(false)
+				  ->from(array('et'=>$this->_name),array(
+				  	'ts.ts_week,et.sun_date,et.mon_date,et.tue_date,et.wed_date,et.thu_date,et.fri_date,et.sat_date,
+				  	if(et.sun_duration is null,"00:00",time_format(SEC_TO_TIME(sum(TIME_TO_SEC(cast(et.sun_duration as time)))),"%H:%i"))sun_duration,ifnull(ts.sun_status,"no_entry")sun_status,
+					if(et.mon_duration is null,"00:00",time_format(SEC_TO_TIME(sum(TIME_TO_SEC(cast(et.mon_duration as time)))),"%H:%i"))mon_duration,ifnull(ts.mon_status,"no_entry")mon_status,
+					if(et.tue_duration is null,"00:00",time_format(SEC_TO_TIME(sum(TIME_TO_SEC(cast(et.tue_duration as time)))),"%H:%i"))tue_duration,ifnull(ts.tue_status,"no_entry")tue_status,
+					if(et.wed_duration is null,"00:00",time_format(SEC_TO_TIME(sum(TIME_TO_SEC(cast(et.wed_duration as time)))),"%H:%i"))wed_duration,ifnull(ts.wed_status,"no_entry")wed_status,
+					if(et.thu_duration is null,"00:00",time_format(SEC_TO_TIME(sum(TIME_TO_SEC(cast(et.thu_duration as time)))),"%H:%i"))thu_duration,ifnull(ts.thu_status,"no_entry")thu_status,
+					if(et.fri_duration is null,"00:00",time_format(SEC_TO_TIME(sum(TIME_TO_SEC(cast(et.fri_duration as time)))),"%H:%i"))fri_duration,ifnull(ts.fri_status,"no_entry")fri_status,
+					if(et.sat_duration is null,"00:00",time_format(SEC_TO_TIME(sum(TIME_TO_SEC(cast(et.sat_duration as time)))),"%H:%i"))sat_duration,ifnull(ts.sat_status,"no_entry")sat_status,
+				  	if(et.week_duration is null,"00:00",time_format(SEC_TO_TIME(sum(TIME_TO_SEC(cast(et.week_duration as time)))),"%H:%i"))week_duration,
+				  	GROUP_CONCAT(distinct ifnull(tn.sun_reject_note,""), if(ts.sun_reject_note != "", CONCAT(p.project_name,":",ifnull(ts.sun_reject_note,"")),"")) sun_reject_note,
+				  	GROUP_CONCAT(distinct ifnull(tn.mon_reject_note,""), if(ts.mon_reject_note != "", CONCAT(p.project_name,":",ifnull(ts.mon_reject_note,"")),"")) mon_reject_note,
+				  	GROUP_CONCAT(distinct ifnull(tn.tue_reject_note,""), if(ts.tue_reject_note != "", CONCAT(p.project_name,":",ifnull(ts.tue_reject_note,"")),"")) tue_reject_note,
+				  	GROUP_CONCAT(distinct ifnull(tn.wed_reject_note,""), if(ts.wed_reject_note != "", CONCAT(p.project_name,":",ifnull(ts.wed_reject_note,"")),"")) wed_reject_note,
+				  	GROUP_CONCAT(distinct ifnull(tn.thu_reject_note,""), if(ts.thu_reject_note != "", CONCAT(p.project_name,":",ifnull(ts.thu_reject_note,"")),"")) thu_reject_note,
+				  	GROUP_CONCAT(distinct ifnull(tn.fri_reject_note,""), if(ts.fri_reject_note != "", CONCAT(p.project_name,":",ifnull(ts.fri_reject_note,"")),"")) fri_reject_note,
+				  	GROUP_CONCAT(distinct ifnull(tn.sat_reject_note,""), if(ts.sat_reject_note != "", CONCAT(p.project_name,":",ifnull(ts.sat_reject_note,"")),"")) sat_reject_note',
+				  	'p.project_name','t.task'
+					));
+			//	  ->joinInner(array('ts'=>'tm_ts_status'),'ts.emp_id = et.emp_id and ts.project_id = et.project_id',array())
+//			  if($project_ids != ""){
+//			  	$select->joinInner(array('ts'=>'tm_ts_status'),'ts.emp_id = et.emp_id and et.ts_year= ts.ts_year and et.ts_month= ts.ts_month and et.ts_week = ts.ts_week and et.project_id = ts.project_id and et.project_id IN ('.$project_ids.')',array());
+//			  }else{
+			  	$select->joinInner(array('ts'=>'tm_ts_status'),'ts.emp_id = et.emp_id and et.ts_year= ts.ts_year and et.ts_month= ts.ts_month and et.ts_week = ts.ts_week and (et.project_id = ts.project_id OR ts.project_id IS NULL)',array());
+			  	$select->joinInner(array('tn'=>'tm_emp_ts_notes'),'tn.emp_id = ts.emp_id and tn.ts_year= ts.ts_year and tn.ts_month= ts.ts_month and tn.ts_week = ts.ts_week',array());
+			  	$select->joinLeft(array('p'=>'tm_projects'),'p.id = ts.project_id and p.id = et.project_id',array());
+			  	$select->joinLeft(array('pt'=>'tm_project_tasks'),'pt.id = et.project_task_id',array());
+			  	$select->joinLeft(array('t'=>'tm_tasks'),'t.id = pt.task_id',array());
+			  	
+			  	
+			//  }
+	  	  	  $select->where("et.is_active=1 and ts.is_active=1 and et.ts_year = $year and  et.ts_month = $month and et.emp_id = $empId");
+			  $select->group('ts.ts_week');
+			//echo $select; exit;	  	         
+		return $this->fetchAll($select)->toArray();
+	}
+
 	//public function getWeeklyTimesheetData($empId,$year,$calWeek,$week) {
 	public function getWeeklyTimesheetData($empId,$year,$month,$week,$flag='') { //,$project_ids="" 
 		//$calWeek = 26;

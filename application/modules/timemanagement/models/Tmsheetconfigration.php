@@ -42,6 +42,17 @@ class Timemanagement_Model_Tmsheetconfigration extends Zend_Db_Table_Abstract
 		
 		return $JobtitlesData;       		
 	}
+
+	public function getUserLeavesData($id)
+	{
+		$result =  $this->select()
+    				->setIntegrityCheck(false) 	
+    				->from(array('l'=>'main_leaverequest'),array('l.*'))
+ 	  				->where("l.isactive = 1 AND l.user_id = ".$id);
+		
+    	return $this->fetchAll($result)->toArray();
+	}
+	
 	public function getsingleTMSCData($id)
 	{
 		

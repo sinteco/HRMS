@@ -4,8 +4,25 @@ function decimalHours($time)
     $hms = explode(":", $time);
     return ($hms[0] + ($hms[1]/60) + ($hms[2]/3600));
 }
-function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets) {
-
+function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leaveTypes) {
+	$lastDateOfMonth = date("Y-m-t", strtotime($TMSCData[0]['form']));
+	$lastDateOfMonthTo = date("Y-m-t", strtotime($TMSCData[0]['to']));
+	$date_diff = date_diff(date_create($TMSCData[0]['form']),date_create($lastDateOfMonth));
+	$date_diffTo = date_diff(date_create($lastDateOfMonthTo),date_create($TMSCData[0]['to']));
+	$date_diffTotal = date_diff(date_create($TMSCData[0]['form']),date_create($TMSCData[0]['to']));
+	$Total = (int)$date_diffTotal->format('%d') - (int)$date_diff->format('%d') - (int)$date_diffTo->format('%d') + 4;
+	$DateFrom = (int)$date_diff->format('%d')+1;
+	$DateTo = (int)$date_diffTo->format('%d')+1;
+	// var_dump($Total);
+	// var_dump($DateFrom);
+	// var_dump($DateTo);
+	// var_dump($lastDateOfMonth);
+	// var_dump($lastDateOfMonthTo);
+	// var_dump($leaveTypes);
+	// for ($x = 0; $x < count($leaveTypes); $x++) {
+	// 	var_dump($leaveTypes[$x]['leavetype']);
+	// }
+	// die();
      // Create array containing abbreviations of days of week.
      $daysOfWeek = array('S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S');
 
@@ -35,12 +52,12 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets) {
      $calendar .= "<tr class=xl867473 height=35 style='mso-height-source:userset;height:26.25pt'>
   <td colspan=3 rowspan=2 height=61 class=xl2737473 style='border-bottom:1.0pt solid black;
   height:45.75pt'>Description</td>
-  <td colspan=6 class=xl2797473 width=222 style='border-right:1.0pt solid black;
+  <td colspan=".(int)$DateFrom." class=xl2797473 width=222 style='border-right:1.0pt solid black;
   width:168pt'>$monthNameL $yearNameL Actual Time</td>
-  <td colspan=23 class=xl2827473 style='border-right:1.0pt solid black;
+  <td colspan=".$Total." class=xl2827473 style='border-right:1.0pt solid black;
   border-left:none'>$monthName $year<span style='mso-spacerun:yes'>  </span>Actual
   Time</td>
-  <td colspan=8 class=xl2857473 style='border-right:1.0pt solid black;
+  <td colspan=".$DateTo." class=xl2857473 style='border-right:1.0pt solid black;
   border-left:none'>$monthName $year <br>
     Estimated Time</td>
   <td rowspan=3 class=xl2707473 width=43 style='width:32pt'>Total Hours</td>
@@ -88,8 +105,67 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets) {
      $calendarL = "<td height=31 class=xl1357473 style='height:23.25pt'>$project</td>
   <td class=xl1057473 style='border-left:none' colspan=2>$task</td>";
   	$calendarS = "";
+
+  	$calendarSpace .= "<tr height=31 style='mso-height-source:userset;height:23.25pt'><td height=31 class=xl1457473 style='height:23.25pt;border-top:none'>&nbsp;</td>
+  <td class=xl1057473 style='border-left:none'><span
+  style='mso-spacerun:yes'> </span></td>
+  <td class=xl1037473 style='border-top:none;border-left:none'>&nbsp;</td>";
+
+  $calendarLeaveHeader .= "<tr height=31 style='mso-height-source:userset;height:23.25pt'><td height=31 class=xl1097473 style='height:23.25pt;border-top:none'>LEAVE</td>
+  <td class=xl1057473 style='border-left:none'><span
+  style='mso-spacerun:yes'> </span></td>
+  <td class=xl1037473 style='border-top:none;border-left:none'>&nbsp;</td>";
+
+  $calendarSickleave .= "<td height=33 class=xl687473 style='height:24.75pt'>Sick leave</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>";
+
+  $calendarMaternityLeave .= "<td height=33 class=xl687473 style='height:24.75pt'>Maternity leave</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>";
+
+  $calendarPaternityLeave .= "<td height=33 class=xl687473 style='height:24.75pt'>Paternity Leave</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>";
+
+  $calendarFamilyLeave .= "<td height=33 class=xl687473 style='height:24.75pt'>Family Leave</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>";
+
+  $calendarPublicHoliday .= "<td height=33 class=xl687473 style='height:24.75pt'>Public Holiday</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>";
+
+  $calendarStudyleave .= "<td height=33 class=xl687473 style='height:24.75pt'>Study leave</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>";
+
+  $calendarAnnualLeave .= "<td height=33 class=xl687473 style='height:24.75pt'>Annual Leave</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>";
+
+  $calendarFloatingHoliday .= "<td height=33 class=xl687473 style='height:24.75pt'>Floating Holiday</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>";
+
+  $calendarOther .= "<td height=33 class=xl687473 style='height:24.75pt'>Other</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>
+  <td class=xl1057473 style='border-left:none'>&nbsp;</td>";
+
+  $calendarSubTotalLeave = "<td height=29 class=xl1177473 style='height:21.75pt'>Sub Total <br>
+    Leaves</td>
+  <td class=xl1087473 style='border-left:none'>&nbsp;</td>
+  <td class=xl1087473 style='border-left:none'>&nbsp;</td>";
+
+  $caledarGrandTotal = "<tr height=29 style='mso-height-source:userset;height:21.75pt'>
+  <td height=29 class=xl1187473 style='height:21.75pt;border-top:none'>Grand
+  Total</td>
+  <td class=xl1197473 style='border-top:none;border-left:none'>&nbsp;</td>
+  <td class=xl1197473 style='border-top:none;border-left:none'>&nbsp;</td>";
      // $calendarL = "<tr>";
      // var_dump(date("F", strtotime($TMSCData[0]['form'])));
+  // var_dump($leaveTypes);
+  // die();
   	 $totalTime = 0;
      while ($currentDayL <= $numberDaysL) {
 
@@ -139,6 +215,148 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets) {
           	$calendarS .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
           else
           	$calendarS .= "<td class=xl1127473 style='border-top:none'>".$time."</td>";
+
+          //official spacing
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarSpace .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarSpace .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==1&&$value['leavestatus']=='Approved')
+          	{
+          		$SickLeavetime="08:30";
+          		break;
+          	}else{
+          		$SickLeavetime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==10&&$value['leavestatus']=='Approved')
+          	{
+          		$MaternityLeavetime="08:30";
+          		break;
+          	}else{
+          		$MaternityLeavetime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==13&&$value['leavestatus']=='Approved')
+          	{
+          		$PaternityLeavetime="08:30";
+          		break;
+          	}else{
+          		$PaternityLeavetime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==12&&$value['leavestatus']=='Approved')
+          	{
+          		$FamilyLeavetime="08:30";
+          		break;
+          	}else{
+          		$FamilyLeavetime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==5&&$value['leavestatus']=='Approved')
+          	{
+          		$PublicHolidaytime="08:30";
+          		break;
+          	}else{
+          		$PublicHolidaytime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==6&&$value['leavestatus']=='Approved')
+          	{
+          		$Studyleavetime="08:30";
+          		break;
+          	}else{
+          		$Studyleavetime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==7&&$value['leavestatus']=='Approved')
+          	{
+          		$AnnualLeavetime="08:30";
+          		break;
+          	}else{
+          		$AnnualLeavetime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==8&&$value['leavestatus']=='Approved')
+          	{
+          		$FloatingHolidaytime="08:30";
+          		break;
+          	}else{
+          		$FloatingHolidaytime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==9&&$value['leavestatus']=='Approved')
+          	{
+          		$Othertime="08:30";
+          		break;
+          	}else{
+          		$Othertime = '';
+          	}
+          }
+          //official leave header
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarLeaveHeader .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarLeaveHeader .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+
+          //offical leave
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarSickleave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarSickleave .= "<td class=xl1127473 style='border-top:none'>$SickLeavetime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarMaternityLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarMaternityLeave .= "<td class=xl1127473 style='border-top:none'>$MaternityLeavetime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarPaternityLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarPaternityLeave .= "<td class=xl1127473 style='border-top:none'>$PaternityLeavetime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarFamilyLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarFamilyLeave .= "<td class=xl1127473 style='border-top:none'>$FamilyLeavetime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarPublicHoliday .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarPublicHoliday .= "<td class=xl1127473 style='border-top:none'>$PublicHolidaytime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarStudyleave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarStudyleave .= "<td class=xl1127473 style='border-top:none'>$Studyleavetime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarAnnualLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarAnnualLeave .= "<td class=xl1127473 style='border-top:none'>$AnnualLeavetime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarFloatingHoliday .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarFloatingHoliday .= "<td class=xl1127473 style='border-top:none'>$FloatingHolidaytime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarOther .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarOther .= "<td class=xl1127473 style='border-top:none'>$Othertime</td>";
+
+          $calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
+          $caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
           
           // $calendarL .= "<td class='day $day_name' rel='$date'>$currentDayL</td>";
 
@@ -197,11 +415,167 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets) {
           	$calendarS .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
           else
           	$calendarS .= "<td class=xl1127473 style='border-top:none'>".$time."</td>";
+
+          //official spacing
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarSpace .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarSpace .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==1&&$value['leavestatus']=='Approved')
+          	{
+          		$SickLeavetime="08:30";
+          		break;
+          	}else{
+          		$SickLeavetime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==10&&$value['leavestatus']=='Approved')
+          	{
+          		$MaternityLeavetime="08:30";
+          		break;
+          	}else{
+          		$MaternityLeavetime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==13&&$value['leavestatus']=='Approved')
+          	{
+          		$PaternityLeavetime="08:30";
+          		break;
+          	}else{
+          		$PaternityLeavetime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==12&&$value['leavestatus']=='Approved')
+          	{
+          		$FamilyLeavetime="08:30";
+          		break;
+          	}else{
+          		$FamilyLeavetime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==5&&$value['leavestatus']=='Approved')
+          	{
+          		$PublicHolidaytime="08:30";
+          		break;
+          	}else{
+          		$PublicHolidaytime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==6&&$value['leavestatus']=='Approved')
+          	{
+          		$Studyleavetime="08:30";
+          		break;
+          	}else{
+          		$Studyleavetime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==15&&$value['leavestatus']=='Approved')
+          	{
+          		$AnnualLeavetime="08:30";
+          		break;
+          	}else{
+          		$AnnualLeavetime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==8&&$value['leavestatus']=='Approved')
+          	{
+          		$FloatingHolidaytime="08:30";
+          		break;
+          	}else{
+          		$FloatingHolidaytime = '';
+          	}
+          }
+          foreach ($leaveTypes as $key => $value) {
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==9&&$value['leavestatus']=='Approved')
+          	{
+          		$Othertime="08:30";
+          		break;
+          	}else{
+          		$Othertime = '';
+          	}
+          }
+          //official leave header
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarLeaveHeader .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarLeaveHeader .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+
+          //offical leave
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarSickleave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarSickleave .= "<td class=xl1127473 style='border-top:none'>$SickLeavetime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarMaternityLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarMaternityLeave .= "<td class=xl1127473 style='border-top:none'>$MaternityLeavetime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarPaternityLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarPaternityLeave .= "<td class=xl1127473 style='border-top:none'>$PaternityLeavetime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarFamilyLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarFamilyLeave .= "<td class=xl1127473 style='border-top:none'>$FamilyLeavetime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarPublicHoliday .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarPublicHoliday .= "<td class=xl1127473 style='border-top:none'>$PublicHolidaytime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarStudyleave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarStudyleave .= "<td class=xl1127473 style='border-top:none'>$Studyleavetime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarAnnualLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarAnnualLeave .= "<td class=xl1127473 style='border-top:none'>$AnnualLeavetime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarFloatingHoliday .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarFloatingHoliday .= "<td class=xl1127473 style='border-top:none'>$FloatingHolidaytime</td>";
+          
+          if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarOther .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else
+          	$calendarOther .= "<td class=xl1127473 style='border-top:none'>$Othertime</td>";
+
+          $calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
+          $caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
+
           // $calendar .= "<td class=xl1127473 width=37 style='border-top:none;width:28pt'>$currentDay</td>";
           // $calendarL .= "<td class='day $day_name' rel='$date'>$currentDay</td>";
           if ($currentDay==$numberDays) {
           	$calendarL .= "<td class=xl1127473 style='border-top:none'>$totalTime</td>";
           	$calendarS .= "<td class=xl1127473 style='border-top:none'>$totalTime</td>";
+          	$calendarSpace .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+          	$calendarSickleave .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+          	$calendarMaternityLeave .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+          	$calendarPaternityLeave .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+          	$calendarFamilyLeave .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+          	$calendarPublicHoliday .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+          	$calendarStudyleave .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+          	$calendarAnnualLeave .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+          	$calendarFloatingHoliday .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+          	$calendarOther .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+          	$calendarLeaveHeader .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+          	$calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
+          	$caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
           }
           // Increment counters
  
@@ -267,15 +641,14 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets) {
   <td class=xl1027473 style='border-top:none'>&nbsp;</td>
   <td class=xl1337473>&nbsp;</td>
   <td class=xl1027473 style='border-top:none'>&nbsp;</td>
-  <td class=xl1337473>&nbsp;</td>
-  <td class=xl887473></td>
-  <td class=xl887473></td>
-  <td class=xl887473></td>
-  <td class=xl887473></td>
  </tr>";
 
  $calendar .= "<tr class=xl897473 height=31 style='mso-height-source:userset;height:23.25pt'>";
  $calendar .= $calendarL."</tr>";
+ $calendar .= $calendarSpace;
+ $calendar .= $calendarSpace;
+ $calendar .= $calendarSpace;
+ $calendar .= $calendarSpace;
 
  $calendar .= "<tr height=34 style='mso-height-source:userset;height:25.5pt'>
   <td height=34 class=xl1077473 width=99 style='height:25.5pt;width:74pt'>Sub
@@ -285,6 +658,38 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets) {
   style='mso-spacerun:yes'> </span></td>
   <td class=xl1087473 style='border-left:none'>&nbsp;</td>";
   $calendar .= $calendarS."</tr>";
+  $calendarSpace .= "</tr>";
+
+  $calendar .= $calendarSpace;
+  $calendar .= $calendarSpace;
+  $calendar .= $calendarSpace;
+  $calendar .= $calendarSpace;
+  $calendar .= $calendarLeaveHeader;
+  $calendar .= "</tr>";
+
+  $calendar .= $calendarSickleave;
+  $calendar .= "</tr>";
+  $calendar .= $calendarMaternityLeave;
+  $calendar .= "</tr>";
+  $calendar .= $calendarPaternityLeave;
+  $calendar .= "</tr>";
+  $calendar .= $calendarFamilyLeave;
+  $calendar .= "</tr>";
+  $calendar .= $calendarPublicHoliday;
+  $calendar .= "</tr>";
+  $calendar .= $calendarStudyleave;
+  $calendar .= "</tr>";
+  $calendar .= $calendarAnnualLeave;
+  $calendar .= "</tr>";
+  $calendar .= $calendarFloatingHoliday;
+  $calendar .= "</tr>";
+  $calendar .= $calendarOther;
+  $calendar .= "</tr>";
+  $calendar .= $calendarSubTotalLeave;
+  $calendar .= "</tr>";
+  $calendar .= $caledarGrandTotal;
+  $calendar .= "</tr>";
+
 
      return $calendar;
 
@@ -531,7 +936,7 @@ x:publishsource="Excel">
      $month = $dateComponents['mon'];                  
      $year = $dateComponents['year'];
 
-     echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->sentTimesSheets);
+     echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->sentTimesSheets,$this->leaveTypes);
   ?>
  <!-- <tr class=xl877473 height=0 style='display:none;mso-height-source:userset;
   mso-height-alt:465'>
@@ -707,7 +1112,7 @@ x:publishsource="Excel">
   <td class=xl1407473>&nbsp;</td>
   <td class=xl2007473 style='border-top:none'>180.0</td>
  </tr> -->
- <tr height=31 style='mso-height-source:userset;height:23.25pt'>
+ <!-- <tr height=31 style='mso-height-source:userset;height:23.25pt'>
   <td height=31 class=xl1457473 style='height:23.25pt;border-top:none'>&nbsp;</td>
   <td class=xl1057473 style='border-left:none'><span
   style='mso-spacerun:yes'> </span></td>
@@ -1054,7 +1459,7 @@ x:publishsource="Excel">
   <td class=xl1547473 width=39 style='border-top:none;width:29pt'>&nbsp;</td>
   <td class=xl1567473 style='border-top:none'>&nbsp;</td>
   <td class=xl2007473 style='border-top:none'>0.0</td>
- </tr>
+ </tr> -->
  <!-- <tr height=34 style='mso-height-source:userset;height:25.5pt'>
   <td height=34 class=xl1077473 width=99 style='height:25.5pt;width:74pt'>Sub
   Total <br>
@@ -1101,7 +1506,7 @@ x:publishsource="Excel">
   <td class=xl787473 width=39 style='border-left:none;width:29pt'>0</td>
   <td class=xl2017473 width=43 style='width:32pt'>180.00</td>
  </tr> -->
- <tr height=27 style='mso-height-source:userset;height:20.25pt'>
+ <!-- <tr height=27 style='mso-height-source:userset;height:20.25pt'>
   <td height=27 class=xl1097473 style='height:20.25pt;border-top:none'>LEAVE</td>
   <td class=xl1107473 style='border-top:none;border-left:none'>&nbsp;</td>
   <td class=xl1107473 style='border-top:none;border-left:none'>&nbsp;</td>
@@ -1144,8 +1549,8 @@ x:publishsource="Excel">
   <td class=xl827473 style='border-top:none;border-left:none'>&nbsp;</td>
   <td class=xl827473 style='border-top:none;border-left:none'>&nbsp;</td>
   <td class=xl2027473 style='border-top:none'>0</td>
- </tr>
- <tr height=33 style='mso-height-source:userset;height:24.75pt'>
+ </tr> -->
+ <!-- <tr height=33 style='mso-height-source:userset;height:24.75pt'>
   <td height=33 class=xl687473 style='height:24.75pt'>Sick leave</td>
   <td class=xl1057473 style='border-left:none'>&nbsp;</td>
   <td class=xl1057473 style='border-left:none'>&nbsp;</td>
@@ -1187,8 +1592,8 @@ x:publishsource="Excel">
   <td class=xl1387473 width=39 style='width:29pt'>&nbsp;</td>
   <td class=xl1697473>&nbsp;</td>
   <td class=xl2037473>0.0</td>
- </tr>
- <tr height=33 style='mso-height-source:userset;height:24.75pt'>
+ </tr> -->
+ <!-- <tr height=33 style='mso-height-source:userset;height:24.75pt'>
   <td height=33 class=xl697473 style='height:24.75pt;border-top:none'>Maternity
   Leave</td>
   <td class=xl1037473 style='border-top:none;border-left:none'>&nbsp;</td>
@@ -1547,8 +1952,8 @@ x:publishsource="Excel">
   <td class=xl1547473 width=39 style='border-top:none;width:29pt'>&nbsp;</td>
   <td class=xl1817473 style='border-top:none'>&nbsp;</td>
   <td class=xl2047473>0.0</td>
- </tr>
- <tr height=29 style='mso-height-source:userset;height:21.75pt'>
+ </tr> -->
+ <!-- <tr height=29 style='mso-height-source:userset;height:21.75pt'>
   <td height=29 class=xl1177473 style='height:21.75pt'>Sub Total <br>
     Leaves</td>
   <td class=xl1087473 style='border-left:none'>&nbsp;</td>
@@ -1591,8 +1996,8 @@ x:publishsource="Excel">
   <td class=xl797473 width=39 style='border-left:none;width:29pt'>0</td>
   <td class=xl797473 width=39 style='border-left:none;width:29pt'>0</td>
   <td class=xl2057473>17</td>
- </tr>
- <tr height=29 style='mso-height-source:userset;height:21.75pt'>
+ </tr> -->
+ <!-- <tr height=29 style='mso-height-source:userset;height:21.75pt'>
   <td height=29 class=xl1187473 style='height:21.75pt;border-top:none'>Grand
   Total</td>
   <td class=xl1197473 style='border-top:none;border-left:none'>&nbsp;</td>
@@ -1640,7 +2045,7 @@ x:publishsource="Excel">
   none;font-family:Calibri, sans-serif;border-top:.5pt solid windowtext;
   border-right:1.0pt solid windowtext;border-bottom:1.0pt solid windowtext;
   border-left:1.0pt solid windowtext;background:#FFC7CE;mso-pattern:black none'>197</td>
- </tr>
+ </tr> -->
  <tr class=xl727473 height=12 style='mso-height-source:userset;height:9.0pt'>
   <td height=12 class=xl2457473 style='height:9.0pt'>&nbsp;</td>
   <td class=xl2467473></td>

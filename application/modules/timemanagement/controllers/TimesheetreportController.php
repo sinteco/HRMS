@@ -150,8 +150,8 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 		}
 
 		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
-		$leaveTypes = $tmsheetconfigrationsmodel->getactiveleavetype();
-		// var_dump($sentTimesSheets);
+		$leaveTypes = $tmsheetconfigrationsmodel->getUserLeavesData($data->id);
+		// var_dump($leaveTypes);
 		// die();
 		$month = date("m");
 		$year = date("yy");

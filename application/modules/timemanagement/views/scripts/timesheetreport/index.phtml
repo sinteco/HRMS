@@ -4,6 +4,19 @@ function decimalHours($time)
     $hms = explode(":", $time);
     return ($hms[0] + ($hms[1]/60) + ($hms[2]/3600));
 }
+function build_calendar_Holiday_View(){
+	$calendar = "<tr class=xl727473 height=19 style='mso-height-source:userset;height:14.25pt'>
+  <td colspan=2 height=19 class=xl2607473 style='height:14.25pt'>Total LOE<span
+  style='mso-spacerun:yes'>  </span>%age</td>
+ ";
+ $var=1;
+ while ($var <= 38) {
+ 	$calendar .= "<td class=xl727473></td>";
+ 	$var++;
+ }
+ $calendar .= "</tr>";
+	return $calendar;
+}
 function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leaveTypes,$empHolidays) {
 	$lastDateOfMonth = date("Y-m-t", strtotime($TMSCData[0]['form']));
 	$lastDateOfMonthTo = date("Y-m-t", strtotime($TMSCData[0]['to']));
@@ -186,7 +199,16 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           $get_name = date('l', strtotime($date)); //get week day
           $day_name = substr($get_name, 0, 3); // Trim day name to 3 chars
 
+          $holiday_signal = false;
+          foreach ($holiday_dates as $key => $value) {
+          	if($value==$date){
+          		$holiday_signal=true;
+          	}
+          }
+
           if($day_name=='Sun' || $day_name=='Sat')
+          	$calendar .= "<td class=xl987473 style='border-top:none'>$currentDayL</td>";
+          else if($holiday_signal)
           	$calendar .= "<td class=xl987473 style='border-top:none'>$currentDayL</td>";
           else
           	$calendar .= "<td class=xl1127473 style='border-top:none'>$currentDayL</td>";
@@ -207,12 +229,6 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           // var_dump($sentTimesSheets);
           // var_dump($date);
           // die();
-          $holiday_signal = false;
-          foreach ($holiday_dates as $key => $value) {
-          	if($value==$date){
-          		$holiday_signal=true;
-          	}
-          }
 
           if($day_name=='Sun' || $day_name=='Sat')
           	$calendarL .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
@@ -397,7 +413,16 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           $get_name = date('l', strtotime($date)); //get week day
           $day_name = substr($get_name, 0, 3); // Trim day name to 3 chars
 
+          $holiday_signal = false;
+          foreach ($holiday_dates as $key => $value) {
+          	if($value==$date){
+          		$holiday_signal=true;
+          	}
+          }
+
           if($day_name=='Sun' || $day_name=='Sat')
+          	$calendar .= "<td class=xl987473 style='border-top:none'>$currentDay</td>";
+          else if($holiday_signal)
           	$calendar .= "<td class=xl987473 style='border-top:none'>$currentDay</td>";
           else
           	$calendar .= "<td class=xl1127473 style='border-top:none'>$currentDay</td>";
@@ -417,12 +442,6 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           // var_dump($sentTimesSheets);
           // var_dump($date);
           // die();
-          $holiday_signal = false;
-          foreach ($holiday_dates as $key => $value) {
-          	if($value==$date){
-          		$holiday_signal=true;
-          	}
-          }
 
           if($day_name=='Sun' || $day_name=='Sat')
           	$calendarL .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
@@ -2337,7 +2356,8 @@ x:publishsource="Excel">
   <td class=xl727473></td>
   <td class=xl727473></td>
  </tr>
- <tr class=xl727473 height=19 style='mso-height-source:userset;height:14.25pt'>
+ <?php echo build_calendar_Holiday_View(); ?>
+ <!-- <tr class=xl727473 height=19 style='mso-height-source:userset;height:14.25pt'>
   <td colspan=2 height=19 class=xl2607473 style='height:14.25pt'>Total LOE<span
   style='mso-spacerun:yes'>  </span>%age</td>
   <td class=xl757473><span style='mso-spacerun:yes'> </span></td>
@@ -2378,7 +2398,7 @@ x:publishsource="Excel">
   <td class=xl727473></td>
   <td class=xl727473></td>
   <td class=xl727473></td>
- </tr>
+ </tr> -->
  <tr class=xl727473 height=15 style='mso-height-source:userset;height:11.25pt'>
   <td height=15 class=xl1857473 style='height:11.25pt'></td>
   <td class=xl1857473></td>

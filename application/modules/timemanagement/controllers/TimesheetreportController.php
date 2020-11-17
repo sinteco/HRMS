@@ -137,7 +137,7 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 		$empMonthTSData = $empTSModel->getTimesheetData($data->id, $yrMon[0],$yrMon[1]);
 		// var_dump($empMonthTSData);
 		$sentTimesSheets = [];
-		for ($x = 0; $x < count($empMonthTSData); $x++) {
+		for ($x = 0; $x <= count($empMonthTSData); $x++) {
 			array_push($sentTimesSheets,array($empMonthTSData[$x]['sun_date']=>$empMonthTSData[$x]['sun_duration']));
 			array_push($sentTimesSheets,array($empMonthTSData[$x]['mon_date']=>$empMonthTSData[$x]['mon_duration']));
 			array_push($sentTimesSheets,array($empMonthTSData[$x]['tue_date']=>$empMonthTSData[$x]['tue_duration']));
@@ -151,7 +151,7 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 
 		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
 		$leaveTypes = $tmsheetconfigrationsmodel->getUserLeavesData($data->id);
-		// var_dump($leaveTypes);
+		// var_dump($empMonthTSData);
 		// die();
 		$month = date("m");
 		$year = date("yy");

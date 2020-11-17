@@ -4,7 +4,7 @@ function decimalHours($time)
     $hms = explode(":", $time);
     return ($hms[0] + ($hms[1]/60) + ($hms[2]/3600));
 }
-function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leaveTypes) {
+function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leaveTypes,$empHolidays) {
 	$lastDateOfMonth = date("Y-m-t", strtotime($TMSCData[0]['form']));
 	$lastDateOfMonthTo = date("Y-m-t", strtotime($TMSCData[0]['to']));
 	$date_diff = date_diff(date_create($TMSCData[0]['form']),date_create($lastDateOfMonth));
@@ -164,7 +164,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
   <td class=xl1197473 style='border-top:none;border-left:none'>&nbsp;</td>";
      // $calendarL = "<tr>";
      // var_dump(date("F", strtotime($TMSCData[0]['form'])));
-  // var_dump($leaveTypes);
+  $holiday_names = explode(',', $empHolidays['holiday_names']);
+  $holiday_dates = explode(',', $empHolidays['holiday_dates']);
+  // var_dump($holiday_dates);
   // die();
   	 $totalTime = 0;
      while ($currentDayL <= $numberDaysL) {
@@ -205,13 +207,23 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           // var_dump($sentTimesSheets);
           // var_dump($date);
           // die();
+          $holiday_signal = false;
+          foreach ($holiday_dates as $key => $value) {
+          	if($value==$date){
+          		$holiday_signal=true;
+          	}
+          }
 
           if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarL .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
+          else if($holiday_signal)
           	$calendarL .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
           else
           	$calendarL .= "<td class=xl1127473 style='border-top:none'>".$time."</td>";
 
           if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarS .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
+          else if($holiday_signal)
           	$calendarS .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
           else
           	$calendarS .= "<td class=xl1127473 style='border-top:none'>".$time."</td>";
@@ -405,19 +417,31 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           // var_dump($sentTimesSheets);
           // var_dump($date);
           // die();
+          $holiday_signal = false;
+          foreach ($holiday_dates as $key => $value) {
+          	if($value==$date){
+          		$holiday_signal=true;
+          	}
+          }
 
           if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarL .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
+          else if($holiday_signal)
           	$calendarL .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
           else
           	$calendarL .= "<td class=xl1127473 style='border-top:none'>".$time."</td>";
 
           if($day_name=='Sun' || $day_name=='Sat')
           	$calendarS .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
+          else if($holiday_signal)
+          	$calendarS .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
           else
           	$calendarS .= "<td class=xl1127473 style='border-top:none'>".$time."</td>";
 
           //official spacing
           if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarSpace .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else if($holiday_signal)
           	$calendarSpace .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
           else
           	$calendarSpace .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
@@ -506,51 +530,71 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           //official leave header
           if($day_name=='Sun' || $day_name=='Sat')
           	$calendarLeaveHeader .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else if($holiday_signal)
+          	$calendarLeaveHeader .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
           else
           	$calendarLeaveHeader .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
 
           //offical leave
           if($day_name=='Sun' || $day_name=='Sat')
           	$calendarSickleave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else if($holiday_signal)
+          	$calendarSickleave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
           else
           	$calendarSickleave .= "<td class=xl1127473 style='border-top:none'>$SickLeavetime</td>";
           
           if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarMaternityLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else if($holiday_signal)
           	$calendarMaternityLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
           else
           	$calendarMaternityLeave .= "<td class=xl1127473 style='border-top:none'>$MaternityLeavetime</td>";
           
           if($day_name=='Sun' || $day_name=='Sat')
           	$calendarPaternityLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else if($holiday_signal)
+          	$calendarPaternityLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
           else
           	$calendarPaternityLeave .= "<td class=xl1127473 style='border-top:none'>$PaternityLeavetime</td>";
           
           if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarFamilyLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else if($holiday_signal)
           	$calendarFamilyLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
           else
           	$calendarFamilyLeave .= "<td class=xl1127473 style='border-top:none'>$FamilyLeavetime</td>";
           
           if($day_name=='Sun' || $day_name=='Sat')
           	$calendarPublicHoliday .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else if($holiday_signal)
+          	$calendarPublicHoliday .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
           else
           	$calendarPublicHoliday .= "<td class=xl1127473 style='border-top:none'>$PublicHolidaytime</td>";
           
           if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarStudyleave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else if($holiday_signal)
           	$calendarStudyleave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
           else
           	$calendarStudyleave .= "<td class=xl1127473 style='border-top:none'>$Studyleavetime</td>";
           
           if($day_name=='Sun' || $day_name=='Sat')
           	$calendarAnnualLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else if($holiday_signal)
+          	$calendarAnnualLeave .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
           else
           	$calendarAnnualLeave .= "<td class=xl1127473 style='border-top:none'>$AnnualLeavetime</td>";
           
           if($day_name=='Sun' || $day_name=='Sat')
           	$calendarFloatingHoliday .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else if($holiday_signal)
+          	$calendarFloatingHoliday .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
           else
           	$calendarFloatingHoliday .= "<td class=xl1127473 style='border-top:none'>$FloatingHolidaytime</td>";
           
           if($day_name=='Sun' || $day_name=='Sat')
+          	$calendarOther .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+          else if($holiday_signal)
           	$calendarOther .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
           else
           	$calendarOther .= "<td class=xl1127473 style='border-top:none'>$Othertime</td>";
@@ -936,7 +980,7 @@ x:publishsource="Excel">
      $month = $dateComponents['mon'];                  
      $year = $dateComponents['year'];
 
-     echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->sentTimesSheets,$this->leaveTypes);
+     echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->sentTimesSheets,$this->leaveTypes,$this->empHolidaysWeekends);
   ?>
  <!-- <tr class=xl877473 height=0 style='display:none;mso-height-source:userset;
   mso-height-alt:465'>

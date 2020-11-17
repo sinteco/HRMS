@@ -141,8 +141,8 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 			array_push($sentTimesSheets,array($empMonthTSData[$x]['sun_date']=>$empMonthTSData[$x]['sun_duration']));
 			array_push($sentTimesSheets,array($empMonthTSData[$x]['mon_date']=>$empMonthTSData[$x]['mon_duration']));
 			array_push($sentTimesSheets,array($empMonthTSData[$x]['tue_date']=>$empMonthTSData[$x]['tue_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['wen_date']=>$empMonthTSData[$x]['wen_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['the_date']=>$empMonthTSData[$x]['the_duration']));
+			array_push($sentTimesSheets,array($empMonthTSData[$x]['wed_date']=>$empMonthTSData[$x]['wed_duration']));
+			array_push($sentTimesSheets,array($empMonthTSData[$x]['thu_date']=>$empMonthTSData[$x]['thu_duration']));
 			array_push($sentTimesSheets,array($empMonthTSData[$x]['fri_date']=>$empMonthTSData[$x]['fri_duration']));
 			array_push($sentTimesSheets,array($empMonthTSData[$x]['sat_date']=>$empMonthTSData[$x]['sat_duration']));
 			array_push($sentTimesSheets,array('project_name'=>$empMonthTSData[$x]['project_name']));

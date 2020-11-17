@@ -117,6 +117,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
      	$task = $value['task']!=null?$value['task']:$task;
      }
      // var_dump($sentTimesSheets);
+     $calendarP = "";
      $calendarL = "<td height=31 class=xl1357473 style='height:23.25pt'>$project</td>
   <td class=xl1057473 style='border-left:none' colspan=2>$task</td>";
   	$calendarS = "";
@@ -251,6 +252,8 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	$calendarSpace .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
           else
           	$calendarSpace .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+
+          	$calendarP .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
 
           foreach ($leaveTypes as $key => $value) {
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==1&&$value['leavestatus']=='Approved')
@@ -467,6 +470,8 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           else
           	$calendarSpace .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
 
+          $calendarP .= "<td class=xl987473 style='border-top:none'>&nbsp;</td>";
+
           foreach ($leaveTypes as $key => $value) {
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==1&&$value['leavestatus']=='Approved')
           	{
@@ -669,44 +674,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
      $calendar .= "<tr class=xl887473 height=26 style='mso-height-source:userset;height:19.5pt'>
   <td height=26 class=xl1307473 style='height:19.5pt;border-top:none'>Project</td>
   <td class=xl1317473 style='border-top:none;border-left:none'>Project Code</td>
-  <td class=xl1327473 style='border-top:none;border-left:none'>Location</td>
-  <td class=xl2377473 style='border-top:none'>&nbsp;</td>
-  <td class=xl1007473 style='border-top:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1027473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1927473 style='border-top:none'>&nbsp;</td>
-  <td class=xl1027473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1167473 width=37 style='border-top:none;width:28pt'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1007473 style='border-top:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1867473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1927473 style='border-top:none'>&nbsp;</td>
-  <td class=xl1927473 style='border-top:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1007473 style='border-top:none'>&nbsp;</td>
-  <td class=xl1867473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1337473>&nbsp;</td>
-  <td class=xl1007473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1017473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1027473 style='border-top:none;border-left:none'>&nbsp;</td>
-  <td class=xl1027473 style='border-top:none'>&nbsp;</td>
-  <td class=xl1337473>&nbsp;</td>
-  <td class=xl1027473 style='border-top:none'>&nbsp;</td>
- </tr>";
+  <td class=xl1327473 style='border-top:none;border-left:none'>Location</td>";
+  	$calendar .= $calendarP;
+  	$calendar .= "</tr>";
 
  $calendar .= "<tr class=xl897473 height=31 style='mso-height-source:userset;height:23.25pt'>";
  $calendar .= $calendarL."</tr>";

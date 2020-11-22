@@ -55,6 +55,23 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 	 */
 	public function indexAction()
 	{
+		$auth = Zend_Auth::getInstance();
+		if($auth->hasIdentity()){
+			$loginUserId = $auth->getStorage()->read()->id;
+		}
+		//start new class view
+		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
+		$myTsModel = new Timemanagement_Model_MyTimesheetedited();
+		$month = date("m");
+		$year = date("yy");
+		$where = "j.month=".$month." and j.year=".$year;
+		$TMSCData = $tmsheetconfigrationsmodel->getTMSCWhere($where);
+		$date_diff = date_diff(date_create($TMSCData[0]['form']),date_create($TMSCData[0]['to']));
+		$lastDateOfMonth = date("Y-m-t", strtotime($TMSCData[0]['to']));
+		$TimesheetData = $myTsModel->getAllTimesheetData($loginUserId,$TMSCData[0]['form'],$lastDateOfMonth);
+		$this->view->TimesheetData = $TimesheetData;
+		$this->view->TMSCData = $TMSCData;
+		//end new calendar view
 		$usersModel = new Timemanagement_Model_Users();
 		$storage = new Zend_Auth_Storage_Session();
 		$data = $storage->read();
@@ -382,6 +399,8 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 		//START code to show pending weeks for submit in current month
 
 		$projmodel = new Timemanagement_Model_Projects();
+		$allproject = $projmodel->getProjectListWithTask();
+		$this->view->allproject = $allproject;
 		$prevweeks = $projmodel->getprevmonthweeks(date('Y-m') , date('d'));
 		 $end_date = max($prevweeks[count($prevweeks)]);//get previous week end date
 		 $start_date = min($prevweeks[count($prevweeks)]);//get previous week start date
@@ -403,6 +422,36 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 
 	public function weekAction()
 	{
+		$auth = Zend_Auth::getInstance();
+		if($auth->hasIdentity()){
+			$loginUserId = $auth->getStorage()->read()->id;
+		}
+		$date = $this->getRequest()->getPost('date', null);
+		$location = $this->getRequest()->getPost('location', null);
+		$project_task_id = $this->getRequest()->getPost('project', null);
+		$duration = $this->getRequest()->getPost('time', null);
+		$myTsModel = new Timemanagement_Model_MyTimesheetedited();
+		$where = '';
+		$cdata = array( 'location'=>trim($location),
+		               'date'=>trim($date),
+		               'project_task_id'=>trim($project_task_id),
+		               'duration'=>trim($duration),
+		               'duration'=>trim($duration),
+		   			   'modifiedby'=>$loginUserId,
+		   			   'emp_id'=>$loginUserId,
+					   'modifieddate'=>gmdate("Y-m-d H:i:s"));
+		// echo $date;
+		$ymd = DateTime::createFromFormat('Y-m-d', $date)->format('Y-m-d');
+		$lastdata = $myTsModel->getsingleTimesheetData($loginUserId,$ymd);
+		if ($lastdata!=null) {
+			$where = "id"."=".$lastdata[0]['id'];
+		}else{
+			$cdata['createdby'] = $loginUserId;
+			$cdata['createddate'] = gmdate("Y-m-d H:i:s");
+		}
+		$lastID = $myTsModel->SaveorUpdateEmpTMEData($cdata,$where);
+		var_dump($lastID);
+		die();
 
 		$usersModel = new Timemanagement_Model_Users();
 		$storage = new Zend_Auth_Storage_Session();

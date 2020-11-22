@@ -9,12 +9,12 @@
 
 require_once 'Zend/Db/Table/Abstract.php';
 
-class Timemanagement_Model_MyTimesheet extends Zend_Db_Table_Abstract
+class Timemanagement_Model_MyTimesheetedited extends Zend_Db_Table_Abstract
 {
 	/**
 	 * The default table name
 	 */
-	protected $_name = 'tm_emp_timesheets';
+	protected $_name = 'tm_emp_timesheets_edited';
 	
 	public function SaveOrUpdateTimesheet($arrayData)
 	{
@@ -42,6 +42,25 @@ class Timemanagement_Model_MyTimesheet extends Zend_Db_Table_Abstract
 //			$id=$this->getAdapter()->lastInsertId($this->_name);
 //			return $id;
 //		}
+	}
+	public function getsingleTimesheetData($empId,$date)
+	{
+		$select = $this->select()
+		->setIntegrityCheck(false)
+		->from(array('p'=>$this->_name))
+		->where("p.emp_id=".$empId." and DATE(p.date) = '".$date."'");
+		return $this->fetchAll($select)->toArray();
+	}
+	public function getAllTimesheetData($empId,$from,$to)
+	{
+		$select = $this->select()
+		->setIntegrityCheck(false)
+		->from(array('eth'=>$this->_name))
+		->join(array('pt' => 'tm_project_tasks'),'eth.project_task_id = pt.id',array('eth.location','eth.date', 'eth.duration'))
+		->join(array('t' => 'tm_tasks'),'pt.task_id = t.id',array('task'))
+		->join(array('p' => 'tm_projects'),'pt.project_id = p.id',array('project_name'))
+		->where("eth.emp_id=".$empId." and DATE(eth.date) BETWEEN '".$from."' AND '".$to."'");
+		return $this->fetchAll($select)->toArray();
 	}
 	public function SaveorUpdateEmpTMEData($data, $where)
 	{

@@ -266,6 +266,18 @@ class Timemanagement_Model_Projects extends Zend_Db_Table_Abstract
 		->order('p.project_name');
 		return $this->fetchAll($select)->toArray();
 	}
+	public function getProjectListWithTask()
+	{
+		$select = $this->select()
+		->setIntegrityCheck(false)
+		->from(array('p'=>$this->_name),array('project_name'))
+		->join(array('pt' => 'tm_project_tasks'),'p.id = pt.project_id',array('id'))
+		->join(array('t' => 'tm_tasks'),'pt.task_id = t.id',array('task'))
+		//->where('p.is_active = 1 ')
+		->order('p.project_name')
+		->group(array('p.id'));
+		return $this->fetchAll($select)->toArray();
+	}
 	/**
 	 * This will fetch all the project details based on the search paramerters passed with pagination.
 	 *

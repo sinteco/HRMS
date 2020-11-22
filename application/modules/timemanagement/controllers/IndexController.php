@@ -71,10 +71,22 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 		$TimesheetData = $myTsModel->getAllTimesheetData($loginUserId,$TMSCData[0]['form'],$lastDateOfMonth);
 		$this->view->TimesheetData = $TimesheetData;
 		$this->view->TMSCData = $TMSCData;
+		$month = date("m",strtotime($TMSCData[0]['form']));
+		$year = date("Y",strtotime($TMSCData[0]['form']));
+		$month0 = date("m",strtotime($TMSCData[0]['to']));
+		$year0 = date("Y",strtotime($TMSCData[0]['to']));
 		//end new calendar view
 		$usersModel = new Timemanagement_Model_Users();
 		$storage = new Zend_Auth_Storage_Session();
 		$data = $storage->read();
+		$usersModel = new Timemanagement_Model_Users();
+		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
+		$empHolidaysWeekendsData = $usersModel->getEmployeeHolidaysNWeekends($data->id, $year,$month);
+		$empHolidays = $usersModel->getEmployeeHolidaysNWeekends($data->id, $year0,$month0);
+		$leaves = $tmsheetconfigrationsmodel->getUserLeavesData($data->id);
+		$this->view->holidays = $empHolidaysWeekends;
+		$this->view->holidays0 = $empHolidays;
+		$this->view->leaves = $leaves;
 			
 		$selYrMon = $this->_getParam('selYrMon');
 

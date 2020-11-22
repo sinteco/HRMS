@@ -1,6 +1,6 @@
 <?php
 
-function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData) {
+function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holidays,$holidays0,$leaves) {
 
      // Create array containing abbreviations of days of week.
      $daysOfWeek = array('S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S');
@@ -62,6 +62,18 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData) {
      $monthL = date("m", strtotime($TMSCData[0]['form']));
      $yearL = date("Y", strtotime($TMSCData[0]['form']));
      $calendarL = "<tr>";
+
+     if(count($holidays)>0){
+          $holiday_names = explode(',', $holidays[0]['holiday_names']);
+          $holiday_dates = explode(',', $holidays[0]['holiday_dates']);
+     }
+     if (count($holidays0)>0) {
+          $holiday_names0 = explode(',', $holidays0[0]['holiday_names']);
+          $holiday_dates0 = explode(',', $holidays0[0]['holiday_dates']);
+     }
+     // var_dump($leaves);
+     // die();
+
      // var_dump(date("F", strtotime($TMSCData[0]['form'])));
 
      while ($currentDayL <= $numberDaysL) {
@@ -80,25 +92,48 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData) {
           $date = "$yearL-$monthL-$currentDayRel";
           $get_name = date('l', strtotime($date)); //get week day
           $day_name = substr($get_name, 0, 3); // Trim day name to 3 chars
-          $date = "&quot;$yearL-$monthL-$currentDayRel&quot;";
 
           $calendar .= "<td class='day $day_name head' rel='$date'><b>$day_name</b> <div>$currentDayL</div></td>";
 
+          $leave_signal = false;
+          foreach ($leaves as $key => $value) {
+               if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved')
+               {
+                    $leave_signal=true;
+                    break;
+               }
+          }
+
+          $date = "&quot;$yearL-$monthL-$currentDayRel&quot;";
+
+          $holiday_signal = false;
+          foreach ($holiday_dates as $key => $value) {
+               if("&quot;".$value."&quot;"==$date){
+                    $holiday_signal=true;
+               }
+          }
           $sizeofArray = 0;
           foreach ($TimesheetData as $key => $value) {
                $d=strtotime($value['date']);
                $vd = date("Y-m-d", $d);
-               if ("&quot;".$vd."&quot;"==$date && $day_name!='Sun' && $day_name != 'Sat') {
+               if (!$leave_signal&&!$holiday_signal&&"&quot;".$vd."&quot;"==$date && $day_name!='Sun' && $day_name != 'Sat') {
                     $calendarL .= "<td class='day $day_name' id='form'>{$value['duration']}</td>";
                     break;
-               }else if ("&quot;".$vd."&quot;"==$date && ($day_name=='Sun' || $day_name == 'Sat')) {
+               }else if (!$leave_signal&&!$holiday_signal&&"&quot;".$vd."&quot;"==$date && ($day_name=='Sun' || $day_name == 'Sat')) {
                     $calendarL .= "<td class='day $day_name' id='form' onclick='TimeSheetForm($date)'>&nbsp; &nbsp;</td>";
                }
 
-               if ($sizeofArray==count($TimesheetData) && ($day_name!='Sun' && $day_name != 'Sat')) {
+               if (!$leave_signal&&!$holiday_signal&&$sizeofArray==count($TimesheetData) && ($day_name!='Sun' && $day_name != 'Sat')) {
                     $calendarL .= "<td class='day $day_name' id='form' onclick='TimeSheetForm($date)'>NA</td>";
-               }else if ($sizeofArray==count($TimesheetData) && ($day_name=='Sun' || $day_name == 'Sat')) {
+               }else if (!$leave_signal&&!$holiday_signal&&$sizeofArray==count($TimesheetData) && ($day_name=='Sun' || $day_name == 'Sat')) {
                     $calendarL .= "<td class='day $day_name' id='form'>&nbsp; &nbsp;</td>";
+               }
+               if(!$leave_signal&&$holiday_signal){
+                    $calendarL .= "<td class='day $day_name' id='form'>&nbsp; H &nbsp;</td>";
+                    break;
+               }else if($leave_signal){
+                    $calendarL .= "<td class='day $day_name' id='form'>&nbsp; L &nbsp;</td>";
+                    break;
                }
                $sizeofArray++;
           }
@@ -127,26 +162,49 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData) {
           $date = "$year-$month-$currentDayRel";
           $get_name = date('l', strtotime($date)); //get week day
           $day_name = substr($get_name, 0, 3); // Trim day name to 3 chars
-          $date = "&quot;$year-$month-$currentDayRel&quot;";
 
           $calendar .= "<td class='day $day_name head' rel='$date'><b>$day_name</b> <div>$currentDay</div></td>";
           // $calendarL .= "<td class='day $day_name' rel='$date' id='form'>00:00</td>";
 
+          $leave_signal = false;
+          foreach ($leaves as $key => $value) {
+               if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved')
+               {
+                    $leave_signal=true;
+                    break;
+               }
+          }
+
+          $date = "&quot;$year-$month-$currentDayRel&quot;";
+
+          $holiday_signal = false;
+          foreach ($holiday_dates0 as $key => $value) {
+               if("&quot;".$value."&quot;"==$date){
+                    $holiday_signal=true;
+               }
+          }
           $sizeofArray = 1;
           foreach ($TimesheetData as $key => $value) {
                $d=strtotime($value['date']);
                $vd = date("Y-m-d", $d);
-               if ("&quot;".$vd."&quot;"==$date && ($day_name!='Sun' || $day_name != 'Sat')) {
+               if (!$leave_signal&&!$holiday_signal&&"&quot;".$vd."&quot;"==$date && ($day_name!='Sun' || $day_name != 'Sat')) {
                     $calendarL .= "<td class='day $day_name' id='form' onclick='TimeSheetForm($date)'>{$value['duration']}</td>";
                     break;
-               }else if ("&quot;".$vd."&quot;"==$date && ($day_name=='Sun' || $day_name == 'Sat')) {
+               }else if (!$leave_signal&&!$holiday_signal&&"&quot;".$vd."&quot;"==$date && ($day_name=='Sun' || $day_name == 'Sat')) {
                     $calendarL .= "<td class='day $day_name' id='form'>&nbsp; &nbsp;</td>";
                }
 
-               if ($sizeofArray==count($TimesheetData) && ($day_name!='Sun' && $day_name != 'Sat')) {
+               if (!$leave_signal&&!$holiday_signal&&$sizeofArray==count($TimesheetData) && ($day_name!='Sun' && $day_name != 'Sat')) {
                     $calendarL .= "<td class='day $day_name' id='form' onclick='TimeSheetForm($date)'>NA</td>";
-               }else if ($sizeofArray==count($TimesheetData) && ($day_name=='Sun' || $day_name == 'Sat')) {
+               }else if (!$leave_signal&&!$holiday_signal&&$sizeofArray==count($TimesheetData) && ($day_name=='Sun' || $day_name == 'Sat')) {
                     $calendarL .= "<td class='day $day_name' id='form'>&nbsp; &nbsp;</td>";
+               }
+               if (!$leave_signal&&$holiday_signal) {
+                    $calendarL .= "<td class='day $day_name' id='form'>&nbsp; H &nbsp;</td>";
+                    break;
+               }else if($leave_signal){
+                    $calendarL .= "<td class='day $day_name' id='form'>&nbsp; L &nbsp;</td>";
+                    break;
                }
                $sizeofArray++;
           }
@@ -189,7 +247,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData) {
      $month = $dateComponents['mon'];                  
      $year = $dateComponents['year'];
 
-     echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->TimesheetData);
+     echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->TimesheetData,$this->holidays,$this->holidays0,$this->leaves);
 ?>
 <table id="calendar"><div style="padding-bottom: 50px"></div><caption><input type="button" value="Submit"></caption></table>
 <div id="login-form" class="modal">
@@ -366,6 +424,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData) {
             });
          }
      $(document).ready(function(){
+     $('.breadcrumbs').append("<span class='arrows'>&rsaquo;</span><a href='<?php echo BASE_URL; ?>timemanagement'>Time Sheet</a>");
      $('.timeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 8, 30, 0)});
       $('#saveTimeSheet').click(function(){
           $.modal.close();

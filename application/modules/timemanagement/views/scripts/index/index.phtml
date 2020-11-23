@@ -1,6 +1,6 @@
 <?php
 
-function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holidays,$holidays0,$leaves) {
+function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holidays,$holidays0,$leaves,$allproject) {
 
      // Create array containing abbreviations of days of week.
      $daysOfWeek = array('S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S');
@@ -44,7 +44,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
 
      $currentDay = 1;
 
-     $calendar .= "</tr><tr class = 'weekdays'>";
+     $calendar .= "</tr><tr class = 'weekdays'><td>Project and Code</td><td>Location</td>";
 
      // The variable $dayOfWeek is used to
      // ensure that the calendar
@@ -61,7 +61,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      $dayOfWeekL = 0;
      $monthL = date("m", strtotime($TMSCData[0]['form']));
      $yearL = date("Y", strtotime($TMSCData[0]['form']));
-     $calendarL = "<tr>";
+     $calendarL = "<tr><td>Project and Code</td><td>Location</td>";
 
      if(count($holidays)>0){
           $holiday_names = explode(',', $holidays[0]['holiday_names']);
@@ -70,6 +70,19 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      if (count($holidays0)>0) {
           $holiday_names0 = explode(',', $holidays0[0]['holiday_names']);
           $holiday_dates0 = explode(',', $holidays0[0]['holiday_dates']);
+     }
+
+     foreach ($allproject as $key => $value) {
+          ${'calendar'.$key}="<tr><td>
+               <select class='form-dropdown' id='project' name='project' style='width:206px' data-component='dropdown' aria-labelledby='label_14'>
+                 <option value=''> Please Select </option>
+                 ";
+                 foreach ($allproject as $index => $valv) {
+                      ${'calendar'.$key}.= "<option value='{$valv['id']}'> {$valv['project_name']} => {$valv['task']} </option>";
+                 }
+                 ${'calendar'.$key}.="
+               </select>
+          </td><td><input type='text' id='fname' name='fname' maxlength='4' size='5'></td>";
      }
      // var_dump($leaves);
      // die();
@@ -101,6 +114,14 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
                {
                     $leave_signal=true;
                     break;
+               }
+          }
+
+          foreach ($allproject as $key => $value) {
+               if(($day_name=='Sun' || $day_name == 'Sat')){
+                    ${'calendar'.$key}.="<td class='day $day_name' id='form'></td>";
+               }else{
+               ${'calendar'.$key}.="<td class='day $day_name' id='form'><input type='text' id='fname' name='fname' maxlength='4' size='4'></td>";
                }
           }
 
@@ -175,6 +196,14 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
                }
           }
 
+          foreach ($allproject as $key => $value) {
+               if(($day_name=='Sun' || $day_name == 'Sat')){
+                    ${'calendar'.$key}.="<td class='day $day_name' id='form'></td>";
+               }else{
+               ${'calendar'.$key}.="<td class='day $day_name' id='form'><input type='text' id='fname' name='fname' maxlength='4' size='4'></td>";
+               }
+          }
+
           $date = "&quot;$year-$month-$currentDayRel&quot;";
 
           $holiday_signal = false;
@@ -229,10 +258,15 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
 
      // }
      
-     $calendar .= "</tr>";
+     $calendar .= "<td></td></tr>";
      $calendarL .= "</tr>";
 
-     $calendar .= $calendarL;
+     // $calendar .= $calendarL;
+
+     foreach ($allproject as $key => $value) {
+               ${'calendar'.$key}.="<td><input type='submit' value='Submit'></td></tr>";
+               $calendar .= ${'calendar'.$key};
+          }
 
      $calendar .= "</table>";
 
@@ -247,9 +281,11 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      $month = $dateComponents['mon'];                  
      $year = $dateComponents['year'];
 
-     echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->TimesheetData,$this->holidays,$this->holidays0,$this->leaves);
+     echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->TimesheetData,$this->holidays,$this->holidays0,$this->leaves,$this->allproject);
 ?>
-<table id="calendar"><div style="padding-bottom: 50px"></div><caption><input type="button" value="Submit"></caption></table>
+<table id="calendar"><div style="padding-bottom: 50px"></div><caption>
+     <!-- <input type="button" value="Send for Approval"> -->
+</caption></table>
 <div id="login-form" class="modal">
   <ul class="form-section page-section">
       <li id="cid_1" class="form-input-wide" data-type="control_head">
@@ -329,7 +365,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
           color: white;
      }
      #calendar {
-     width: 90%;
+     width: 100%;
      /*display: grid;*/
      grid-template-columns: repeat(7, 1fr);
      }

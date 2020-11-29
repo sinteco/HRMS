@@ -2303,6 +2303,7 @@ function display_weeks_monthly(selmn,manager_id,search,click,hidweek)
 
 function show_accordion(manager_id,startday,endday,search,clicked_status,active,type,hidweek)
 {
+    console.log(manager_id+" "+startday+" "+endday+" "+search+" "+clicked_status+" "+active+" "+type+" "+hidweek);
     var emp_list_flag=$('#sel_emp_list').val();
     search = encodeURIComponent(search);
     $('#pageno').val('0');
@@ -2455,6 +2456,7 @@ function enableEmpTimesheet(selmn,emp_id,type,hideweek,manager_id,flag,emp_list_
 }
 
 function approveEmpTimesheet(selmn,emp_id,type,hideweek,manager_id,flag,emp_list_flag){
+  // console.log(selmn+' '+emp_id+' '+type+' '+hideweek+' '+manager_id+' '+flag+' '+emp_list_flag);
 	$.ajax({
         data:"selmn="+selmn+"&hideweek="+hideweek+"&type="+type+"&emp_id="+emp_id+"&emplistflag="+emp_list_flag,	
         url:base_url+"/timemanagement/emptimesheets/approvetimesheet/format/json",

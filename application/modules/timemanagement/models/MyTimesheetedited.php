@@ -43,12 +43,12 @@ class Timemanagement_Model_MyTimesheetedited extends Zend_Db_Table_Abstract
 //			return $id;
 //		}
 	}
-	public function getsingleTimesheetData($empId,$date)
+	public function getsingleTimesheetData($empId,$date,$project_task_id)
 	{
 		$select = $this->select()
 		->setIntegrityCheck(false)
 		->from(array('p'=>$this->_name))
-		->where("p.emp_id=".$empId." and DATE(p.date) = '".$date."'");
+		->where("p.emp_id=".$empId." and DATE(p.date) = '".$date."' and project_task_id = '".$project_task_id."'");
 		return $this->fetchAll($select)->toArray();
 	}
 	public function getAllTimesheetData($empId,$from,$to)
@@ -81,6 +81,16 @@ class Timemanagement_Model_MyTimesheetedited extends Zend_Db_Table_Abstract
 		}
 		
 	
+	}
+	public function SaveorUpdateEmpTMSEStatusData($data){
+		$db = Zend_Db_Table::getDefaultAdapter();
+		$lastInsertId = $db->insert('tm_ts_edited_status', $data);
+		return $lastInsertId;
+	}
+	public function getTimeSheetstatus($emp_id,$main_tmsheetconfigration){
+		$db = Zend_Db_Table::getDefaultAdapter();
+		$col = $db=query("SELECT * FROM tm_ts_edited_status tses where tses.main_tmsheetconfigrations_id=".$main_tmsheetconfigration." and emp_id='".$emp_id."'");
+		return $col->fetchAll();
 	}
 	public function updateTimesheetRecord($data, $where) {
 		

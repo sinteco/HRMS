@@ -1,9 +1,9 @@
 <?php
 
-function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holidays,$holidays0,$leaves,$allproject) {
+function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holidays,$holidays0,$leaves,$allproject,$url) {
 
      // Create array containing abbreviations of days of week.
-     $daysOfWeek = array('S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S');
+     // $daysOfWeek = array('S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S','S','M','T','W','T','F','S');
 
      // What is the first day of the month in question?
      $firstDayOfMonth = mktime(0,0,0,$month,1,$year);
@@ -25,10 +25,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      $dayOfWeek = $dateComponents['wday'];
 
      // Create the table tag opener and day headers
-
-     $calendar = "<table id='calendar'>";
-     $calendar .= "<caption class='month'>$monthNameL $yearNameL Actual Time ";
-     $calendar .= "$monthName $year Actual Time ";
+     $calendar = "<form method='POST' id='tmsheetform'><table id='calendar'>";
+     $calendar .= "<caption class='month'>$monthNameL $yearNameL Actual Time, ";
+     $calendar .= "$monthName $year Actual Time, ";
      $calendar .= "$monthName $year Estimated Time</caption>";
      $calendar .= "<tr>";
 
@@ -44,7 +43,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
 
      $currentDay = 1;
 
-     $calendar .= "</tr><tr class = 'weekdays'><td>Project and Code</td><td>Location</td>";
+     $calendar .= "</tr><tr class = 'weekdays'><td class='day head'>Project and Code</td><td class='day head'>Location</td>";
 
      // The variable $dayOfWeek is used to
      // ensure that the calendar
@@ -73,8 +72,8 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      }
 
      foreach ($allproject as $key => $value) {
-          ${'calendar'.$key}="<tr><td>
-               <select class='form-dropdown' id='project' name='project' style='width:206px' data-component='dropdown' aria-labelledby='label_14'>
+          ${'calendar'.$key}="<tr><td class='day'>
+               <select class='form-dropdown' id='project' name='project[]' style='width:206px' data-component='dropdown' aria-labelledby='label_14'>
                  <option value=''> Please Select </option>
                  ";
                  foreach ($allproject as $index => $valv) {
@@ -82,12 +81,15 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
                  }
                  ${'calendar'.$key}.="
                </select>
-          </td><td><input type='text' id='fname' name='fname' maxlength='4' size='5'></td>";
+          </td><td class='day'><input type='text' id='fname' name='location[]'></td>";
      }
-     // var_dump($leaves);
+     // var_dump($holiday_names0);
      // die();
 
      // var_dump(date("F", strtotime($TMSCData[0]['form'])));
+     $totalTablesize = 0;
+     $rowarray = [];
+     $workingDays = 0;
 
      while ($currentDayL <= $numberDaysL) {
 
@@ -109,30 +111,60 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
           $calendar .= "<td class='day $day_name head' rel='$date'><b>$day_name</b> <div>$currentDayL</div></td>";
 
           $leave_signal = false;
+          $leave_signal_half = false;
           foreach ($leaves as $key => $value) {
-               if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved')
+               if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved'&&$value['appliedleavescount']=='0.5')
                {
+                    $leave_signal_half=true;
+                    break;
+               }elseif(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved'){
                     $leave_signal=true;
                     break;
+               }
+          }
+
+          $holiday_signal = false;
+          foreach ($holiday_dates as $key => $value) {
+               if($value==$date){
+                    $holiday_signal=true;
                }
           }
 
           foreach ($allproject as $key => $value) {
                if(($day_name=='Sun' || $day_name == 'Sat')){
                     ${'calendar'.$key}.="<td class='day $day_name' id='form'></td>";
+               }else if($leave_signal_half){
+                ${'calendar'.$key}.="<td class='day $day_name' id='form'><input type='text' id='fname' name='time[]' maxlength='4' size='4' class='halfleaveTimeEntry'><input type='hidden' name='date[]' value='$date'></td>";
+               }else if($leave_signal){
+                ${'calendar'.$key}.="<td class='day $day_name' id='form'>Leave day</td>";
+               }else if($holiday_signal){
+                ${'calendar'.$key}.="<td class='day $day_name' id='form'>holiday</td>";
+               }elseif ($day_name=='Fri') {
+                 ${'calendar'.$key}.="<td class='day $day_name' id='form'><input type='text' id='fname' name='time[]' maxlength='4' size='4' class='friTimeEntry'><input type='hidden' name='date[]' value='$date'></td>";
                }else{
-               ${'calendar'.$key}.="<td class='day $day_name' id='form'><input type='text' id='fname' name='fname' maxlength='4' size='4'></td>";
+               ${'calendar'.$key}.="<td class='day $day_name' id='form'><input type='text' id='fname' name='time[]' maxlength='4' size='4' class='timeEntry'><input type='hidden' name='date[]' value='$date'></td>";
                }
+          }
+
+          if(($day_name=='Sun' || $day_name == 'Sat')){
+               array_push($rowarray,"<td class='day $day_name' id='form'></td>");
+          }elseif($leave_signal_half){
+            array_push($rowarray,"<td class='day $day_name' id='form'><input type='text' id='fname' name='time[]' maxlength='4' size='4' class='halfleaveTimeEntry'><input type='hidden' class='dateclass' name='date[]' value='$date'></td>");
+               $workingDays++;
+          }elseif($leave_signal){
+            array_push($rowarray,"<td class='day $day_name' id='form'>Leave Day</td>");
+          }elseif($holiday_signal){
+            array_push($rowarray,"<td class='day $day_name' id='form'>Holiday</td>");
+          }elseif ($day_name=='Fri') {
+            array_push($rowarray,"<td class='day $day_name' id='form'><input type='text' id='fname' name='time[]' maxlength='4' size='4' class='friTimeEntry'><input type='hidden' class='dateclass' name='date[]' value='$date'></td>");
+               $workingDays++;
+          }else{
+               array_push($rowarray,"<td class='day $day_name' id='form'><input type='text' id='fname' name='time[]' maxlength='4' size='4' class='timeEntry'><input type='hidden' class='dateclass' name='date[]' value='$date'></td>");
+               $workingDays++;
           }
 
           $date = "&quot;$yearL-$monthL-$currentDayRel&quot;";
 
-          $holiday_signal = false;
-          foreach ($holiday_dates as $key => $value) {
-               if("&quot;".$value."&quot;"==$date){
-                    $holiday_signal=true;
-               }
-          }
           $sizeofArray = 0;
           foreach ($TimesheetData as $key => $value) {
                $d=strtotime($value['date']);
@@ -157,12 +189,14 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
                     break;
                }
                $sizeofArray++;
+               
           }
 
           // Increment counters
  
           $currentDayL++;
           $dayOfWeekL++;
+          $totalTablesize++;
 
      }
 
@@ -188,30 +222,58 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
           // $calendarL .= "<td class='day $day_name' rel='$date' id='form'>00:00</td>";
 
           $leave_signal = false;
+          $leave_signal_half = false;
           foreach ($leaves as $key => $value) {
-               if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved')
+               if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved'&&$value['appliedleavescount']=='0.5')
                {
+                    $leave_signal_half=true;
+                    break;
+               }elseif (($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved') {
                     $leave_signal=true;
                     break;
+               }
+          }
+          $holiday_signal = false;
+          foreach ($holiday_dates0 as $key => $value) {
+               if($value==$date){
+                    $holiday_signal=true;
                }
           }
 
           foreach ($allproject as $key => $value) {
                if(($day_name=='Sun' || $day_name == 'Sat')){
                     ${'calendar'.$key}.="<td class='day $day_name' id='form'></td>";
+               }elseif($leave_signal_half){
+                  ${'calendar'.$key}.="<td class='day $day_name' id='form'><div style='font-size: xx-small;'>half day leave</div><input type='text' id='fname' name='time[]' maxlength='4' size='4' class='halfleaveTimeEntry'><input type='hidden' name='date[]' value='$date'></td></td>";
+               }elseif($leave_signal){
+                  ${'calendar'.$key}.="<td class='day $day_name' id='form'>Leave day</td>";
+               }elseif($holiday_signal){
+                  ${'calendar'.$key}.="<td class='day $day_name' id='form'>Holiday</td>";
+               }elseif ($day_name=='Fri') {
+                 ${'calendar'.$key}.="<td class='day $day_name' id='form'><input type='text' id='fname' name='time[]' maxlength='4' size='4' class='friTimeEntry'><input type='hidden' name='date[]' value='$date'></td></td>";
                }else{
-               ${'calendar'.$key}.="<td class='day $day_name' id='form'><input type='text' id='fname' name='fname' maxlength='4' size='4'></td>";
+               ${'calendar'.$key}.="<td class='day $day_name' id='form'><input type='text' id='fname' name='time[]' maxlength='4' size='4' class='timeEntry'><input type='hidden' name='date[]' value='$date'></td></td>";
                }
+          }
+
+          if(($day_name=='Sun' || $day_name == 'Sat')){
+               array_push($rowarray,"<td class='day $day_name' id='form'></td>");
+          }elseif($leave_signal_half){
+              array_push($rowarray,"<td class='day $day_name' id='form'><div style='font-size: xx-small;'>half day leave</div><input type='text' id='fname' name='time[]' maxlength='4' size='4' class='halfleaveTimeEntry'><input type='hidden' name='date[]' value='$date'></td>");
+               $workingDays++;
+          }elseif($leave_signal){
+              array_push($rowarray,"<td class='day $day_name' id='form'>Leave Day</td>");
+          }elseif($holiday_signal){
+              array_push($rowarray,"<td class='day $day_name' id='form'>Holiday</td>");
+          }elseif($day_name=='Fri') {
+            array_push($rowarray,"<td class='day $day_name' id='form'><input type='text' id='fname' name='time[]' maxlength='4' size='4' class='friTimeEntry'><input type='hidden' name='date[]' value='$date'></td>");
+               $workingDays++;
+          }else{
+               array_push($rowarray,"<td class='day $day_name' id='form'><input type='text' id='fname' name='time[]' maxlength='4' size='4' class='timeEntry'><input type='hidden' name='date[]' value='$date'></td>");
+               $workingDays++;
           }
 
           $date = "&quot;$year-$month-$currentDayRel&quot;";
-
-          $holiday_signal = false;
-          foreach ($holiday_dates0 as $key => $value) {
-               if("&quot;".$value."&quot;"==$date){
-                    $holiday_signal=true;
-               }
-          }
           $sizeofArray = 1;
           foreach ($TimesheetData as $key => $value) {
                $d=strtotime($value['date']);
@@ -236,6 +298,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
                     break;
                }
                $sizeofArray++;
+               
           }
 
           
@@ -244,6 +307,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
  
           $currentDay++;
           $dayOfWeek++;
+          $totalTablesize++;
 
      }
      
@@ -263,12 +327,21 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
 
      // $calendar .= $calendarL;
 
-     foreach ($allproject as $key => $value) {
-               ${'calendar'.$key}.="<td><input type='submit' value='Submit'></td></tr>";
-               $calendar .= ${'calendar'.$key};
-          }
+     // foreach ($allproject as $key => $value) {
+               $calendar0.="</tr>";
+               $calendar .= $calendar0;
 
-     $calendar .= "</table>";
+               $holidaycal = "<table>";
+               for ($i=0; $i < count($holiday_dates); $i++) { 
+                 $holidaycal .= "<tr><td>".$holiday_dates[$i]."</td><td> &nbsp; </td><td>".$holiday_names[$i]."</td></tr>";
+               }
+               for ($i=0; $i < count($holiday_dates0); $i++) { 
+                 $holidaycal .= "<tr><td>".$holiday_dates0[$i]."</td><td> &nbsp; </td><td>".$holiday_names0[$i]."</td></tr>";
+               }
+          // }
+               $json = json_encode($rowarray);
+     $calendar .= "</table><div id='tableSize' value='".htmlentities($json, ENT_QUOTES, 'UTF-8')."'><div id='workingDays' value='$workingDays'></div><div>";
+     $calendar .= $holidaycal."</table>";
 
      return $calendar;
 
@@ -281,61 +354,24 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      $month = $dateComponents['mon'];                  
      $year = $dateComponents['year'];
 
-     echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->TimesheetData,$this->holidays,$this->holidays0,$this->leaves,$this->allproject);
+     if($this->TMstatus[0]['status']=="For Approval"){
+        echo "Sent";
+     }
+
+     // echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->TimesheetData,$this->holidays,$this->holidays0,$this->leaves,$this->allproject,$this->baseUrl("index.php/timemanagement/index/week"));
 ?>
 <table id="calendar"><div style="padding-bottom: 50px"></div><caption>
-     <!-- <input type="button" value="Send for Approval"> -->
-</caption></table>
-<div id="login-form" class="modal">
-  <ul class="form-section page-section">
-      <li id="cid_1" class="form-input-wide" data-type="control_head">
-        <div class="form-header-group  header-large">
-          <div class="header-text httal htvam">
-            <h1 id="header_1" class="form-header" data-component="header">
-              Project Timesheet
-            </h1>
-          </div>
-        </div>
-      </li>
-      <li class="form-line" data-type="control_dropdown" id="id_14">
-        <label class="form-label form-label-top form-label-auto" id="label_14" for="input_14"> Project </label>
-        <div id="cid_14" class="form-input-wide" data-layout="half">
-          <select class="form-dropdown" id="project" name="project" style="width:310px" data-component="dropdown" aria-labelledby="label_14">
-            <option value=""> Please Select </option>
-            <?php foreach ($this->allproject as $key => $value) {
-                 echo "<option value='{$value['id']}'> {$value['project_name']} => {$value['task']} </option>";
-            } ?>
-          </select>
-        </div>
-      </li>
-      <li class="form-line" data-type="control_textbox" id="id_19">
-        <label class="form-label form-label-top form-label-auto" id="label_19" for="input_19"> Location </label>
-        <div id="cid_19" class="form-input-wide" data-layout="half">
-          <input type="text" id="input_19" name="location" data-type="input-textbox" class="form-textbox" style="width:310px" size="310" value="" data-component="textbox" aria-labelledby="label_19">
-        </div>
-      </li>
-      <li class="form-line" data-type="control_textbox" id="id_21">
-        <label class="form-label form-label-top form-label-auto" id="label_21" for="input_21"> Time </label>
-        <div id="cid_21" class="form-input-wide" data-layout="half">
-          <input type="text" id="input_21" name="time" data-type="input-textbox" class="timeEntry" style="width:310px" size="310" value="" data-component="textbox" aria-labelledby="label_21">
-        </div>
-      </li>
-      <input type="hidden" name="date">
-      <li class="form-line" data-type="control_button" id="id_2">
-        <div id="cid_2" class="form-input-wide" data-layout="full">
-          <div data-align="auto" class="form-buttons-wrapper form-buttons-auto   jsTest-button-wrapperField">
-            <button id="saveTimeSheet" type="submit" class="form-submit-button submit-button jf-form-buttons jsTest-submitField" data-component="button" data-content="">
-              Submit
-            </button>
-          </div>
-        </div>
-      </li>
-      <li style="display:none">
-        Should be Empty:
-        <input type="text" name="website" value="">
-      </li>
-    </ul>
-</div>
+    <label>Comment:</label>
+     <textarea name="comment" rows="4" cols="50">
+  </textarea>
+     <input id="submit" type="submit" name="submit_row" value="Submit For Approval" style="float: right; background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;">
+     <input type="button" onclick="add_row();" value="Add Project" style="float: left;">
+</caption></table></form>
 <style type="text/css">
      input[type=button] {
          background-color: #4CAF50;
@@ -376,9 +412,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
        width: 100%;
      }
      caption.month {
-         padding: 70px 0px;
+         padding: 20px 0px;
          width: 100%;
-         background: #1abc9c;
+         background: #82a81c;
          color: white;
          font-size: 20px;
          text-transform: uppercase;
@@ -451,8 +487,36 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      td#form {
          padding: 12px 5px;
      }
+
 </style>
 <script type="text/javascript">
+     function add_row()
+     {
+      var x = document.getElementById("tableSize").getAttribute("value");
+      x=JSON.parse(x);
+      $rowno=$("#calendar tr").length;
+      $rowno=$rowno+1;
+      var str = "<tr id='row"+$rowno+"'><td class='day'><select class='form-dropdown' id='project' name='project[]' style='width:206px' data-component='dropdown' aria-labelledby='label_14'>"+
+                 "<option value=''> Please Select </option>"+
+                 <?php 
+                 foreach ($this->allproject as $index => $valv) {
+                      echo "\"<option value='{$valv['id']}'> {$valv['project_name']} => {$valv['task']} </option>\"+";
+                 }
+                  ?>
+               "</select></td><td class='day'><input type='text' id=' location' name='location[]'></td>";
+               for (var i = 0; i < x.length; i++) {
+                    str+=x[i];
+               }
+               str+="<td><input type='button' value='DELETE' onclick=delete_row('row"+$rowno+"')></td></tr>";
+               $("#calendar tr:last").after(str);
+               $('.timeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 8, 30, 0)});
+               $('.friTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
+               $('.halfleaveTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
+     }
+     function delete_row(rowno)
+     {
+      $('#'+rowno).remove();
+     }
      function TimeSheetForm(elstr) {
           $("input[name=date]").val(elstr);
             $('#login-form').modal({
@@ -460,8 +524,71 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
             });
          }
      $(document).ready(function(){
+     $("form").submit(function(e){
+          e.preventDefault();
+         // alert("Submitted");
+         var wd = document.getElementById("workingDays").getAttribute("value");
+         var v = $('#tmsheetform').serializeArray();
+         var l = [];
+         var t = [];
+         var d = [];
+         var p = [];
+         var c = [];
+         for (var i = 0; i < v.length; i++) {
+             // console.log(v[i]['name']);
+             // console.log(v[i]['value']);
+             if (v[i]['name']=='project[]') 
+             {
+              p.push({
+                'name':'project_id',
+                'value':v[i]['value']
+                });
+             }
+             if (v[i]['name']=='location[]') 
+             {
+              l.push({
+                'name':'location',
+                'value':v[i]['value']
+                });
+             }
+             if (v[i]['name']=='time[]') 
+             {
+              t.push({
+                'name':'time',
+                'value':v[i]['value']
+                });
+             }
+             if (v[i]['name']=='date[]') 
+             {
+              d.push({
+                'name':'date',
+                'value':v[i]['value']
+                });
+             }
+             if(v[i]['name']=='comment')
+             {
+              c.push({
+                'name':'comment',
+                'value':v[i]['value']
+              })
+             }
+         }
+         // var vals = $(".dateclass").map(function(){ return this.value}).get();
+         // console.log(c);
+         // alert(c);
+         var data = {project: p, location: l, time: t, date: d, workingDays: wd, comment: c};
+         $.post('<?php echo $this->baseUrl("index.php/timemanagement/index/week");?>', data, function(returnedData) {
+              console.log(returnedData);
+              if(returnedData!=null){
+                    window.location.reload(true);
+              }
+            });
+              // console.log(v);
+       });
      $('.breadcrumbs').append("<span class='arrows'>&rsaquo;</span><a href='<?php echo BASE_URL; ?>timemanagement'>Time Sheet</a>");
      $('.timeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 8, 30, 0)});
+     $('.friTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
+     $('.halfleaveTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
       $('#saveTimeSheet').click(function(){
           $.modal.close();
           var project = $("#project option:selected").val();

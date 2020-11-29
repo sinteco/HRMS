@@ -84,6 +84,8 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 		$empHolidaysWeekendsData = $usersModel->getEmployeeHolidaysNWeekends($data->id, $year,$month);
 		$empHolidays = $usersModel->getEmployeeHolidaysNWeekends($data->id, $year0,$month0);
 		$leaves = $tmsheetconfigrationsmodel->getUserLeavesData($data->id);
+		$TMstatus = $myTsModel->getTimeSheetstatus($data->id,$TMSCData[0]['id']);
+		$this->view->tMstatus = $TMstatus;
 		$this->view->holidays = $empHolidaysWeekends;
 		$this->view->holidays0 = $empHolidays;
 		$this->view->leaves = $leaves;
@@ -434,6 +436,12 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 
 	public function weekAction()
 	{
+		// $data = $this->params()->fromPost();
+		// var_dump($data);
+		// die();
+		$myTsModel = new Timemanagement_Model_MyTimesheetedited();
+		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
+		$where = '';
 		$auth = Zend_Auth::getInstance();
 		if($auth->hasIdentity()){
 			$loginUserId = $auth->getStorage()->read()->id;
@@ -442,27 +450,63 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 		$location = $this->getRequest()->getPost('location', null);
 		$project_task_id = $this->getRequest()->getPost('project', null);
 		$duration = $this->getRequest()->getPost('time', null);
-		$myTsModel = new Timemanagement_Model_MyTimesheetedited();
-		$where = '';
-		$cdata = array( 'location'=>trim($location),
-		               'date'=>trim($date),
-		               'project_task_id'=>trim($project_task_id),
-		               'duration'=>trim($duration),
-		               'duration'=>trim($duration),
+		$workingdays = $this->getRequest()->getPost('workingDays', null);
+		$comment = $this->getRequest()->getPost('comment', null);
+		// var_dump($comment);
+		// die();
+		// var_dump($project_task_id);
+		// var_dump($duration);
+		// var_dump($date);
+		$month = date("m");
+		$year = date("yy");
+		$where = "j.month=".$month." and j.year=".$year;
+		$TMSCData = $tmsheetconfigrationsmodel->getTMSCWhere($where);
+
+		$datas = array('main_tmsheetconfigrations_id'=>trim($TMSCData[0]['id']),
+		               'comment'=>trim($comment[0]['value']),
+		   			   'modified_by'=>$loginUserId,
+		   			   'emp_id'=>$loginUserId,
+					   'modified'=>gmdate("Y-m-d H:i:s"));
+		$datas['created_by'] = $loginUserId;
+		$datas['created'] = gmdate("Y-m-d H:i:s");
+
+		$lastID = $myTsModel->SaveorUpdateEmpTMSEStatusData($datas);
+		// var_dump($comment[0]['value']);
+		// var_dump($TMSCData[0]['id']);
+		die();
+		$myform = [];
+		$lastdateArray = 0;
+		// $workingdays = 25;
+		for($i=0; $i < count($project_task_id); $i++) {
+			$myform = [];
+			// array_push($myform,$project_task_id[$i]);
+			// array_push($myform,$location[$i]);
+			for ($j=$lastdateArray; $j < $workingdays*($i+1); $j++) { 
+				// array_push($myform,$date[$j]);
+				// array_push($myform,$duration[$j]);
+				$lastdateArray=$j+1;
+				// var_dump($lastdateArray);
+				$cdata = array( 'location'=>trim($location[$i]['value']),
+		               'date'=>trim($date[$j]['value']),
+		               'project_task_id'=>trim($project_task_id[$i]['value']),
+		               'duration'=>trim($duration[$j]['value']),
 		   			   'modifiedby'=>$loginUserId,
 		   			   'emp_id'=>$loginUserId,
 					   'modifieddate'=>gmdate("Y-m-d H:i:s"));
-		// echo $date;
-		$ymd = DateTime::createFromFormat('Y-m-d', $date)->format('Y-m-d');
-		$lastdata = $myTsModel->getsingleTimesheetData($loginUserId,$ymd);
-		if ($lastdata!=null) {
-			$where = "id"."=".$lastdata[0]['id'];
-		}else{
-			$cdata['createdby'] = $loginUserId;
-			$cdata['createddate'] = gmdate("Y-m-d H:i:s");
+				$ymd = DateTime::createFromFormat('Y-m-d', $date[$j]['value'])->format('Y-m-d');
+				$lastdata = $myTsModel->getsingleTimesheetData($loginUserId,$ymd,$project_task_id[$i]['value']);
+				if ($lastdata!=null) {
+					$where = "id"."=".$lastdata[0]['id'];
+				}else{
+					$cdata['createdby'] = $loginUserId;
+					$cdata['createddate'] = gmdate("Y-m-d H:i:s");
+				}
+				$lastID = $myTsModel->SaveorUpdateEmpTMEData($cdata,$where);
+				var_dump($lastID);
+			}
+			//get myform over here
+			// var_dump($myform);
 		}
-		$lastID = $myTsModel->SaveorUpdateEmpTMEData($cdata,$where);
-		var_dump($lastID);
 		die();
 
 		$usersModel = new Timemanagement_Model_Users();

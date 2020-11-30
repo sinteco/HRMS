@@ -84,8 +84,8 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 		$empHolidaysWeekendsData = $usersModel->getEmployeeHolidaysNWeekends($data->id, $year,$month);
 		$empHolidays = $usersModel->getEmployeeHolidaysNWeekends($data->id, $year0,$month0);
 		$leaves = $tmsheetconfigrationsmodel->getUserLeavesData($data->id);
-		// $TMstatus = $myTsModel->getTimeSheetstatus($data->id,$TMSCData[0]['id']);
-		// $this->view->TMstatus = $TMstatus;
+		$TMstatus = $myTsModel->getTimeSheetstatus($data->id,$TMSCData[0]['id']);
+		$this->view->TMstatus = $TMstatus;
 		$this->view->holidays = $empHolidaysWeekends;
 		$this->view->holidays0 = $empHolidays;
 		$this->view->leaves = $leaves;

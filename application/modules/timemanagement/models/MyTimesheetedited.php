@@ -88,9 +88,11 @@ class Timemanagement_Model_MyTimesheetedited extends Zend_Db_Table_Abstract
 		return $lastInsertId;
 	}
 	public function getTimeSheetstatus($emp_id,$main_tmsheetconfigration){
-		$db = Zend_Db_Table::getDefaultAdapter();
-		$col = $db=query("SELECT * FROM tm_ts_edited_status tses where tses.main_tmsheetconfigrations_id=".$main_tmsheetconfigration." and emp_id='".$emp_id."'");
-		return $col->fetchAll();
+		$select = $this->select()
+		->setIntegrityCheck(false)
+		->from(array('tses'=>'tm_ts_edited_status'))
+		->where("tses.main_tmsheetconfigrations_id='".$main_tmsheetconfigration."' and emp_id='".$emp_id."' and status!='Rejected'");
+		return $this->fetchAll($select)->toArray();
 	}
 	public function updateTimesheetRecord($data, $where) {
 		

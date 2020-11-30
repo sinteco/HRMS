@@ -407,13 +407,17 @@ IF(FIND_IN_SET('enabled',GROUP_CONCAT(sun_project_status,',',mon_project_status,
 		}
 	}
 	function updateEmployeeTimesheet($emp_id="",$year="",$month="",$lastday="",$calenderWeekArray="",$flag="",$rejectNote="",$emplistflag,$loginUserId){
+		$isactive=false;
 		$db = Zend_Db_Table::getDefaultAdapter();
 		$sql = "update tm_ts_edited_status tses join main_tmsheetconfigrations tsc on tsc.id=tses.main_tmsheetconfigrations_id
 			set tses.approved_by=".$loginUserId.",tses.status='".$flag."' ";
 			if($rejectNote!=""){
-				$sql .= ", rejectNote='".$rejectNote."'";
+				$sql .= ", tses.rejectNote='".$rejectNote."' ";
 			}
-		$sql .= " where tsc.month=".$month." and tsc.year=".$year." and tses.emp_id=".$emp_id;
+			// if($flag == 'Rejected'){
+			// 	$sql .= ", tses.isactive = '0'";	
+			// }
+		$sql .= " where tsc.month=".$month." and tsc.year=".$year." and tses.emp_id=".$emp_id." and  tses.status='For Approval'";
 		$db->query($sql);
 		// $result = $stmt->execute();
 		return true;

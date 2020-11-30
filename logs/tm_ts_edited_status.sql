@@ -4,6 +4,7 @@ CREATE TABLE `sentrifugo`.`tm_ts_edited_status`(
     `main_tmsheetconfigrations_id` INT NOT NULL,
     `comment` VARCHAR(255) NULL,
     `rejectNote` VARCHAR(255) NULL,
+    `asfile` VARCHAR(255) NULL,
     `status` ENUM(
         'For Approval',
         'Rejected',

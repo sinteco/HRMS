@@ -354,24 +354,36 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      $month = $dateComponents['mon'];                  
      $year = $dateComponents['year'];
 
-     // if($this->TMstatus[0]['status']=="For Approval"){
-     //    echo "Sent";
-     // }
-
-     echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->TimesheetData,$this->holidays,$this->holidays0,$this->leaves,$this->allproject,$this->baseUrl("index.php/timemanagement/index/week"));
+     if($this->TMstatus[0]['status']=="For Approval"){
+        echo "<br><div>Your timesheet is already sent !</div>";
+     }else if($this->TMstatus[0]['status']=="Approved"){
+          echo "<br><div>Your timesheet is already approved !</div>";
+     }else {
+          echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->TimesheetData,$this->holidays,$this->holidays0,$this->leaves,$this->allproject,$this->baseUrl("index.php/timemanagement/index/week"));
+     }
 ?>
-<table id="calendar"><div style="padding-bottom: 50px"></div><caption>
-    <label>Comment:</label>
-     <textarea name="comment" rows="4" cols="50">
-  </textarea>
-     <input id="submit" type="submit" name="submit_row" value="Submit For Approval" style="float: right; background-color: #4CAF50;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;">
-     <input type="button" onclick="add_row();" value="Add Project" style="float: left;">
-</caption></table></form>
+<?php 
+     if($this->TMstatus[0]['status']=="For Approval"){
+        
+     }else if($this->TMstatus[0]['status']=="Approved"){
+          
+     }else {
+          ?>
+          <table id="calendar"><div style="padding-bottom: 50px"></div><caption>
+         <label>Comment:</label>
+          <textarea name="comment" rows="4" cols="50">
+       </textarea>
+          <input id="submit" type="submit" name="submit_row" value="Submit For Approval" style="float: right; background-color: #4CAF50;
+         color: white;
+         padding: 12px 20px;
+         border: none;
+         border-radius: 4px;
+         cursor: pointer;">
+          <input type="button" onclick="add_row();" value="Add Project" style="float: left;">
+     </caption></table></form>
+          <?php
+     }
+ ?>
 <style type="text/css">
      input[type=button] {
          background-color: #4CAF50;

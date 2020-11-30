@@ -472,11 +472,12 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 
 		$lastID = $myTsModel->SaveorUpdateEmpTMSEStatusData($datas);
 		// var_dump($comment[0]['value']);
-		// var_dump($TMSCData[0]['id']);
-		die();
-		$myform = [];
+		// var_dump($workingdays);
+		// die();
+		// $myform = [];
 		$lastdateArray = 0;
 		// $workingdays = 25;
+		$where = "";
 		for($i=0; $i < count($project_task_id); $i++) {
 			$myform = [];
 			// array_push($myform,$project_task_id[$i]);
@@ -502,7 +503,7 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 					$cdata['createddate'] = gmdate("Y-m-d H:i:s");
 				}
 				$lastID = $myTsModel->SaveorUpdateEmpTMEData($cdata,$where);
-				var_dump($lastID);
+				// var_dump($lastID);
 			}
 			//get myform over here
 			// var_dump($myform);

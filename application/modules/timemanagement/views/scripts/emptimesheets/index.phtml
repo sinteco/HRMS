@@ -186,6 +186,18 @@ $(function() {
         		<?php } ?>
         	</select>
          </div>
+         <div style="float:right">
+         	<button class="addtmshs" type="button" style="    float: right;
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;">
+         		Add TimeSheet Status
+         	</button>
+         </div>
+         <br><br><br>
 	     <ul id="mainmenuTabs" class="tabs_ul_all">
             <li id="all" class="menu_filter_clicked">All</li>
             <li id="submitted">For Approval</li>            
@@ -325,6 +337,11 @@ function clearSearchData()
 	$('#idclear_view_task').hide();
 	search_employee('event','<?php echo $data->id;?>','empstring','menu_filter','','menu_monthweek','idhidweek_ac');
 }
+$(document).ready(function(){
+	$('.addtmshs').click(function() {
+	  alert( "Handler is in progress thank you !" );
+	});
+});
 </script>
 
 <style>

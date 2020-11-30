@@ -422,6 +422,23 @@ IF(FIND_IN_SET('enabled',GROUP_CONCAT(sun_project_status,',',mon_project_status,
 		// $result = $stmt->execute();
 		return true;
 	}
+	public function getsingleTMSC($month,$year,$emp_id)
+	{
+		$select = $this->select()
+						->setIntegrityCheck(false)
+						->from(array('tses' => 'tm_ts_edited_status'))
+						->join(array('tsc' => 'main_tmsheetconfigrations'),'tsc.id=tses.main_tmsheetconfigrations_id')
+						->where("tsc.month=".$month." and tsc.year=".$year." and tses.emp_id=".$emp_id." and  tses.status='For Approval'");
+		return $this->fetchAll($select)->toArray();
+	}
+	public function deleteEMPTimesheetEdited($emp_id,$from,$to)
+	{
+		$db = Zend_Db_Table::getDefaultAdapter();
+		// $db->query("DELETE from tm_emp_timesheets_edited AS e WHERE e.emp_id='".$emp_id."' AND (e.date BETWEEN '".$from."' AND '".$to."')");
+		// echo "DELETE from tm_emp_timesheets_edited AS e WHERE e.emp_id='".$emp_id."' AND (e.date BETWEEN '".$from."' AND '".$to."')";
+		// die();
+		$db->delete('tm_emp_timesheets_edited',"emp_id='".$emp_id."' AND (date BETWEEN '".$from."' AND '".$to."')");
+	}
 
 	function rejectEmployeeTimesheetStatus($emp_id="", $calweek="", $year="", $datesArr="",$rejectNote="",$month="",$emplistflag){
 		$resultData = array();

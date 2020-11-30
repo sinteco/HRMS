@@ -544,7 +544,9 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		if($type == 'week'){
 			$calenderWeek[0] = $calenderWeeksArray[$week-1];
 		}
+		$res = $empTSModel->getsingleTMSC($month,$year,$emp_id);
 		$result = $empTSModel-> updateEmployeeTimesheet($emp_id,$year,$month,$lastday,$calenderWeek,"Rejected",$rejnote,$emplistflag,$loginUserId);
+		$empTSModel->deleteEMPTimesheetEdited($emp_id,$res[0]['form'],date("Y-m-t", strtotime($res[0]['to'])));
 		$this->_helper->json(array('saved'=>$result));
 	}
 

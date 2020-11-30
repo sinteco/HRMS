@@ -79,8 +79,6 @@ class Timemanagement_Model_MyTimesheetedited extends Zend_Db_Table_Abstract
 			var_dump($e);
 			die();
 		}
-		
-	
 	}
 	public function SaveorUpdateEmpTMSEStatusData($data){
 		$db = Zend_Db_Table::getDefaultAdapter();

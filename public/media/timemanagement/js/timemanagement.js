@@ -2524,6 +2524,7 @@ function rejectEmpTimesheet(selmn,emp_id,type,hideweek,manager_id,flag,emp_list_
                 	        dataType:'json',
                 	        type: 'POST',
                 	        success:function(data){
+                            console.log(data);
                 	        	$('#idtxtrejectnote').val("");
                 	        	$("#grid_msg").html("<span class='style-1-icon success'></span>Rejected Successfully.");
                 	        	$("#grid_msg").show();

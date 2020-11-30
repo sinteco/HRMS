@@ -354,11 +354,11 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      $month = $dateComponents['mon'];                  
      $year = $dateComponents['year'];
 
-     if($this->TMstatus[0]['status']=="For Approval"){
-        echo "Sent";
-     }
+     // if($this->TMstatus[0]['status']=="For Approval"){
+     //    echo "Sent";
+     // }
 
-     // echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->TimesheetData,$this->holidays,$this->holidays0,$this->leaves,$this->allproject,$this->baseUrl("index.php/timemanagement/index/week"));
+     echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->TimesheetData,$this->holidays,$this->holidays0,$this->leaves,$this->allproject,$this->baseUrl("index.php/timemanagement/index/week"));
 ?>
 <table id="calendar"><div style="padding-bottom: 50px"></div><caption>
     <label>Comment:</label>

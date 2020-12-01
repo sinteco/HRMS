@@ -2749,6 +2749,35 @@ function hidetodatecalender()
 							}
 					}
 				});
+	}
+	else if(dayselected == 3)
+	{
+			$.ajax({
+					url: base_url+"/leaverequest/gethalfdaydetails/format/json",   
+					type : 'POST',	
+					dataType: 'json',
+					success : function(response){
+							if(response['result'] == 1)
+							{
+							    $("#todatediv").hide();
+								$('#to_date').val('');
+								$('#from_date').val(fromdate);
+								$("#appliedleavesdaycount").val('0.0');
+							}
+							else if(response['result'] == 2)
+							{
+							   $('#s2id_leaveday .select2-choice span').html('Full Day');
+							   $('#leaveday').val(1);
+							   jAlert("Half day leave cannot be applied.");
+							}
+							else if($.trim(response['result']) == 'error')
+							{
+							   $('#s2id_leaveday .select2-choice span').html('Full Day');
+							   $('#leaveday').val(1);
+							   jAlert("Half day leave cannot be applied.");
+							}
+					}
+				});
 	}			
 
 }
@@ -2816,7 +2845,9 @@ function validateselecteddate(ele)
   var leavetypeselectedstr = leavetypeselectedval.split('!@#'); 
   var leavetypeid = leavetypeselectedstr[0];
   var leavetypelimit = leavetypeselectedstr[1];
-  var leavetypetext = leavetypeselectedstr[2];
+  var leavepreallocated = leavetypeselectedstr[2];
+  var leavebalance = leavetypeselectedstr[3];
+  var leavetypetext = leavetypeselectedstr[4];
   var dayselected =  $('#leaveday :selected').val();
   var fromdateval = $('#from_date').val();
   var todateval = $('#to_date').val();
@@ -2855,6 +2886,12 @@ function validateselecteddate(ele)
 	 
 	  var date = new Date();
 	  var y = date.getFullYear();
+	  var escapeholiday = false;
+	  if(leavetypeid=="11"||leavetypeid=="10"){
+		escapeholiday = true;
+	  }else{
+		  escapeholiday = false;
+	  }
 	
     if(fromdateval != '' && todateval != '' && leavetypeselectedval !='' && todate <= y )	
 	  {
@@ -2862,7 +2899,7 @@ function validateselecteddate(ele)
 		$.ajax({
 					url: base_url+"/index/calculatebusinessdays/format/json",   
 					type : 'POST',	
-					data : 'fromDate='+fromdateval+'&toDate='+todateval+'&dayselected='+dayselected+'&leavetypelimit='+leavetypelimit+'&leavetypetext='+leavetypetext+'&ishalfday='+ishalfday+'&context='+context+'&selectorid='+selectorid+'&leavetypeid='+leavetypeid,
+					data : 'escapeholiday='+escapeholiday+'&fromDate='+fromdateval+'&toDate='+todateval+'&dayselected='+dayselected+'&leavebalance='+leavebalance+'&leavepreallocated='+leavepreallocated+'&leavetypelimit='+leavetypelimit+'&leavetypetext='+leavetypetext+'&ishalfday='+ishalfday+'&context='+context+'&selectorid='+selectorid+'&leavetypeid='+leavetypeid,
 					dataType: 'json',
 					beforeSend: function ()
 					{
@@ -2881,7 +2918,15 @@ function validateselecteddate(ele)
 							  			
 							  		}
 							  		if(response['days'] > response['availableleaves'])
-									 jAlert("Applied leaves exceed the available annual leaves count. Additional leaves will be considered as Loss of Pay.");
+									{
+										 jAlert("Applied leaves exceed the available annual leaves count.");
+										 $("#to_date").val(null);
+										 $("#appliedleavesdaycount").val(null);
+									}
+									if(true)
+									{
+										//
+									}
 								}
 							}
 							if(response['result'] == 'error' && response['result'] !='' && response['message'] !='')

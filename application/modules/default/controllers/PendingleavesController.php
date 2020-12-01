@@ -171,10 +171,15 @@ class Default_PendingleavesController extends Zend_Controller_Action
 								  $leaverequestform->leaveday->addMultiOption($data['leaveday'],'Full Day');
 									$data['leaveday']=	'Full Day';   
 								}
-								else 
+								else if($data['leaveday'] == 2)
 								{
 								  $leaverequestform->leaveday->addMultiOption($data['leaveday'],'Half Day');
 								  $data['leaveday']='Half Day'; 
+								}
+								else if($data['leaveday'] == 3)
+								{
+								  $leaverequestform->leaveday->addMultiOption($data['leaveday'],'1 Hour');
+								  $data['leaveday']='1 Hour'; 
 								}					
 							   
 								$repmngrnameArr = $usersmodel->getUserDetailsByID($data['rep_mang_id'],'all');	

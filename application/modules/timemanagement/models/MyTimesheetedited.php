@@ -9,12 +9,12 @@
 
 require_once 'Zend/Db/Table/Abstract.php';
 
-class Timemanagement_Model_MyTimesheet extends Zend_Db_Table_Abstract
+class Timemanagement_Model_MyTimesheetedited extends Zend_Db_Table_Abstract
 {
 	/**
 	 * The default table name
 	 */
-	protected $_name = 'tm_emp_timesheets';
+	protected $_name = 'tm_emp_timesheets_edited';
 	
 	public function SaveOrUpdateTimesheet($arrayData)
 	{
@@ -43,6 +43,25 @@ class Timemanagement_Model_MyTimesheet extends Zend_Db_Table_Abstract
 //			return $id;
 //		}
 	}
+	public function getsingleTimesheetData($empId,$date,$project_task_id)
+	{
+		$select = $this->select()
+		->setIntegrityCheck(false)
+		->from(array('p'=>$this->_name))
+		->where("p.emp_id=".$empId." and DATE(p.date) = '".$date."' and project_task_id = '".$project_task_id."'");
+		return $this->fetchAll($select)->toArray();
+	}
+	public function getAllTimesheetData($empId,$from,$to)
+	{
+		$select = $this->select()
+		->setIntegrityCheck(false)
+		->from(array('eth'=>$this->_name))
+		->join(array('pt' => 'tm_project_tasks'),'eth.project_task_id = pt.id',array('eth.location','eth.date', 'eth.duration'))
+		->join(array('t' => 'tm_tasks'),'pt.task_id = t.id',array('task'))
+		->join(array('p' => 'tm_projects'),'pt.project_id = p.id',array('project_name'))
+		->where("eth.emp_id=".$empId." and DATE(eth.date) BETWEEN '".$from."' AND '".$to."'");
+		return $this->fetchAll($select)->toArray();
+	}
 	public function SaveorUpdateEmpTMEData($data, $where)
 	{
 		try{
@@ -60,8 +79,18 @@ class Timemanagement_Model_MyTimesheet extends Zend_Db_Table_Abstract
 			var_dump($e);
 			die();
 		}
-		
-	
+	}
+	public function SaveorUpdateEmpTMSEStatusData($data){
+		$db = Zend_Db_Table::getDefaultAdapter();
+		$lastInsertId = $db->insert('tm_ts_edited_status', $data);
+		return $lastInsertId;
+	}
+	public function getTimeSheetstatus($emp_id,$main_tmsheetconfigration){
+		$select = $this->select()
+		->setIntegrityCheck(false)
+		->from(array('tses'=>'tm_ts_edited_status'))
+		->where("tses.main_tmsheetconfigrations_id='".$main_tmsheetconfigration."' and emp_id='".$emp_id."' and status!='Rejected'");
+		return $this->fetchAll($select)->toArray();
 	}
 	public function updateTimesheetRecord($data, $where) {
 		

@@ -59,6 +59,7 @@ class Default_Form_leaverequest extends Zend_Form
         $leaveday->setMultiOptions(array(							
 							'1'=>'Full Day' ,
 							'2'=>'Half Day',
+							'3'=>'1 Hour'
 							));
         $leaveday->setRequired(true);
 		$leaveday->addValidator('NotEmpty', false, array('messages' => 'Please select date.'));	

@@ -230,7 +230,7 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		if($emp_list_flag == "project"){
 			$empList = $empTimesheets_model->getEmployeesAsscociatedWithProject($manager_id,$year,$month,$search,$clicked_status,$emp_list_flag,$hidweek,$page);
 		}else{
-			$empList = $empTimesheets_model->getEmployeesForMonthly($manager_id,$year,$month,$search,$clicked_status,$emp_list_flag,$hidweek,$page);
+			$empList = $empTimesheets_model->getEmployeesForMonthly($manager_id,$year,$month,$search,$clicked_status,$emp_list_flag,$hidweek,$page,$type);
 		}
 
 		$this->view->emplist= $empList;
@@ -478,6 +478,10 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 	 * Action to Approve employee timesheet for month or week based on calender week.
 	 */
 	public function approvetimesheetAction (){
+		$auth = Zend_Auth::getInstance();
+		if($auth->hasIdentity()){
+			$loginUserId = $auth->getStorage()->read()->id;
+		}
 		$selYrMon = $this->_getParam('selmn');
 		$emp_id = $this->_getParam('emp_id');
 		$type = $this->_getParam('type');
@@ -502,7 +506,7 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		if($type == 'week'){
 			$calenderWeek[0] = $calenderWeeksArray[$week-1];
 		}
-		$result = $empTSModel-> updateEmployeeTimesheet($emp_id,$year,$month,$lastday,$calenderWeek,"approve","",$emplistflag);
+		$result = $empTSModel-> updateEmployeeTimesheet($emp_id,$year,$month,$lastday,$calenderWeek,"Approved","",$emplistflag,$loginUserId);
 		$this->_helper->json(array('saved'=>$result));
 	}
 
@@ -510,6 +514,10 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 	 * Action to reject employee timesheet for month or week based on calender week.
 	 */
 	public function rejecttimesheetAction (){
+		$auth = Zend_Auth::getInstance();
+		if($auth->hasIdentity()){
+			$loginUserId = $auth->getStorage()->read()->id;
+		}
 		$selYrMon = $this->_getParam('selmn');
 		$emp_id = $this->_getParam('emp_id');
 		$type = $this->_getParam('type');
@@ -536,7 +544,9 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		if($type == 'week'){
 			$calenderWeek[0] = $calenderWeeksArray[$week-1];
 		}
-		$result = $empTSModel-> updateEmployeeTimesheet($emp_id,$year,$month,$lastday,$calenderWeek,"reject",$rejnote,$emplistflag);
+		$res = $empTSModel->getsingleTMSC($month,$year,$emp_id);
+		$result = $empTSModel-> updateEmployeeTimesheet($emp_id,$year,$month,$lastday,$calenderWeek,"Rejected",$rejnote,$emplistflag,$loginUserId);
+		$empTSModel->deleteEMPTimesheetEdited($emp_id,$res[0]['form'],date("Y-m-t", strtotime($res[0]['to'])));
 		$this->_helper->json(array('saved'=>$result));
 	}
 

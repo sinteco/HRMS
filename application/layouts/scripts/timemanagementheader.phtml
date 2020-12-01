@@ -954,10 +954,11 @@ if($loginuserRole == SUPERADMINROLE)
 
 <ul class="reports-ctrl" id="scroller">
 	<li class="reports-div active" id="indexli"><a href="<?php echo $this->baseUrl("/index.php/timemanagement");?>"><span class="menu_icon"><i class="fa fa-calendar fa-2"></i></span><p class="one-line">Timesheet</p></a></li>
+	<li class="reports-div active" id="timesheetreportli"><a href="<?php echo $this->baseUrl("/index.php/timemanagement/timesheetreport/");?>"><span class="menu_icon"><i class="fa fa-calendar fa-2"></i></span><p class="one-line">Timesheet Report</p></a></li>
 	
 	<?php if(Zend_Registry::get( 'tm_role' )!='Admin'){?>
 	<!--<li class="reports-div active" id="weekli"><a href="<?php //echo $this->baseUrl("/index.php/timemanagement/index/week?flag=time");?>"><span class="menu_icon"><i class="fa fa-clock-o fa-2"></i></span><p class="one-line">Enter Time</p></a></li> -->
-	<li class="time_entry reports-div active" id="weekli"><a href="<?php echo $this->baseUrl("/index.php/timeentry");?>"><span class="menu_icon"><i class="fa fa-clock-o fa-2"></i></span><p class="one-line">Enter Time</p></a></li>
+	<!-- <li class="time_entry reports-div active" id="weekli"><a href="<?php echo $this->baseUrl("/index.php/timeentry");?>"><span class="menu_icon"><i class="fa fa-clock-o fa-2"></i></span><p class="one-line">Enter Time</p></a></li> -->
 	<?php }?>
 	
 	<?php if(Zend_Registry::get( 'tm_role' )!='Employee'){?>
@@ -977,6 +978,10 @@ if($loginuserRole == SUPERADMINROLE)
 	
 	<?php if(Zend_Registry::get( 'tm_role' )=='Admin'){?>
 	<li class="reports-div" id="configurationli"><a href="<?php echo $this->baseUrl("/index.php/timemanagement/configuration/");?>"><span class="menu_icon"><i class="fa fa-cogs fa-2"></i></span><p class="one-line">Configuration</p></a></li>
+	<?php }?>
+
+	<?php if(Zend_Registry::get( 'tm_role' )=='Admin'){?>
+	<li class="reports-div" id="tmsheetconfigrationli"><a href="<?php echo $this->baseUrl("/index.php/timemanagement/tmsheetconfigration/");?>"><span class="menu_icon"><i class="fa fa-cogs fa-2"></i></span><p class="one-line">Time Sheet Report Configuration</p></a></li>
 	<?php }?>
 	
 	<!-- li class="reports-div" id="videoli"><a href="javascript:void(0);"  onclick="showVideoTutorial();"><span class="menu_icon"><i class="fa fa-video-camera fa-2"></i></span><p class="one-line">Video Tutorial</p></a></li -->

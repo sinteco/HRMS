@@ -82,8 +82,18 @@ class Default_Model_Employeeleavetypes extends Zend_Db_Table_Abstract
 	{
 	 	$select = $this->select()
     					   ->setIntegrityCheck(false)	
-                           ->from(array('e'=>'main_employeeleavetypes'),array('e.id','e.leavetype','e.numberofdays','e.leavepredeductable'))
+                           ->from(array('e'=>'main_employeeleavetypes'),array('e.id','e.leavetype','e.numberofdays','e.leavepredeductable','e.leavepreallocated'))
 						   ->where('e.isactive = 1');  		   					   				
+		return $this->fetchAll($select)->toArray();   
+	
+	}
+	public function getleavebalance($leaveid,$userid)
+	{
+	 	$select = $this->select()
+    					   ->setIntegrityCheck(false)	
+                           ->from(array('lr'=>'main_leaverequest'),array('COALESCE(SUM(IF(lr.leavestatus="Approved" and lr.from_date BETWEEN CAST(CONCAT(YEAR(now()),"-01-01") AS DATE) AND CAST(CONCAT(YEAR(now()),"-12-31") AS DATE) and lr.to_date BETWEEN CAST(CONCAT(YEAR(now()),"-01-01") AS DATE) AND CAST(CONCAT(YEAR(now()),"-12-31") AS DATE),lr.appliedleavescount,0)),0) as leavebalance'))
+						   ->where('lr.isactive = 1 and lr.leavetypeid='.$leaveid.' and lr.user_id ='.$userid);
+						//    die($select);  		   					   				
 		return $this->fetchAll($select)->toArray();   
 	
 	}

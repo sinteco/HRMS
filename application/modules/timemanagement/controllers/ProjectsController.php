@@ -98,6 +98,7 @@ class Timemanagement_ProjectsController extends Zend_Controller_Action
 		$this->view->dataArray = $data;
 		$this->view->call = $call ;
 		$this->view->messages = $this->_helper->flashMessenger->getMessages();
+		// var_dump($data);die();
 	}
 
 	public function viewAction()

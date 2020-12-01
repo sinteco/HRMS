@@ -153,7 +153,7 @@ $(function() {
 	
 		    <ul id="monthweek" class="month_view_link">
 			 <!--<li class="active" id="month" title="Month">M</li>-->
-	         <li id="week" class="link_txt"  title="Week">Weekly View</li>
+	         <!-- <li id="week" class="link_txt"  title="Week">Weekly View</li> -->
 	         <li id="month" class="link_txt dis_none"  title="Month">Monthly View</li>
 		</ul>
 		
@@ -186,12 +186,24 @@ $(function() {
         		<?php } ?>
         	</select>
          </div>
+         <div style="float:right">
+         	<button class="addtmshs" type="button" style="    float: right;
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;">
+         		Add TimeSheet Status
+         	</button>
+         </div>
+         <br><br><br>
 	     <ul id="mainmenuTabs" class="tabs_ul_all">
             <li id="all" class="menu_filter_clicked">All</li>
             <li id="submitted">For Approval</li>            
             <li id="rejected">Rejected</li>
-            <li id="blocked">Blocked</li>
-            <li id="enabled">Enabled</li>
+            <!-- <li id="blocked">Blocked</li> -->
+            <!-- <li id="enabled">Enabled</li> -->
             <li id="approved">Approved</li>
         </ul>
 	</div>
@@ -325,6 +337,11 @@ function clearSearchData()
 	$('#idclear_view_task').hide();
 	search_employee('event','<?php echo $data->id;?>','empstring','menu_filter','','menu_monthweek','idhidweek_ac');
 }
+$(document).ready(function(){
+	$('.addtmshs').click(function() {
+	  alert( "Handler is in progress thank you !" );
+	});
+});
 </script>
 
 <style>

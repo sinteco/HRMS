@@ -102,13 +102,16 @@ protected function _getAcl()
 									$acl->allow($tmroleText[$role], 'timemanagement:index', array('index','week','edit','view','getstates','converdate'));
 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:reports'));
-									$acl->allow($tmroleText[$role], 'timemanagement:reports', array('index','employeereports','projectsreports','getempduration','getprojecttaskduration','tmreport'));
+									$acl->allow($tmroleText[$role], 'timemanagement:reports', array('index','employeereports','addemployeeleavereports','projectsreports','getempduration','getprojecttaskduration','tmreport'));
 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:clients'));
 									$acl->allow($tmroleText[$role], 'timemanagement:clients', array('index','edit','view','delete','addpopup'));
 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:configuration'));
 									$acl->allow($tmroleText[$role], 'timemanagement:configuration', array('index','add'));
+
+		$acl->addResource(new Zend_Acl_Resource('timemanagement:tmsheetconfigration'));
+									$acl->allow($tmroleText[$role], 'timemanagement:tmsheetconfigration', array('index','edit','view','delete'));
 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:currency'));
 									$acl->allow($tmroleText[$role], 'timemanagement:currency', array('index'));
@@ -156,19 +159,24 @@ protected function _getAcl()
 									$acl->allow($tmroleText[$role], 'timemanagement:projecttasks', array('index','viewtasksresources','deletetask','assignresourcestotask','saveresources','edittaskname'));
 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:reports'));
-									$acl->allow($tmroleText[$role], 'timemanagement:reports', array('index','employeereports','projectsreports','getempduration','getprojecttaskduration','tmreport'));
+									$acl->allow($tmroleText[$role], 'timemanagement:reports', array('index','employeereports','addemployeeleavereports','projectsreports','getempduration','getprojecttaskduration','tmreport'));
 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:emptimesheets'));
 									$acl->allow($tmroleText[$role], 'timemanagement:emptimesheets', array('index','displayweeks','getmonthlyspan','accordion','employeetimesheet','empdisplayweeks','emptimesheetmonthly','emptimesheetweekly','enabletimesheet','approvetimesheet','rejecttimesheet','approvedaytimesheet','rejectdaytimesheet','getweekstartenddates'));
 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:expenses'));
 									$acl->allow($tmroleText[$role], 'timemanagement:expenses', array('index','edit','view','delete','download','uploadpreview','getprojectbyclientid','getfilename','submitexpense','expensereports','viewexpenses','viewexpensereports','updateexpensestatus','updateexpensestatus','updateexpensestatus','updateexpensestatus','updateexpensestatus','updateexpensestatus','updateexpensestatus','updateexpensestatus','updateexpensestatus'));
+		$acl->addResource(new Zend_Acl_Resource('timemanagement:timesheetreport'));
+									$acl->allow($tmroleText[$role], 'timemanagement:timesheetreport', array('index','week','save','submit','eraseweek','getstates','getapprovedtimesheet','closeapprovealert','converdate'));
  } elseif(!empty($tm_role) && $tm_role == 'Employee') { 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:index'));
 									$acl->allow($tmroleText[$role], 'timemanagement:index', array('index','week','save','submit','eraseweek','getstates','getapprovedtimesheet','closeapprovealert','converdate'));
 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:employeeprojects'));
 									$acl->allow($tmroleText[$role], 'timemanagement:employeeprojects', array('index','view','emptasksgrid'));
+
+		$acl->addResource(new Zend_Acl_Resource('timemanagement:timesheetreport'));
+									$acl->allow($tmroleText[$role], 'timemanagement:timesheetreport', array('index','week','save','submit','eraseweek','getstates','getapprovedtimesheet','closeapprovealert','converdate'));
 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:notifications'));
 									$acl->allow($tmroleText[$role], 'timemanagement:notifications', array('getnotifications','index'));
@@ -177,7 +185,7 @@ protected function _getAcl()
 									$acl->allow($tmroleText[$role], 'timemanagement:expenses', array('index','edit','view','delete','download','uploadpreview','getprojectbyclientid','getfilename','submitexpense','expensereports','viewexpenses','viewexpensereports','updateexpensestatus','updateexpensestatus','updateexpensestatus','updateexpensestatus','updateexpensestatus','updateexpensestatus','updateexpensestatus','updateexpensestatus','updateexpensestatus'));
 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:reports'));
-									$acl->allow($tmroleText[$role], 'timemanagement:reports', array('index','employeereports','projectsreports','getempduration','getprojecttaskduration','tmreport'));
+									$acl->allow($tmroleText[$role], 'timemanagement:reports', array('index','employeereports','addemployeeleavereports','projectsreports','getempduration','getprojecttaskduration','tmreport'));
  } 
 		
 	   $acl->addResource(new Zend_Acl_Resource('login:index'));	

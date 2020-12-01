@@ -147,7 +147,7 @@ IF(FIND_IN_SET('enabled',GROUP_CONCAT(sun_project_status,',',mon_project_status,
 		
 	}
 	
-	public function getEmployeesForMonthly($manager_id = "",$year,$month,$search="",$clicked_status,$emp_list_flag="",$week="",$current_page)
+	public function getEmployeesForMonthlyold($manager_id = "",$year,$month,$search="",$clicked_status,$emp_list_flag="",$week="",$current_page)
 	{
 		$search=urldecode($search);
 		$stat_arr=array('enabled'=>'Enabled','blocked'=>'Blocked','rejected'=>'Rejected','submitted'=>'For Approval','approved'=>'Approved','saved'=>'Saved');
@@ -224,6 +224,49 @@ IF(FIND_IN_SET('enabled',GROUP_CONCAT(sun_project_status,',',mon_project_status,
 
 		return $fin_arr;
 
+	}
+
+	public function getEmployeesForMonthly($manager_id = "",$year,$month,$search="",$clicked_status,$emp_list_flag="",$week="",$current_page,$type){
+		$search=urldecode($search);
+		$fin_arr=array();
+		$i=0;
+		$where = " WHERE tmc.month = ".$month." and tmc.year = ".$year." and (tmes.isactive = 1) ";
+		$per_page = 8;
+		$current_index = ($current_page - 1) * $per_page;
+		$db = Zend_Db_Table::getDefaultAdapter();
+		$selectEmpTimesheetsQuery = "SELECT mes.user_id as empid,mes.userfullname as empname,'00:00' as duration,tmes.status as time_status,'' as ts_week,'' as ts_year,'' as ts_month
+			FROM tm_ts_edited_status tmes
+			join main_tmsheetconfigrations tmc on tmc.id=tmes.main_tmsheetconfigrations_id
+			join main_employees_summary mes on mes.user_id=tmes.emp_id ";
+		$selectEmpTimesheetsQuery .= $where;
+		if($type=="submitted"){
+			$selectEmpTimesheetsQuery .= " and tmes.status = 'For Approval'";
+		}elseif ($type=="approved") {
+			$selectEmpTimesheetsQuery .= " and tmes.status = 'Approved'";
+		}elseif ($type=="rejected") {
+			$selectEmpTimesheetsQuery .= " and tmes.status = 'Rejected";
+		}
+		if(trim($search) != "")
+		{
+			$selectEmpTimesheetsQuery .= "and mes.userfullname like '%".$search."%'";
+		}
+		$selectEmpTimesheetsQuery .= " LIMIT ".$current_index.",".$per_page;
+		$res = $db->query($selectEmpTimesheetsQuery);
+		while ($row=$res->fetch())
+		{
+
+			$fin_arr[$i]['emp_id']=$row['empid'];
+			$fin_arr[$i]['emp_name']=$row['empname'];
+			$fin_arr[$i]['duration']=$row['duration'];
+			$fin_arr[$i]['time_status']=$row['time_status'];
+			$fin_arr[$i]['ts_week']=$row['ts_week'];
+			$fin_arr[$i]['ts_year']=$row['ts_year'];
+			$fin_arr[$i]['ts_month']=$row['ts_month'];
+			$fin_arr[$i]['proj_ids']="";
+			$i++;
+		}
+
+		return $fin_arr;
 	}
 
 	function getEmployeeTimsheetDetails($year,$month,$week="",$user_id,$project_ids="",$emplistflag=""){
@@ -333,7 +376,7 @@ IF(FIND_IN_SET('enabled',GROUP_CONCAT(sun_project_status,',',mon_project_status,
 		
 	}
 	
-	function updateEmployeeTimesheet($emp_id="",$year="",$month="",$lastday="",$calenderWeekArray="",$flag="",$rejectNote="",$emplistflag){
+	function updateEmployeeTimesheet_old($emp_id="",$year="",$month="",$lastday="",$calenderWeekArray="",$flag="",$rejectNote="",$emplistflag){
 
 		$db = Zend_Db_Table::getDefaultAdapter();
 		$month_start_date = $year."-".$month."-"."01";
@@ -362,6 +405,39 @@ IF(FIND_IN_SET('enabled',GROUP_CONCAT(sun_project_status,',',mon_project_status,
 			echo $e->getMessage();
 			return FALSE;
 		}
+	}
+	function updateEmployeeTimesheet($emp_id="",$year="",$month="",$lastday="",$calenderWeekArray="",$flag="",$rejectNote="",$emplistflag,$loginUserId){
+		$isactive=false;
+		$db = Zend_Db_Table::getDefaultAdapter();
+		$sql = "update tm_ts_edited_status tses join main_tmsheetconfigrations tsc on tsc.id=tses.main_tmsheetconfigrations_id
+			set tses.approved_by=".$loginUserId.",tses.status='".$flag."' ";
+			if($rejectNote!=""){
+				$sql .= ", tses.rejectNote='".$rejectNote."' ";
+			}
+			// if($flag == 'Rejected'){
+			// 	$sql .= ", tses.isactive = '0'";	
+			// }
+		$sql .= " where tsc.month=".$month." and tsc.year=".$year." and tses.emp_id=".$emp_id." and  tses.status='For Approval'";
+		$db->query($sql);
+		// $result = $stmt->execute();
+		return true;
+	}
+	public function getsingleTMSC($month,$year,$emp_id)
+	{
+		$select = $this->select()
+						->setIntegrityCheck(false)
+						->from(array('tses' => 'tm_ts_edited_status'))
+						->join(array('tsc' => 'main_tmsheetconfigrations'),'tsc.id=tses.main_tmsheetconfigrations_id')
+						->where("tsc.month=".$month." and tsc.year=".$year." and tses.emp_id=".$emp_id." and  tses.status='For Approval'");
+		return $this->fetchAll($select)->toArray();
+	}
+	public function deleteEMPTimesheetEdited($emp_id,$from,$to)
+	{
+		$db = Zend_Db_Table::getDefaultAdapter();
+		// $db->query("DELETE from tm_emp_timesheets_edited AS e WHERE e.emp_id='".$emp_id."' AND (e.date BETWEEN '".$from."' AND '".$to."')");
+		// echo "DELETE from tm_emp_timesheets_edited AS e WHERE e.emp_id='".$emp_id."' AND (e.date BETWEEN '".$from."' AND '".$to."')";
+		// die();
+		$db->delete('tm_emp_timesheets_edited',"emp_id='".$emp_id."' AND (date BETWEEN '".$from."' AND '".$to."')");
 	}
 
 	function rejectEmployeeTimesheetStatus($emp_id="", $calweek="", $year="", $datesArr="",$rejectNote="",$month="",$emplistflag){

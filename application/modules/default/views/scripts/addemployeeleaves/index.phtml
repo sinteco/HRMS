@@ -75,18 +75,160 @@ if($this->call != 'ajaxcall')
 <?php
     }
 }
- 
+?>
+<input type="hidden" id="reportsView" name="reportsView" value="leave" />
+<input type="hidden" id="start_hidden" name="start_hidden"  maxlength="30" size="20" value="<?php echo $this->start_date;?>">  
+<input type="hidden" id="end_hidden" name="end_hidden"  maxlength="30" size="20" value="<?php echo $this->end_date;?>"> 
+<input type="hidden" id="period_flag" name="period_flag" value="projreports"/>
+<input type="hidden" id="is_pdf" name="is_pdf" value="0"/>
+<input type="hidden" id="is_excel" name="is_excel" value="0"/>
+<input type="hidden" id="sort_order" name="sort_order" value="" />
+<input type="hidden" id="sort_by" name="sort_by" value="" />
+<input type="hidden" id="page_no" name="page_no" value="" />
+<input type="hidden" id="per_page" name="per_page" value="" />
+<input type="hidden" id="search_data_pdf" name="search_data_pdf" value="" />
+<input type="hidden" id="selected_period_hidden" value="<?php echo $this->selected_period_hidden;?>"/>
+<?php
+ echo "<div><p>From: <input type=\"text\" id=\"fromdatepicker\"> To: <input type=\"text\" id=\"todatepicker\"></p></div><div class=\"export-links\">
+			<div class=\"fltright export_links\">
+				<div class=\"sprite export-xls\" name=\"excel\" id=\"excel\">Export to Excel</div>
+				<div class=\"sprite export-pdf\" name=\"pdf\" id=\"pdf\">Export to PDF</div>
+			</div>
+		</div>";
 
 if($this->call == 'ajaxcall'){
 	$div = ''; $endDiv = ''; 
 } else { 
 	$div = '<div id="grid_'.$this->dataArray[0]['objectname'].'" class="all-grid-control">'; $endDiv = '</div>';
 }
-	echo $div.'<div id="msg" style="display:none;font-style: oblique; font-weight: bold; color: green;""></div>'.$this->employeegrid($this->dataArray[0]).$endDiv;
+	echo $div.'<div id="msg" style="display:none;font-style: oblique; font-weight: bold; color: green;""></div><div id="meme">'.$this->employeegrid($this->dataArray[0]).'</div>'.$endDiv;
 ?>
 <?php	}	?>
 <script type='text/javascript'>
 $(document).ready(function(){
+	$( "#fromdatepicker" ).datepicker().datepicker("setDate", new Date());
+	$( "#todatepicker" ).datepicker().datepicker("setDate", new Date());
+	$("a:contains(leave entitlement per year)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(Service Year)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(Accrued Leave as of today)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(BBF (Balance Brought Forward))").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(Balance as of today)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(Used Leaves)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(Leave Balance)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+	$("a:contains(Date of joining)").hover(function() {
+        $(this).css('cursor','pointer').attr('title', 'Discription Text');
+    }, function() {
+        $(this).css('cursor','auto');
+    });
+
+    function getEmployeeReports(){
+	var projid = $('#idselproj').val();
+	var start_date = $('#start_date').val();
+	var end_date = $('#end_date').val();
+	var selected_period_hidden = $("#selected_period_hidden").attr('value');
+	var is_pdf = $('#is_pdf').val();
+	var is_excel = $('#is_excel').val();
+
+	if(is_pdf == 1 || is_excel == 1)
+	{
+		var sort_order = $('#sort_order').val(); 
+		var sort_by = $('#sort_by').val(); 
+		var page_no = $('#page_no').val(); 
+		var per_page = $('#per_page').val();
+		var search_data_pdf = $('#search_data_pdf').val();
+		var datefrom = $('#fromdatepicker').val();
+		var dateto = $('#todatepicker').val();
+		datefrom = "-"+new Date(datefrom).getDay()+"-"+new Date(datefrom).getDate();
+		dateto = "-"+new Date(dateto).getDay()+"-"+new Date(dateto).getDate();
+		// alert(datefrom);
+		// alert(start_date);
+		$('#is_pdf').val('0');
+		$('#is_excel').val('0');
+		$('#sort_order').val('');
+		$('#sort_by').val('');
+		$('#page_no').val('');
+		$('#per_page').val('');
+		window.location.href = base_url+"/timemanagement/reports/addemployeeleavereports/"+'projectId/'+projid+'/start_date/'+start_date+'/end_date/'+end_date+'/selected_period_hidden/'+selected_period_hidden+'/is_pdf/'+is_pdf+'/is_excel/'+is_excel+'/sort_order/'+sort_order+'/sort_by/'+sort_by+'/page_no/'+page_no+'/per_page/'+per_page+'/search_data_pdf/'+search_data_pdf+'/datefrom/'+datefrom+'/dateto/'+dateto;
+	}
+	else
+	{
+		$.ajax({
+	    	url: base_url+"/timemanagement/reports/employeereports/format/html",   
+	        type : 'POST',	
+	        dataType:'html',
+	        data :'projectId='+projid+'&start_date='+start_date+'&end_date='+end_date+'&selected_period_hidden='+selected_period_hidden+'&is_pdf='+is_pdf,
+	        success : function(response){
+	        	$("#idacc_content").html(response);
+	        	$(".export_links").show(); 
+	        }
+	    });		
+	}
+	
+}
+
+    $("#pdf").click(function(){
+		var report = $("#reportsView").val();
+		$("#is_pdf").val('1');		
+		var period = $("#selected_period_hidden").val();
+		if(period.trim().length > 0 && (report == 'leave' || report == 'projects'))
+		{
+			getOnchangeDates();
+		}
+		else if(report == 'leave')
+		{
+			getEmployeeReports();
+		}
+		else
+		{
+			getProjectReports();
+		}
+	});
+
+	$("#excel").click(function(){
+		var report = $("#reportsView").val();
+		$("#is_excel").val('1');		
+		var period = $("#selected_period_hidden").val();
+		if(period.trim().length > 0 && (report == 'leave' || report == 'projects'))
+		{
+			getOnchangeDates();
+		}
+		else if(report == 'leave')
+		{
+			getEmployeeReports();
+		}
+		else
+		{
+			getProjectReports();
+		}
+	});
 <?php if (count($this->messages)) {?>
       setTimeout(function(){
 			$('#dispmsgemp').fadeOut('slow');

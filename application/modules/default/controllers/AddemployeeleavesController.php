@@ -154,9 +154,9 @@ class Default_AddemployeeleavesController extends Zend_Controller_Action
 							}
 							$currentyeardata = $employeeleavesModel->getsingleEmployeeleaveData($userId);
 							if(empty($currentyeardata)) {
-								$empLeaveLimit = ($emp_leave_limit + $leavetransfercount);	
+								$empLeaveLimit = $emp_leave_limit;//($emp_leave_limit + $leavetransfercount);	
 							}else{
-								$empLeaveLimit = ($emp_leave_limit + $currentyeardata[0]['emp_leave_limit']);
+								$empLeaveLimit = $emp_leave_limit;//($emp_leave_limit + $currentyeardata[0]['emp_leave_limit']);
 							} 
 							/* Save employee leaves in allotted leaves log */
 							$logID = $employeeleavesModel->saveallotedleaves($postedArr,$emp_leave_limit,$userId,$loginUserId);

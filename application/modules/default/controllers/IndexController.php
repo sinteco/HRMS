@@ -775,6 +775,13 @@ class Default_IndexController extends Zend_Controller_Action
 		$weekend2 = '';
 		$availableleaves = '';
 		$holidayDatesArr = array();
+		$leavetypeid = $this->_request->getParam('leavetypeid');
+		if($leavetypeid=="10"||$leavetypeid=="11"){
+			$eskipholiday = true;
+		}else{
+			$eskipholiday = false;
+		}
+		// $eskipholiday = $this->_request->getParam('escapeholiday');
 		$fromDatejs = $this->_request->getParam('fromDate');
 		$fromDate = sapp_Global::change_date($fromDatejs,'database');
 
@@ -790,6 +797,8 @@ class Default_IndexController extends Zend_Controller_Action
 		$dayselected = $this->_request->getParam('dayselected');
 		$leavetypelimit = $this->_request->getParam('leavetypelimit');
 		$leavetypetext = $this->_request->getParam('leavetypetext');
+		$leavebalance = $this->_request->getParam('leavebalance');
+		$leavepreallocated = $this->_request->getParam('leavepreallocated');
 		$ishalfday = $this->_request->getParam('ishalfday');
 		$context = $this->_request->getParam('context');
 		$selectorid = $this->_request->getParam('selectorid');
@@ -854,7 +863,7 @@ class Default_IndexController extends Zend_Controller_Action
 						{
 							if(count($holidayDatesArr)>0)
 							{
-								if($weekDay != $weekend1 && $weekDay != $weekend2 && (!in_array($fromDate,$holidayDatesArr)))
+								if($eskipholiday || $weekDay != $weekend1 && $weekDay != $weekend2 && (!in_array($fromDate,$holidayDatesArr)))
 								{
 									$noOfDays++;
 								}
@@ -872,7 +881,7 @@ class Default_IndexController extends Zend_Controller_Action
 						}
 					}
 					//echo $noOfDays;exit;
-					if($leavetypelimit >= $noOfDays)
+					if($leavetypelimit >= $noOfDays || $leavepreallocated==2)
 					{
 						$result['result'] = 'success';
 						$result['days'] = $noOfDays;
@@ -883,6 +892,20 @@ class Default_IndexController extends Zend_Controller_Action
 						$result['result'] = 'error';
 						$result['days'] = '';
 						$result['message'] = $leavetypetext.' leave type permits maximum of '.$leavetypelimit.' leaves.';
+						$result['availableleaves'] = $availableleaves;
+					}
+					//check with leave balance
+					if($leavebalance >= $noOfDays || $leavepreallocated==2)
+					{
+						$result['result'] = 'success';
+						$result['days'] = $noOfDays;
+						$result['message'] = '';
+						$result['availableleaves'] = $availableleaves;
+					}else
+					{
+						$result['result'] = 'error';
+						$result['days'] = '';
+						$result['message'] = $leavetypetext.' leave type permits maximum of '.$leavetypelimit.' leaves and you have balance of '.$leavebalance;
 						$result['availableleaves'] = $availableleaves;
 					}
 

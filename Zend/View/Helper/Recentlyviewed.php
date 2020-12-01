@@ -395,7 +395,9 @@ class Zend_View_Helper_Recentlyviewed extends Zend_View_Helper_Abstract
 	                            		else if($pagesplitName == 'emptimesheets')
 	                            			$menuName ='Employee Timesheets';
 	                            		else if($pagesplitName == 'employeeprojects')
-	                            			$menuName ='Projects';
+                                            $menuName ='Projects';
+                                        else if($pagesplitName == 'timesheetreport')
+	                            			$menuName ='Time sheet Report';
 	                            		else 
 	                            			$menuName = ucfirst($pagesplitName);	
 	                            	}

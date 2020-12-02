@@ -1,8 +1,11 @@
 <?php 
+function decimalSum($val0,$val1){
+  return $val0+$val1;
+}
 function decimalHours($time)
 {
     $hms = explode(":", $time);
-    return ($hms[0] + ($hms[1]/60) + ($hms[2]/3600));
+    return number_format((float)($hms[0] + ($hms[1]/60) + ($hms[2]/3600)), 2, '.', '');
 }
 function build_calendar_Holiday_View(){
 	$calendar = "<tr class=xl727473 height=19 style='mso-height-source:userset;height:14.25pt'>
@@ -206,6 +209,34 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
         ${'totalTimeColumnwithLeave'.$ke}=0;
       }
     }
+
+    $calendarSubTotalTimeSum = 0;
+    $calendarSubTotalLeaveSum = 0;
+
+    $cdl=$currentDayL;
+    $ndl =$numberDaysL;
+    $cd=$currentDay;
+    $nd=$numberDays;
+
+    while ($cdl <= $ndl) {
+      ${'totalLeaveColumn'.$cdl}=0;
+      $cdl++;
+    }
+    while ($cd <= $nd) {
+      ${'totalLeaveColumn'.$cd}=0;
+      $cd++;
+    }
+
+    $calendarSickleaveRow=0;
+    $calendarMaternityLeaveRow=0;
+    $calendarPaternityLeaveRow=0;
+    $calendarFamilyLeaveRow=0;
+    $calendarPublicHolidayRow=0;
+    $calendarStudyleaveRow=0;
+    $calendarAnnualLeaveRow=0;
+    $calendarFloatingHolidayRow=0;
+    $calendarOtherRow=0;
+
      while ($currentDayL <= $numberDaysL) {
 
           // Seventh column (Saturday) reached. Start a new row.
@@ -290,8 +321,34 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
                   }
               }
             }
-            
           }
+
+          foreach ($sentTimesSheets as $key => $value) {
+            if($day_name=='Sun' || $day_name=='Sat')
+              {
+                $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
+                break;
+              }
+            else if($holiday_signal){
+              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
+              break;
+            }
+            else if($leave_signal){
+              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
+              break;
+            }
+            else{
+                foreach ($value as $ke => $val) {
+                  if($val['date']==$date." 00:00:00")
+                  {
+                    $calendarSubTotalTime .= "<td class=xl987473 width=37 style='width:28pt'>${'totalTimeColumn'.$ke}</td>";
+                    $calendarSubTotalTimeSum += ${'totalTimeColumn'.$ke};
+                    break;
+                  }
+                }
+                break;
+              }
+            }
 
           if($day_name=='Sun' || $day_name=='Sat')
           	$calendarL .= "<td class=xl987473 style='border-top:none'>".$time."</td>";
@@ -319,6 +376,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==1&&$value['leavestatus']=='Approved')
           	{
           		$SickLeavetime="08:30";
+              ${'totalLeaveColumn'.$currentDayL} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarSickleaveRow += decimalHours("08:30");
           		break;
           	}else{
           		$SickLeavetime = '';
@@ -328,6 +388,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==10&&$value['leavestatus']=='Approved')
           	{
           		$MaternityLeavetime="08:30";
+              ${'totalLeaveColumn'.$currentDayL} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarMaternityLeaveRow += decimalHours("08:30");
           		break;
           	}else{
           		$MaternityLeavetime = '';
@@ -337,6 +400,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==13&&$value['leavestatus']=='Approved')
           	{
           		$PaternityLeavetime="08:30";
+              ${'totalLeaveColumn'.$currentDayL} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarPaternityLeaveRow += decimalHours("08:30");
           		break;
           	}else{
           		$PaternityLeavetime = '';
@@ -346,6 +412,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==12&&$value['leavestatus']=='Approved')
           	{
           		$FamilyLeavetime="08:30";
+              ${'totalLeaveColumn'.$currentDayL} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarFloatingHolidayRow += decimalHours("08:30");
           		break;
           	}else{
           		$FamilyLeavetime = '';
@@ -355,6 +424,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==5&&$value['leavestatus']=='Approved')
           	{
           		$PublicHolidaytime="08:30";
+              ${'totalLeaveColumn'.$currentDayL} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarPublicHolidayRow += decimalHours("08:30");
           		break;
           	}else{
           		$PublicHolidaytime = '';
@@ -364,6 +436,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==6&&$value['leavestatus']=='Approved')
           	{
           		$Studyleavetime="08:30";
+              ${'totalLeaveColumn'.$currentDayL} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarStudyleaveRow += decimalHours("08:30");
           		break;
           	}else{
           		$Studyleavetime = '';
@@ -373,6 +448,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==7&&$value['leavestatus']=='Approved')
           	{
           		$AnnualLeavetime="08:30";
+              ${'totalLeaveColumn'.$currentDayL} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarAnnualLeaveRow += decimalHours("08:30");
           		break;
           	}else{
           		$AnnualLeavetime = '';
@@ -382,6 +460,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==8&&$value['leavestatus']=='Approved')
           	{
           		$FloatingHolidaytime="08:30";
+              ${'totalLeaveColumn'.$currentDayL} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarFloatingHolidayRow += decimalHours("08:30");
           		break;
           	}else{
           		$FloatingHolidaytime = '';
@@ -391,6 +472,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==9&&$value['leavestatus']=='Approved')
           	{
           		$Othertime="08:30";
+              ${'totalLeaveColumn'.$currentDayL} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarOtherRow += decimalHours("08:30");
           		break;
           	}else{
           		$Othertime = '';
@@ -450,41 +534,57 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
 
           // $calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
           foreach ($sentTimesSheets as $key => $value) {
-            if($day_name=='Sun' || $day_name=='Sat')
+            if($day_name=='Sun' || $day_name=='Sat'){
               $calendarSubTotalLeave .= "<td class=xl987473 style='border-top:none'> </td>";
-            else if($holiday_signal)
+              break;
+            }
+            else if($holiday_signal){
               $calendarSubTotalLeave .= "<td class=xl987473 style='border-top:none'> </td>";
-            else if($leave_signal)
+              break;
+            }
+            else if($leave_signal){
               $calendarSubTotalLeave .= "<td class=xl987473 style='border-top:none'> </td>";
+              break;
+            }
             else{
                 foreach ($value as $ke => $val) {
                   if($val['date']==$date." 00:00:00")
                   {
-                    $calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>1</td>";
+                    $calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>${'totalLeaveColumn'.$currentDayL}</td>";
+                    break;
                   }
                 }
+                break;
               }
             }
 
           foreach ($sentTimesSheets as $key => $value) {
-            if($day_name=='Sun' || $day_name=='Sat')
-              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
-            else if($holiday_signal)
-              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
-            else if($leave_signal)
-              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
+            if($day_name=='Sun' || $day_name=='Sat'){
+              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'> </td>";
+              break;
+            }
+            else if($holiday_signal){
+              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'> </td>";
+              break;
+            }
+            else if($leave_signal){
+              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'> </td>";
+              break;
+            }
             else{
                 foreach ($value as $ke => $val) {
                   if($val['date']==$date." 00:00:00")
                   {
-                    $calendarSubTotalTime .= "<td class=xl1877473 width=37 style='width:28pt'>2</td>";
+                    $caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>".decimalSum(${'totalLeaveColumn'.$currentDay},${'totalTimeColumn'.$ke})."</td>";
+                    break;
                   }
                 }
+                break;
               }
             }
 
 
-          $caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
+          // $caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
           
           // $calendarL .= "<td class='day $day_name' rel='$date'>$currentDayL</td>";
 
@@ -587,8 +687,34 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
                   }
               }
             }
-            
           }
+
+          foreach ($sentTimesSheets as $key => $value) {
+            if($day_name=='Sun' || $day_name=='Sat')
+              {
+                $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
+                break;
+              }
+            else if($holiday_signal){
+              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
+              break;
+            }
+            else if($leave_signal){
+              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
+              break;
+            }
+            else{
+                foreach ($value as $ke => $val) {
+                  if($val['date']==$date." 00:00:00")
+                  {
+                    $calendarSubTotalTime .= "<td class=xl987473 width=37 style='width:28pt'>${'totalTimeColumn'.$ke}</td>";
+                    $calendarSubTotalTimeSum += ${'totalTimeColumn'.$ke};
+                    break;
+                  }
+                }
+                break;
+              }
+            }
 
           // $totalTime += decimalHours($time);
           // var_dump($time);
@@ -624,6 +750,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==1&&$value['leavestatus']=='Approved')
           	{
           		$SickLeavetime="08:30";
+              ${'totalLeaveColumn'.$currentDay} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarSickleaveRow += decimalHours("08:30");
           		break;
           	}else{
           		$SickLeavetime = '';
@@ -633,6 +762,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==10&&$value['leavestatus']=='Approved')
           	{
           		$MaternityLeavetime="08:30";
+              ${'totalLeaveColumn'.$currentDay} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarMaternityLeaveRow += decimalHours("08:30");
           		break;
           	}else{
           		$MaternityLeavetime = '';
@@ -642,6 +774,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==13&&$value['leavestatus']=='Approved')
           	{
           		$PaternityLeavetime="08:30";
+              ${'totalLeaveColumn'.$currentDay} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarPaternityLeaveRow += decimalHours("08:30");
           		break;
           	}else{
           		$PaternityLeavetime = '';
@@ -651,6 +786,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==12&&$value['leavestatus']=='Approved')
           	{
           		$FamilyLeavetime="08:30";
+              ${'totalLeaveColumn'.$currentDay} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarFamilyLeaveRow += decimalHours("08:30");
           		break;
           	}else{
           		$FamilyLeavetime = '';
@@ -660,6 +798,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==5&&$value['leavestatus']=='Approved')
           	{
           		$PublicHolidaytime="08:30";
+              ${'totalLeaveColumn'.$currentDay} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarPublicHolidayRow += decimalHours("08:30");
           		break;
           	}else{
           		$PublicHolidaytime = '';
@@ -669,6 +810,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==6&&$value['leavestatus']=='Approved')
           	{
           		$Studyleavetime="08:30";
+              ${'totalLeaveColumn'.$currentDay} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarStudyleaveRow += decimalHours("08:30");
           		break;
           	}else{
           		$Studyleavetime = '';
@@ -678,6 +822,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==15&&$value['leavestatus']=='Approved')
           	{
           		$AnnualLeavetime="08:30";
+              ${'totalLeaveColumn'.$currentDay} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarAnnualLeaveRow += decimalHours("08:30");
           		break;
           	}else{
           		$AnnualLeavetime = '';
@@ -687,6 +834,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==8&&$value['leavestatus']=='Approved')
           	{
           		$FloatingHolidaytime="08:30";
+              ${'totalLeaveColumn'.$currentDay} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarFloatingHolidayRow += decimalHours("08:30");
           		break;
           	}else{
           		$FloatingHolidaytime = '';
@@ -696,6 +846,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==9&&$value['leavestatus']=='Approved')
           	{
           		$Othertime="08:30";
+              ${'totalLeaveColumn'.$currentDay} += decimalHours("08:30");
+              $calendarSubTotalLeaveSum += decimalHours("08:30");
+              $calendarOtherRow += decimalHours("08:30");
           		break;
           	}else{
           		$Othertime = '';
@@ -776,40 +929,56 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           // $calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
 
           foreach ($sentTimesSheets as $key => $value) {
-            if($day_name=='Sun' || $day_name=='Sat')
+            if($day_name=='Sun' || $day_name=='Sat'){
               $calendarSubTotalLeave .= "<td class=xl987473 style='border-top:none'> </td>";
-            else if($holiday_signal)
+              break;
+            }
+            else if($holiday_signal){
               $calendarSubTotalLeave .= "<td class=xl987473 style='border-top:none'> </td>";
-            else if($leave_signal)
+              break;
+            }
+            else if($leave_signal){
               $calendarSubTotalLeave .= "<td class=xl987473 style='border-top:none'> </td>";
+              break;
+            }
             else{
                 foreach ($value as $ke => $val) {
                   if($val['date']==$date." 00:00:00")
                   {
-                    $calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>1</td>";
+                    $calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>${'totalLeaveColumn'.$currentDay}</td>";
+                    break;
                   }
                 }
+                break;
               }
             }
 
           foreach ($sentTimesSheets as $key => $value) {
-            if($day_name=='Sun' || $day_name=='Sat')
-              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
-            else if($holiday_signal)
-              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
-            else if($leave_signal)
-              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
+            if($day_name=='Sun' || $day_name=='Sat'){
+              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'> </td>";
+              break;
+            }
+            else if($holiday_signal){
+              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'> </td>";
+              break;
+            }
+            else if($leave_signal){
+              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'> </td>";
+              break;
+            }
             else{
                 foreach ($value as $ke => $val) {
                   if($val['date']==$date." 00:00:00")
                   {
-                    $calendarSubTotalTime .= "<td class=xl1877473 width=37 style='width:28pt'>2</td>";
+                    $caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>".decimalSum(${'totalLeaveColumn'.$currentDay},${'totalTimeColumn'.$ke})."</td>";
+                    break;
                   }
                 }
+                break;
               }
             }
 
-          $caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
+          // $caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
 
           // $calendar .= "<td class=xl1127473 width=37 style='border-top:none;width:28pt'>$currentDay</td>";
           // $calendarL .= "<td class='day $day_name' rel='$date'>$currentDay</td>";
@@ -820,19 +989,19 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	$calendarL .= "<td class=xl1127473 style='border-top:none'>$totalTime</td>";
           	$calendarS .= "<td class=xl1127473 style='border-top:none'>$totalTime</td>";
           	$calendarSpace .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
-          	$calendarSickleave .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
-          	$calendarMaternityLeave .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
-          	$calendarPaternityLeave .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
-          	$calendarFamilyLeave .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
-          	$calendarPublicHoliday .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
-          	$calendarStudyleave .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
-          	$calendarAnnualLeave .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
-          	$calendarFloatingHoliday .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
-          	$calendarOther .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
+          	$calendarSickleave .= "<td class=xl1127473 style='border-top:none'>$calendarSickleaveRow</td>";
+          	$calendarMaternityLeave .= "<td class=xl1127473 style='border-top:none'>$calendarMaternityLeaveRow</td>";
+          	$calendarPaternityLeave .= "<td class=xl1127473 style='border-top:none'>$calendarPaternityLeaveRow</td>";
+          	$calendarFamilyLeave .= "<td class=xl1127473 style='border-top:none'>$calendarFamilyLeaveRow</td>";
+          	$calendarPublicHoliday .= "<td class=xl1127473 style='border-top:none'>$calendarPublicHolidayRow</td>";
+          	$calendarStudyleave .= "<td class=xl1127473 style='border-top:none'>$calendarStudyleaveRow</td>";
+          	$calendarAnnualLeave .= "<td class=xl1127473 style='border-top:none'>$calendarAnnualLeaveRow</td>";
+          	$calendarFloatingHoliday .= "<td class=xl1127473 style='border-top:none'>$calendarFloatingHolidayRow</td>";
+          	$calendarOther .= "<td class=xl1127473 style='border-top:none'>$calendarOtherRow</td>";
           	$calendarLeaveHeader .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
-          	$calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>1</td>";
-            $calendarSubTotalTime .= "<td class=xl1877473 width=37 style='width:28pt'>2</td>";
-          	$caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>0</td>";
+          	$calendarSubTotalLeave .= "<td class=xl987473 width=37 style='width:28pt'>$calendarSubTotalLeaveSum</td>";
+            $calendarSubTotalTime .= "<td class=xl987473 width=37 style='width:28pt'>$calendarSubTotalTimeSum</td>";
+          	$caledarGrandTotal .= "<td class=xl987473 width=37 style='width:28pt'>".decimalSum($calendarSubTotalTimeSum,$calendarSubTotalLeaveSum)."</td>";
           }
           // Increment counters
  
@@ -878,7 +1047,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
  $calendar .= $calendarSpace;
 
   $calendar .= "</tr>".$calendarSubTotalTime;
-  $calendar .= $calendarS."</tr>";
+  // $calendar .= $calendarS."</tr>";
   $calendarSpace .= "</tr>";
 
   // $calendar .= $calendarSpace;
@@ -2657,7 +2826,7 @@ x:publishsource="Excel">
   <td colspan=18 height=26 class=xl2677473 style='height:19.5pt'><span
   style='mso-spacerun:yes'>                                                                                        
   </span>Employee</td>
-  <td colspan=25 class=xl2587473>Approved<span
+  <td colspan=25 class=xl2587473><?php if($this->status[0]['status']=="Approved"){echo "Approved";} ?> <span
   style='mso-spacerun:yes'> </span></td>
   <td class=xl727473></td>
   <td class=xl727473></td>
@@ -2667,7 +2836,7 @@ x:publishsource="Excel">
   <td class=xl727473></td>
  </tr>
  <tr class=xl655357473 height=32 style='mso-height-source:userset;height:24.0pt'>
-  <td height=32 class=xl2567473 colspan=3 style='height:24.0pt'>Signature:_______________________</td>
+  <td height=32 class=xl2567473 colspan=3 style='height:24.0pt'>Signature: <u><?php echo $this->fullName; ?></u></td>
   <td class=xl655357473></td>
   <td class=xl655357473></td>
   <td class=xl655357473></td>
@@ -2675,14 +2844,14 @@ x:publishsource="Excel">
   <td class=xl655357473></td>
   <td class=xl655357473></td>
   <td class=xl655357473></td>
-  <td class=xl2567473 colspan=7>Date: ______________________________<span
+  <td class=xl2567473 colspan=7>Date: <u><?php echo date( 'F d, yy', strtotime($this->status[0]['created'])); ?></u><span
   style='mso-spacerun:yes'> </span></td>
   <td class=xl2567473></td>
   <td class=xl2567473></td>
-  <td colspan=9 class=xl2587473>Signature:_______________________</td>
+  <td colspan=9 class=xl2587473>Signature:<u><?php if($this->status[0]['status']=="Approved"){echo $this->approver['userfullname'];} ?></u></td>
   <td class=xl2567473></td>
   <td colspan=14 class=xl2677473>Date:-<span style='mso-spacerun:yes'> 
-  </span><?php echo date("F d, yy"); ?></td>
+  </span> <u><?php if($this->status[0]['status']=="Approved"){echo date( 'F d, yy', strtotime($this->status[0]['modified']));} ?> </td>
   <td class=xl655357473></td>
   <td class=xl655357473></td>
   <td class=xl655357473></td>

@@ -133,21 +133,14 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 		//ksort($YrMonths);
 			
 		$yrMon = explode('-', $selYrMon);
-		$empTSModel = new Timemanagement_Model_MyTimesheet();
+		// $empTSModel = new Timemanagement_Model_MyTimesheet();
+		// $empMonthTSData = $empTSModel->getTimesheetData($data->id, $yrMon[0],$yrMon[1]);
+		$empTSModel = new Timemanagement_Model_MyTimesheetedited();
 		$empMonthTSData = $empTSModel->getTimesheetData($data->id, $yrMon[0],$yrMon[1]);
-		// var_dump($empMonthTSData);
-		$sentTimesSheets = [];
-		for ($x = 0; $x <= count($empMonthTSData); $x++) {
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['sun_date']=>$empMonthTSData[$x]['sun_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['mon_date']=>$empMonthTSData[$x]['mon_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['tue_date']=>$empMonthTSData[$x]['tue_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['wed_date']=>$empMonthTSData[$x]['wed_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['thu_date']=>$empMonthTSData[$x]['thu_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['fri_date']=>$empMonthTSData[$x]['fri_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['sat_date']=>$empMonthTSData[$x]['sat_duration']));
-			array_push($sentTimesSheets,array('project_name'=>$empMonthTSData[$x]['project_name']));
-			array_push($sentTimesSheets,array('task'=>$empMonthTSData[$x]['task']));
-		}
+		
+		$sentTimesSheets = $this->group_by('project_task_id',$empMonthTSData);
+		// var_dump($sentTimesSheets);
+		// die();
 
 		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
 		$leaveTypes = $tmsheetconfigrationsmodel->getUserLeavesData($data->id);
@@ -431,6 +424,19 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 		}	   
 		//END code to show pending weeks for submit in current month
 
+	}
+	function group_by($key, $data) {
+	    $result = array();
+
+	    foreach($data as $val) {
+	        if(array_key_exists($key, $val)){
+	            $result[$val[$key]][] = $val;
+	        }else{
+	            $result[""][] = $val;
+	        }
+	    }
+
+	    return $result;
 	}
 
 	public function weekAction()

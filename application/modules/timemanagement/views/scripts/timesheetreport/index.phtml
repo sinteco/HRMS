@@ -2640,6 +2640,25 @@ x:publishsource="Excel">
   <td class=xl727473></td>
   <td class=xl727473></td>
  </tr>
+ <?php 
+      $holidays0 = $this->holidays0;
+      $holidays = $this->holidays;
+      if(count($holidays)>0){
+          $holiday_names = explode(',', $holidays[0]['holiday_names']);
+          $holiday_dates = explode(',', $holidays[0]['holiday_dates']);
+     }
+     if (count($holidays0)>0) {
+          $holiday_names0 = explode(',', $holidays0[0]['holiday_names']);
+          $holiday_dates0 = explode(',', $holidays0[0]['holiday_dates']);
+     }
+      $holidaycal = "";
+       for ($i=0; $i < count($holiday_dates); $i++) { 
+         $holidaycal .= "<tr><td class=xl2617473>".$holiday_dates[$i]."</td>&nbsp;<td>".$holiday_names[$i]."</td></tr>";
+       }
+       for ($i=0; $i < count($holiday_dates0); $i++) { 
+         $holidaycal .= "<tr><td class=xl2617473>".$holiday_dates0[$i]."</td>&nbsp;<td>".$holiday_names0[$i]."</td></tr>";
+       }
+  ?>
  <tr class=xl727473 height=19 style='mso-height-source:userset;height:14.25pt'>
   <td colspan=2 height=19 class=xl2607473 style='height:14.25pt'>Total Actual
   Hours Worked</td>
@@ -2670,8 +2689,8 @@ x:publishsource="Excel">
   <td class=xl2527473></td>
   <td class=xl2527473></td>
   <td class=xl1857473></td>
-  <td colspan=3 class=xl2617473><?php echo $this->empHolidaysWeekends['holiday_dates']; ?></td>
-  <td class=xl2537473 colspan=7><?php echo $this->empHolidaysWeekends['holiday_names']; ?></td>
+  <!-- <td colspan=3 class=xl2617473><?php echo $this->empHolidaysWeekends['holiday_dates']; ?></td>
+  <td class=xl2537473 colspan=7><?php echo $this->empHolidaysWeekends['holiday_names']; ?></td> -->
   <td class=xl1857473></td>
   <td class=xl2477473></td>
   <td class=xl2477473></td>
@@ -2775,6 +2794,7 @@ x:publishsource="Excel">
   <td class=xl727473></td>
   <td class=xl727473></td>
  </tr>
+ <?php echo $holidaycal; ?>
  <tr class=xl727473 height=21 style='height:15.75pt'>
   <td height=21 class=xl2557473 colspan=6 style='height:15.75pt'>I CERTIFY THAT
   ABOVE IS TRUE AND CORRECT<span style='mso-spacerun:yes'> </span></td>

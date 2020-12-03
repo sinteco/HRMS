@@ -207,8 +207,18 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 
 		}
 
+		$month111 = date("m",strtotime($TMSCData[0]['form']));
+		$year111 = date("Y",strtotime($TMSCData[0]['form']));
+		$month0111 = date("m",strtotime($TMSCData[0]['to']));
+		$year0111 = date("Y",strtotime($TMSCData[0]['to']));
+
+		$empHolidaysWeekendsData111 = $usersModel->getEmployeeHolidaysNWeekends($data->id, $year111,$month111);
+		$empHolidays111 = $usersModel->getEmployeeHolidaysNWeekends($data->id, $year0111,$month0111);
+
 		$this->view->empMonthTSData = $empMonthTSData;
 		$this->view->empHolidaysWeekends = $empHolidaysWeekendsData[0];
+		$this->view->holidays = $empHolidaysWeekends111;
+		$this->view->holidays0 = $empHolidays111;
 		//	$this->view->month = $month;
 		//	$this->view->year = $year;
 		//$this->view->YrMonths = $YrMonths;

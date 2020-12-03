@@ -521,9 +521,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
                }
                str+="<td><input type='button' value='DELETE' onclick=delete_row('row"+$rowno+"')></td></tr>";
                $("#calendar tr:last").after(str);
-               $('.timeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 8, 30, 0)});
-               $('.friTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
-               $('.halfleaveTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
+               $('.timeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 8, 30, 0)});
+               $('.friTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
+               $('.halfleaveTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
      }
      function delete_row(rowno)
      {
@@ -598,9 +598,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
               // console.log(v);
        });
      $('.breadcrumbs').append("<span class='arrows'>&rsaquo;</span><a href='<?php echo BASE_URL; ?>timemanagement'>Time Sheet</a>");
-     $('.timeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 8, 30, 0)});
-     $('.friTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
-     $('.halfleaveTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
+     $('.timeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 8, 30, 0)});
+     $('.friTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
+     $('.halfleaveTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
       $('#saveTimeSheet').click(function(){
           $.modal.close();
           var project = $("#project option:selected").val();

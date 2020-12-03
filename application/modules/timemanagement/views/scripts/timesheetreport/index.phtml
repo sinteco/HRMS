@@ -1034,7 +1034,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
   	$calendar .= $calendarP;
   	$calendar .= "</tr>";
 
- $calendar .= "<tr class=xl897473 height=31 style='mso-height-source:userset;height:23.25pt'>";
+ if($sentTimesSheets!=null){$calendar .= "<tr class=xl897473 height=31 style='mso-height-source:userset;height:23.25pt'>";}
  foreach ($sentTimesSheets as $key => $value) {
        ${'calendar'.$key}.="</tr>";
        $calendar .= ${'calendar'.$key};
@@ -1046,7 +1046,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
  $calendar .= $calendarSpace;
  $calendar .= $calendarSpace;
 
-  $calendar .= "</tr>".$calendarSubTotalTime;
+  if($sentTimesSheets!=null){$calendar .= "</tr>".$calendarSubTotalTime;}
   // $calendar .= $calendarS."</tr>";
   $calendarSpace .= "</tr>";
 
@@ -1075,10 +1075,10 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
   $calendar .= "</tr>";
   $calendar .= $calendarOther;
   $calendar .= "</tr>";
-  $calendar .= $calendarSubTotalLeave;
-  $calendar .= "</tr>";
-  $calendar .= $caledarGrandTotal;
-  $calendar .= "</tr>";
+  if($sentTimesSheets!=null){$calendar .= $calendarSubTotalLeave;
+  $calendar .= "</tr>";}
+  if($sentTimesSheets!=null){$calendar .= $caledarGrandTotal;
+  $calendar .= "</tr>";}
 
 
      return $calendar;

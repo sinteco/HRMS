@@ -75,6 +75,7 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 	 */
 	public function indexAction()
 	{
+		$usersModel = new Timemanagement_Model_Users();
 		$storage = new Zend_Auth_Storage_Session();
 		$data = $storage->read();
 		$empTimesheets_model=new Timemanagement_Model_Emptimesheets();
@@ -82,11 +83,13 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		$date1 = new DateTime(date('Y-m-01'));
 		$startday=$date1->format('Y-m-d');
 		$endday=date('Y-m')."-".cal_days_in_month(CAL_GREGORIAN, $date1->format('m'), $date1->format('Y')); //ending date of month
+		$users = $usersModel->getAllEmployee();
 		$this->view->tm_role = Zend_Registry::get('tm_role');
 		$this->view->data=$data;
 		$this->view->startday_m=$startday;
 		$this->view->endday_m=$endday;
 		$this->view->min_year=$min_year;
+		$this->view->users=$users;
 
 	}
 

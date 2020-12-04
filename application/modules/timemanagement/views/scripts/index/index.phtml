@@ -25,7 +25,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      $dayOfWeek = $dateComponents['wday'];
 
      // Create the table tag opener and day headers
-     $calendar = "<form method='POST' id='tmsheetform'><table id='calendar'>";
+     $calendar = "<form method='POST' id='tmsheetform' style='overflow: auto;'><table id='calendar'>";
      $calendar .= "<caption class='month'>$monthNameL $yearNameL Actual Time, ";
      $calendar .= "$monthName $year Actual Time, ";
      $calendar .= "$monthName $year Estimated Time</caption>";

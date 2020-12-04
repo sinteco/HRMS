@@ -186,6 +186,30 @@ $(function() {
         		<?php } ?>
         	</select>
          </div>
+         <div id="dialog" title="TimeSheet Status Dialog">
+         	<form>
+         		<div class="container">
+	         	<label for="cars">Month:</label>
+	         	<input type="text" class="date-picker-month" placeholder="Time Sheet Month" name="month">
+	         	<label for="cars">Year:</label>
+	         	<input type="text" class="date-picker-year" placeholder="Time Sheet Year" name="year">
+	         	<label for="cars">Choose Employee:</label>
+			    <select id='selUser'>
+				  <option value=""></option>
+				  <?php foreach ($this->users as $key => $value) {
+				  	echo "<option value=".$value['user_id'].">".$value['userfullname']."</option>";
+				  } ?>
+				</select>
+				<label for="cars">Choose File:</label>
+				<input type="file" name="upload" accept="application/pdf,application/vnd.ms-excel" />
+				<label for="cars">Comment:</label>
+				<textarea placeholder="Comment" name="comment" rows="2" >
+				</textarea>
+				<button type="button" class="registerbtn">Save</button>
+				</div>
+			</form>
+
+		</div>
          <div style="float:right">
          	<button class="addtmshs" type="button" style="    float: right;
     background-color: #4CAF50;
@@ -220,7 +244,7 @@ $(function() {
     <span class="textarea_bg">
         <textarea id="idtxtrejectnote" class="textarea_re textarea_two_appri"  maxlength="200"></textarea>
     </span>
-</div>  
+</div>
 <script type="text/javascript" language="javascript" >
 $(document).ready(function(){
 	$('.breadcrumbs').append("<span class='arrows'>&rsaquo;</span><span>Employee TimeSheets</span>");
@@ -339,11 +363,83 @@ function clearSearchData()
 }
 $(document).ready(function(){
 	$('.addtmshs').click(function() {
-	  alert( "Handler is in progress thank you !" );
+	  	$( "#dialog" ).dialog({
+	  		modal: true,
+	  		open: function () {
+		        if ($.ui && $.ui.dialog && !$.ui.dialog.prototype._allowInteractionRemapped && $(this).closest(".ui-dialog").length) {
+		            if ($.ui.dialog.prototype._allowInteraction) {
+		                $.ui.dialog.prototype._allowInteraction = function (e) {
+		                    if ($(e.target).closest('.select2-drop').length) return true;
+		                    return ui_dialog_interaction.apply(this, arguments);
+		                };
+		                $.ui.dialog.prototype._allowInteractionRemapped = true;
+		            }
+		            else {
+		                $.error("You must upgrade jQuery UI or else.");
+		            }
+		        }
+		    },
+		    _allowInteraction: function (event) {
+		        return !!$(event.target).is(".select2-input") || this._super(event);
+		    }
+		});
 	});
+
+	// $('.date-picker-month').datepicker( {
+ //        changeMonth: true,
+ //        changeYear: true,
+ //        showButtonPanel: false,
+ //        dateFormat: 'm',
+ //        onClose: function(dateText, inst) { 
+ //            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+ //            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+ //            $(this).datepicker('setDate', new Date(year, month, 1));
+ //        }
+ //    });
+ 	$("#selUser").select2();
+ 	var d = new Date();
+	$('.date-picker-month').val(d.getMonth());
+	$('.date-picker-year').val(d.getFullYear());
+    // $('.date-picker-year').datepicker( {
+    //     changeMonth: true,
+    //     changeYear: true,
+    //     showButtonPanel: false,
+    //     dateFormat: 'yy',
+    //     onClose: function(dateText, inst) { 
+    //         var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+    //         var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+    //         $(this).datepicker('setDate', new Date(year, month, 1));
+    //     }
+    // });
+
 });
 </script>
 
 <style>
 	.emp_time_sheet input.btn_search_clear[type="button"] {top: 6px; right: 8px;}
+	#dialog {
+	    display:none;
+	}
+	input[type=text], input[type=password],textarea,select,input[type=file],div#s2id_selUser {
+	  width: 100%;
+	  padding: 10px;
+	  margin: 5px 0 22px 0;
+	  display: inline-block;
+	  border: none;
+	  background: #f1f1f1;
+	}
+	.registerbtn {
+	  background-color: #4CAF50;
+	  color: white;
+	  padding: 10px 25px;
+	  margin: 8px 0;
+	  border: none;
+	  cursor: pointer;
+	  /*width: 100%;*/
+	  opacity: 0.9;
+	}
+	.select2-container .select2-choice{
+		width: 50%;
+	}
+
 </style>

@@ -194,18 +194,18 @@ $(function() {
 	         	<label for="cars">Year:</label>
 	         	<input type="text" class="date-picker-year" placeholder="Time Sheet Year" name="year">
 	         	<label for="cars">Choose Employee:</label>
-			    <select id='selUser'>
+			    <select name="employee" id='selUser'>
 				  <option value=""></option>
 				  <?php foreach ($this->users as $key => $value) {
 				  	echo "<option value=".$value['user_id'].">".$value['userfullname']."</option>";
 				  } ?>
 				</select>
 				<label for="cars">Choose File:</label>
-				<input type="file" name="upload" accept="application/pdf,application/vnd.ms-excel" />
+				<input id="file" type="file" name="file" accept="application/pdf,application/vnd.ms-excel" />
 				<label for="cars">Comment:</label>
 				<textarea placeholder="Comment" name="comment" rows="2" >
 				</textarea>
-				<button type="button" class="registerbtn">Save</button>
+				<button id="save" type="button" class="registerbtn">Save</button>
 				</div>
 			</form>
 
@@ -384,6 +384,52 @@ $(document).ready(function(){
 		    }
 		});
 	});
+	$('#save').on('click', function() {
+	  var month = $("[name='month']").val();
+	  var year = $("[name='year']").val();
+	  var employee = $("[name='employee']").val();
+	  var file = $("[name='file']").prop('files');
+	  var comment = $("[name='comment']").val();
+	  // $('#dialog').dialog('close')
+	  
+      	var fd = new FormData(); 
+        var files = $('#file')[0].files[0];
+        fd.append('file', files);
+        fd.append('month',$("[name='month']").val());
+        fd.append('year',$("[name='year']").val());
+        fd.append('employee',$("[name='employee']").val());
+        fd.append('comment',$("[name='comment']").val());
+        var fullurl = '<?php echo $this->baseUrl("index.php/timemanagement/emptimesheets/empdisplayweeks");?>';
+
+        $.ajax({ 
+            url: fullurl, 
+            type: 'POST',
+            data: fd, 
+            contentType: false, 
+            cache:false,
+            processData: false, 
+            success: function(response){
+            	// alert(response);
+                if(response == "successful"){ 
+                   alert('file uploaded Thanks');
+                   window.location.reload(true);
+                } 
+                else if(response=="config not found"){ 
+                    alert("timesheet config not found");
+                }else if(response=="found recode"){
+                	alert("time sheet status have already submited !");
+                }else{
+                	alert('file not uploaded');
+                	window.location.reload(true);
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+		        alert("Status: " + textStatus); alert("Error: " + errorThrown);
+		        // alert("more: "+XMLHttpRequest.responseText);
+		        console.log(XMLHttpRequest.responseText);
+		    }
+        });
+    });
 
 	// $('.date-picker-month').datepicker( {
  //        changeMonth: true,
@@ -398,7 +444,7 @@ $(document).ready(function(){
  //    });
  	$("#selUser").select2();
  	var d = new Date();
-	$('.date-picker-month').val(d.getMonth());
+	$('.date-picker-month').val(d.getMonth()+1);
 	$('.date-picker-year').val(d.getFullYear());
     // $('.date-picker-year').datepicker( {
     //     changeMonth: true,
@@ -437,9 +483,6 @@ $(document).ready(function(){
 	  cursor: pointer;
 	  /*width: 100%;*/
 	  opacity: 0.9;
-	}
-	.select2-container .select2-choice{
-		width: 50%;
 	}
 
 </style>

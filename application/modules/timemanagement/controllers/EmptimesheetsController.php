@@ -99,6 +99,49 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 
 	public function empdisplayweeksAction(){
 
+		$month = $this->_getParam('month');
+		$year = $this->_getParam('year');
+		$employee = $this->_getParam('employee');
+		$file = $this->_getParam('file');
+		$comment = $this->_getParam('comment');
+		$temp = explode(".", $_FILES["file"]["name"]);
+		$fileName = round(microtime(true)) . '.' . end($temp);
+
+		$auth = Zend_Auth::getInstance();
+		if($auth->hasIdentity()){
+			$loginUserId = $auth->getStorage()->read()->id;
+		}
+
+		$tmsmodel = new Timemanagement_Model_Timesheetstatus();
+		$tsconfig = $tmsmodel->gettsconfigrationbymonth($month,$year);
+		$tsstatus = $tmsmodel->gettsstatusbyemp($employee,$tsconfig[0]['id']);
+		if ($tsconfig==null) {
+			echo "config not found";
+			die();
+		}
+		if($tsstatus!=null){
+			echo "found recode";
+			die();
+		}
+		$file = new Zend_Form_Element_File('file');
+		$target_dir = APPLICATION_PATH ."/../public/tmp/upload";
+		$data = array( 'emp_id'=>trim($employee),
+		               'main_tmsheetconfigrations_id'=>trim($tsconfig[0]['id']),
+		               'comment'=>trim($comment),
+		               'asfile'=>trim($fileName),
+		   			   'status'=>'Approved',
+		   			   'approved_by'=>$loginUserId,
+		   			   'modified_by'=>$loginUserId,
+		   			   'created_by'=>$loginUserId,
+					   'created'=>gmdate("Y-m-d H:i:s"),
+					   'modified'=>gmdate("Y-m-d H:i:s")	
+				);
+		$insertid = $tmsmodel->insertEmployeeTimesheetStatus($data);
+		if(move_uploaded_file($_FILES["file"]["tmp_name"], $target_dir.$fileName))
+			echo "successful";
+		die();
+		return true;
+
 		$selmn=$this->_getParam('selmn');
 		$hidweek=$this->_getParam('hidweek',null);
 		$manager_id=$this->_getParam('manager_id');

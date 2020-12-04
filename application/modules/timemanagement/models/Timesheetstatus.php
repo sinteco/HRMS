@@ -39,6 +39,28 @@ class Timemanagement_Model_Timesheetstatus extends Zend_Db_Table_Abstract
 		return $this->fetchAll($select)->toArray();
 	}
 
+	function insertEmployeeTimesheetStatus($data){
+		$db = Zend_Db_Table::getDefaultAdapter();
+		$db->insert('tm_ts_edited_status', $data);
+		return $id = $db->lastInsertId();
+	}
+
+	function gettsstatusbyemp($emp_id,$config_id){
+		$db = Zend_Db_Table::getDefaultAdapter();
+		$sql = "SELECT * FROM tm_ts_edited_status WHERE isactive=1 and emp_id = '".$emp_id."' and main_tmsheetconfigrations_id = '".$config_id."'";
+		$jobTitleData = $db->query($sql);
+		$res = $jobTitleData->fetchAll();
+		return $res;
+	}
+
+	function gettsconfigrationbymonth($month,$year){
+		$db = Zend_Db_Table::getDefaultAdapter();
+		$sql = "SELECT * FROM main_tmsheetconfigrations WHERE isactive=1 and month = '".$month."' and year = '".$year."'";
+		$jobTitleData = $db->query($sql);
+		$res = $jobTitleData->fetchAll();
+		return $res;
+	}
+
 	public function getTsRecordExists($empid,$ts_year,$ts_month,$ts_week,$cal_week)
 	{
 		$select = $this->select()

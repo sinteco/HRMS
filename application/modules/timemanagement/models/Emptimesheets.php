@@ -235,7 +235,7 @@ IF(FIND_IN_SET('enabled',GROUP_CONCAT(sun_project_status,',',mon_project_status,
 		$current_index = ($current_page - 1) * $per_page;
 		$db = Zend_Db_Table::getDefaultAdapter();
 		$selectEmpTimesheetsQuery = "SELECT mes.user_id as empid,mes.userfullname as empname,'00:00' as duration,tmes.status as time_status,'' as ts_week,'' as ts_year,'' as ts_month
-			FROM tm_ts_edited_status tmes
+			,tmes.asfile as ts_as_fail FROM tm_ts_edited_status tmes
 			join main_tmsheetconfigrations tmc on tmc.id=tmes.main_tmsheetconfigrations_id
 			join main_employees_summary mes on mes.user_id=tmes.emp_id ";
 		$selectEmpTimesheetsQuery .= $where;
@@ -263,6 +263,7 @@ IF(FIND_IN_SET('enabled',GROUP_CONCAT(sun_project_status,',',mon_project_status,
 			$fin_arr[$i]['ts_year']=$row['ts_year'];
 			$fin_arr[$i]['ts_month']=$row['ts_month'];
 			$fin_arr[$i]['proj_ids']="";
+			$fin_arr[$i]['ts_as_fail']=$row['ts_as_fail'];
 			$i++;
 		}
 

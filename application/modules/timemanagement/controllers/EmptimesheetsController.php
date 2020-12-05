@@ -308,12 +308,47 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		$emplistflag = $this->_getParam('emplistflag');
 		$project_ids = $this->_getParam('project_ids');
 
+		$selectedDateArray = explode('-',$selYrMon);
+		$month = $selectedDateArray[1];
+		$year = $selectedDateArray[0];
+
+		// var_dump($month);
+		// var_dump($year);
+		// var_dump($user_id);
+		// var_dump($manager_id);
+		// die();
+
 
 		$empTimesheets_model=new Timemanagement_Model_Emptimesheets();
+		$tmsmodel = new Timemanagement_Model_Timesheetstatus();
+		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
+		$tmsheetstatusmodel = new Timemanagement_Model_MyTimesheetedited();
+		$usersModel = new Timemanagement_Model_Users();
+
+		$tsconfig = $tmsmodel->gettsconfigrationbymonth($month,$year);
+		$tsstatus = $tmsmodel->gettsstatusbyemp($user_id,$tsconfig[0]['id']);
+
 		$min_year=$empTimesheets_model->getMinYear();
 		$date1 = new DateTime(date('Y-m-01'));
 		$startday=$date1->format('Y-m-d');
 		$endday=date('Y-m')."-".cal_days_in_month(CAL_GREGORIAN, $date1->format('m'), $date1->format('Y')); //ending date of month
+
+		//get data from database
+		$where = "j.month=".$month." and j.year=".$year;
+		$TMSCData = $tmsheetconfigrationsmodel->getTMSCWhere($where);
+		$leaveTypes = $tmsheetconfigrationsmodel->getUserLeavesData($user_id);
+		$empMonthTSData = $tmsheetstatusmodel->getTimesheetData($user_id, $year,$month);
+		$sentTimesSheets = $this->group_by('project_task_id',$empMonthTSData);
+		$month111 = date("m",strtotime($TMSCData[0]['form']));
+		$year111 = date("Y",strtotime($TMSCData[0]['form']));
+		$month0111 = date("m",strtotime($TMSCData[0]['to']));
+		$year0111 = date("Y",strtotime($TMSCData[0]['to']));
+
+		$empHolidaysWeekendsData111 = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year111,$month111);
+		$empHolidays111 = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year0111,$month0111);
+		$empHolidaysWeekendsData = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year,$month);
+		$userfullname = $usersModel->getEmployeeDetailByEmpId($user_id);
+		if($tsstatus[0]['status']=="Approved"){$approver = $usersModel->getEmployeeDetail($tsstatus[0]['approved_by']);}else {$approver = null;}
 
 		$this->view->tm_role = Zend_Registry::get('tm_role');
 		$this->view->data=$data;
@@ -327,7 +362,32 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		$this->view->hidweek = $hidweek;
 		$this->view->emplistflag = $emplistflag;
 		$this->view->project_ids = $project_ids;
+		//my data to sent to view
+		$this->view->status = $tsstatus;
+		$this->view->month = $month;
+		$this->view->year = $year;
+		$this->view->sentTimesSheets = $sentTimesSheets;
+		$this->view->TMSCData = $TMSCData;
+		$this->view->leaveTypes = $leaveTypes;
+		$this->view->empHolidaysWeekends = $empHolidaysWeekendsData[0];
+		$this->view->holidays = $empHolidaysWeekends111;
+		$this->view->holidays0 = $empHolidays111;
+		$this->view->fullName = $userfullname['userfullname'];
+		$this->view->approver = $approver;
 
+	}
+	function group_by($key, $data) {
+	    $result = array();
+
+	    foreach($data as $val) {
+	        if(array_key_exists($key, $val)){
+	            $result[$val[$key]][] = $val;
+	        }else{
+	            $result[""][] = $val;
+	        }
+	    }
+
+	    return $result;
 	}
 	/**
 	 * This action will display employee timesheet in month format.

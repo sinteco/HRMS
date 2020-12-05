@@ -136,6 +136,8 @@ protected function _getAcl()
 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:projecttasks'));
 									$acl->allow($tmroleText[$role], 'timemanagement:projecttasks', array('index','viewtasksresources','deletetask','assignresourcestotask','saveresources','edittaskname'));
+									$acl->addResource(new Zend_Acl_Resource('timemanagement:timesheetreport'));
+									$acl->allow($tmroleText[$role], 'timemanagement:timesheetreport', array('index','week','save','submit','eraseweek','getstates','getapprovedtimesheet','closeapprovealert','converdate'));
  } elseif(!empty($tm_role) && $tm_role == 'Manager') { 
 		 $acl->addResource(new Zend_Acl_Resource('timemanagement:index'));
 									$acl->allow($tmroleText[$role], 'timemanagement:index', array('index','week','save','submit','eraseweek','getstates','getapprovedtimesheet','closeapprovealert','converdate'));

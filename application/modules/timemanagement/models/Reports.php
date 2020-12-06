@@ -83,12 +83,12 @@ class Timemanagement_Model_Reports extends Zend_Db_Table_Abstract
 				FROM tm_ts_edited_status tms
 				JOIN main_tmsheetconfigrations tsc on tsc.id=tms.main_tmsheetconfigrations_id
 				join main_employees_summary es on es.user_id=tms.emp_id
-				left join tm_emp_timesheets_edited ts on ts.date BETWEEN tsc.form and tsc.to
+				left join tm_emp_timesheets_edited ts on ts.date BETWEEN tsc.form and tsc.to and tsc.to and es.user_id=ts.emp_id
 				left join tm_project_tasks pt on pt.id=ts.project_task_id
 				left join tm_projects p on p.id=pt.project_id
 				left join tm_tasks t on t.id=pt.task_id
 				where tsc.month='".$month."' and tsc.year='".$year."'
-				GROUP by es.userfullname,tms.status,ts.project_task_id";
+				GROUP by tms.id";
 		$jobTitleData = $db->query($sql);
 		$res = $jobTitleData->fetchAll();
 		return $res;

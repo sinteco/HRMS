@@ -370,6 +370,42 @@ class Timemanagement_ReportsController extends Zend_Controller_Action
 		}
 			
 	}
+	//employee status
+	public function timesheetstatusreportsAction(){
+
+		$is_pdf = ($this->_getParam('is_pdf')!='' && $this->_getParam('is_pdf')!='undefined')? $this->_getParam('is_pdf'):"";
+		$is_excel = ($this->_getParam('is_excel')!='' && $this->_getParam('is_excel')!='undefined')? $this->_getParam('is_excel'):"";
+		$selmn = $this->_request->getParam('selmn');
+		$dateArray = explode('-', $selmn);
+		$Month = $dateArray[0];
+		$Year = $dateArray[1];
+
+		$reportsmodel = new Timemanagement_Model_Reports();
+		$result = $reportsmodel->gettsstatusReport($Year,$Month);
+
+		if(!empty($is_pdf))
+		{
+			$view = $this->getHelper('ViewRenderer')->view;
+            $this->view->reportsdata = $result;
+            $text = $view->render('reports/timesheetstatusreport.phtml');
+            require_once 'application/modules/default/library/MPDF57/mpdf.php';
+            $mpdf=new mPDF('', 'A4-L', 12, 'Arial', 10, 10, 12, 12, 6, 6);
+            $mpdf->SetDisplayMode('fullpage');
+            $mpdf->list_indent_first_level = 0;
+            $mpdf->SetDisplayMode('fullpage');
+            $mpdf->pagenumSuffix = '';
+            $mpdf->nbpgPrefix = ' of ';
+            $mpdf->nbpgSuffix = '';
+            $mpdf->AddPage();
+            $mpdf->WriteHTML($text);
+            $mpdf->Output('TimesheetStatusReport'.'.pdf','D');
+		}
+		else if(!empty($is_excel))
+		{
+            $cols_param_arr= $reportsmodel->tmsheetstatusReportHeader();
+    		sapp_Global::export_to_excel($result,$cols_param_arr,"TimesheetStatusReport.xlsx");
+		}
+	}
 
 	public function projectsreportsAction(){
 

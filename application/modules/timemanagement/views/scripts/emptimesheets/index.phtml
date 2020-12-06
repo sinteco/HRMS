@@ -220,8 +220,27 @@ $(function() {
     cursor: pointer;">
          		Add TimeSheet Status
          	</button>
+         	<br><br><br>
+         	<input type="hidden" id="reportsView" name="reportsView" value="leave" />
+			<input type="hidden" id="start_hidden" name="start_hidden"  maxlength="30" size="20" value="<?php echo $this->start_date;?>">  
+			<input type="hidden" id="end_hidden" name="end_hidden"  maxlength="30" size="20" value="<?php echo $this->end_date;?>"> 
+			<input type="hidden" id="period_flag" name="period_flag" value="projreports"/>
+			<input type="hidden" id="is_pdf" name="is_pdf" value="0"/>
+			<input type="hidden" id="is_excel" name="is_excel" value="0"/>
+			<input type="hidden" id="sort_order" name="sort_order" value="" />
+			<input type="hidden" id="sort_by" name="sort_by" value="" />
+			<input type="hidden" id="page_no" name="page_no" value="" />
+			<input type="hidden" id="per_page" name="per_page" value="" />
+			<input type="hidden" id="search_data_pdf" name="search_data_pdf" value="" />
+			<input type="hidden" id="selected_period_hidden" value="<?php echo $this->selected_period_hidden;?>"/>
+         	<div style="float:left">
+				<div class="fltright">
+					<div class="sprite export-xls" id="excel">Export to Excel</div>
+					<!-- <div class="sprite export-pdf" id="pdf">Export to PDF</div> -->
+				</div>
+			</div>
          </div>
-         <br><br><br>
+         
 	     <ul id="mainmenuTabs" class="tabs_ul_all">
             <li id="all" class="menu_filter_clicked">All</li>
             <li id="submitted">For Approval</li>            
@@ -431,33 +450,58 @@ $(document).ready(function(){
         });
     });
 
-	// $('.date-picker-month').datepicker( {
- //        changeMonth: true,
- //        changeYear: true,
- //        showButtonPanel: false,
- //        dateFormat: 'm',
- //        onClose: function(dateText, inst) { 
- //            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
- //            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
- //            $(this).datepicker('setDate', new Date(year, month, 1));
- //        }
- //    });
  	$("#selUser").select2();
  	var d = new Date();
 	$('.date-picker-month').val(d.getMonth()+1);
 	$('.date-picker-year').val(d.getFullYear());
-    // $('.date-picker-year').datepicker( {
-    //     changeMonth: true,
-    //     changeYear: true,
-    //     showButtonPanel: false,
-    //     dateFormat: 'yy',
-    //     onClose: function(dateText, inst) { 
-    //         var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
-    //         var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-    //         $(this).datepicker('setDate', new Date(year, month, 1));
-    //     }
-    // });
 
+	$('#excel').on('click', function() {
+		$("#is_excel").val('1');
+		var selmn = $('#idhidselmn').val();
+		var start_date = $('#start_date').val();
+		var end_date = $('#end_date').val();
+		var selected_period_hidden = $("#selected_period_hidden").attr('value');
+		var is_pdf = $('#is_pdf').val();
+		var is_excel = $('#is_excel').val();
+
+		if(is_pdf == 1 || is_excel == 1)
+		{
+			var sort_order = $('#sort_order').val(); 
+			var sort_by = $('#sort_by').val(); 
+			var page_no = $('#page_no').val(); 
+			var per_page = $('#per_page').val();
+			var search_data_pdf = $('#search_data_pdf').val();
+			var datefrom = $('#fromdatepicker').val();
+			var dateto = $('#todatepicker').val();
+			datefrom = "-"+new Date(datefrom).getDay()+"-"+new Date(datefrom).getDate();
+			dateto = "-"+new Date(dateto).getDay()+"-"+new Date(dateto).getDate();
+			// alert(datefrom);
+			// alert(start_date);
+			$('#is_pdf').val('0');
+			$('#is_excel').val('0');
+			$('#sort_order').val('');
+			$('#sort_by').val('');
+			$('#page_no').val('');
+			$('#per_page').val('');
+			window.location.href = base_url+"/timemanagement/reports/timesheetstatusreports/"+'is_pdf/'+is_pdf+'/is_excel/'+is_excel+'/selmn/'+selmn;
+		}
+		else
+		{
+			$.ajax({
+		    	url: base_url+"/timemanagement/reports/employeereports/format/html",   
+		        type : 'POST',	
+		        dataType:'html',
+		        data :'projectId='+projid+'&start_date='+start_date+'&end_date='+end_date+'&selected_period_hidden='+selected_period_hidden+'&is_pdf='+is_pdf,
+		        success : function(response){
+		        	$("#idacc_content").html(response);
+		        	$(".export_links").show(); 
+		        }
+		    });		
+		}
+	});
+	$('#pdf').on('click', function() {
+		alert('onprogess');
+	});
 });
 </script>
 

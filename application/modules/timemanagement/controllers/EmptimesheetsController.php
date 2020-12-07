@@ -613,6 +613,19 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 			$calenderWeek[0] = $calenderWeeksArray[$week-1];
 		}
 		$result = $empTSModel-> updateEmployeeTimesheet($emp_id,$year,$month,$lastday,$calenderWeek,"Approved","",$emplistflag,$loginUserId);
+		//send email to employee for rejection.
+		$usersmodel = new Timemanagement_Model_Users();
+		$employeeDetail = $usersmodel->getEmployeeDetailByEmpId($emp_id);
+		// Send email to reporting manager when timesheet is sumbitted.
+		$options['subject'] = APPLICATION_NAME.': Time Sheet Status';
+        $options['header'] = 'Employee Time Sheet Approved';
+        $options['toEmail'] = $employeeDetail['emailaddress'];  
+        $options['toName'] = $employeeDetail['userfullname'];
+        $options['message'] = 'Dear '.$employeeDetail['userfullname'].', <br/> Your Timesheet have been Approved for the month of '.$month.' and year '.$year.'.';
+        $options['cron'] = 'yes';
+        if(!empty($loginUserId)){
+            sapp_Global::_sendEmail($options);
+        }
 		$this->_helper->json(array('saved'=>$result));
 	}
 
@@ -653,6 +666,19 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		$res = $empTSModel->getsingleTMSC($month,$year,$emp_id);
 		$result = $empTSModel-> updateEmployeeTimesheet($emp_id,$year,$month,$lastday,$calenderWeek,"Rejected",$rejnote,$emplistflag,$loginUserId);
 		$empTSModel->deleteEMPTimesheetEdited($emp_id,$res[0]['form'],date("Y-m-t", strtotime($res[0]['to'])));
+		//send email to employee for rejection.
+		$usersmodel = new Timemanagement_Model_Users();
+		$employeeDetail = $usersmodel->getEmployeeDetailByEmpId($emp_id);
+		// Send email to reporting manager when timesheet is sumbitted.
+		$options['subject'] = APPLICATION_NAME.': Time Sheet Status';
+        $options['header'] = 'Employee Time Sheet Rejected';
+        $options['toEmail'] = $employeeDetail['emailaddress'];  
+        $options['toName'] = $employeeDetail['userfullname'];
+        $options['message'] = 'Dear '.$employeeDetail['userfullname'].', <br/> Your Timesheet have been Rejected for the month of '.$month.' and year '.$year.' and with Reason '.$rejnote;
+        $options['cron'] = 'yes';
+        if(!empty($loginUserId)){
+            sapp_Global::_sendEmail($options);
+        }
 		$this->_helper->json(array('saved'=>$result));
 	}
 

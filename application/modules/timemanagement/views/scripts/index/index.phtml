@@ -592,7 +592,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
          $.post('<?php echo $this->baseUrl("index.php/timemanagement/index/week");?>', data, function(returnedData) {
               console.log(returnedData);
               if(returnedData!=null){
-                    window.location.reload(true);
+                    // window.location.reload(true);
+                    console.log(returnedData);
+                    alert(returnedData);
               }
             });
               // console.log(v);

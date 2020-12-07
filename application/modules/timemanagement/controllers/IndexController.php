@@ -436,15 +436,14 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 
 	public function weekAction()
 	{
-		// $data = $this->params()->fromPost();
-		// var_dump($data);
-		// die();
 		$myTsModel = new Timemanagement_Model_MyTimesheetedited();
+		$usersmodel = new Timemanagement_Model_Users();
 		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
 		$where = '';
 		$auth = Zend_Auth::getInstance();
 		if($auth->hasIdentity()){
 			$loginUserId = $auth->getStorage()->read()->id;
+			$userfullname = $auth->getStorage()->read()->userfullname;
 		}
 		$date = $this->getRequest()->getPost('date', null);
 		$location = $this->getRequest()->getPost('location', null);
@@ -508,6 +507,29 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 			//get myform over here
 			// var_dump($myform);
 		}
+		//get ready data for email
+		$employeeDetail = $usersmodel->getEmployeeDetailByEmpId($loginUserId);
+		$reportingmanager = $usersmodel->getEmployeeDetailByEmpId($employeeDetail['reporting_manager']);
+		// Send email to reporting manager when timesheet is sumbitted.
+		$options['subject'] = APPLICATION_NAME.': Time Sheet submitted';
+        $options['header'] = 'Employee Time Sheet submitted';
+        $options['toEmail'] = $reportingmanager['emailaddress'];  
+        $options['toName'] = $reportingmanager['userfullname'];
+        $options['message'] = 'Dear '.$reportingmanager['userfullname'].', <br/> '.$userfullname.' have sumbitted timesheet for approval.';
+        $options['cron'] = 'yes';
+        if(!empty($loginUserId)){
+            sapp_Global::_sendEmail($options);
+        }
+        // Send email to employee when timesheet is sumbitted.
+		$options['subject'] = APPLICATION_NAME.': Time Sheet submitted';
+        $options['header'] = 'Employee Time Sheet submitted';
+        $options['toEmail'] = $employeeDetail['emailaddress'];  
+        $options['toName'] = $employeeDetail['userfullname'];
+        $options['message'] = 'Dear '.$employeeDetail['userfullname'].', <br/> your Timesheet have been sumbitted for approval.';
+        $options['cron'] = 'yes';
+        if(!empty($loginUserId)){
+            sapp_Global::_sendEmail($options);
+        }
 		die();
 
 		$usersModel = new Timemanagement_Model_Users();

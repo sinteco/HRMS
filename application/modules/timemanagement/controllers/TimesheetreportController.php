@@ -159,6 +159,7 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 		$this->view->TMSCData = $TMSCData;
 		$this->view->sentTimesSheets = $sentTimesSheets;
 		$this->view->fullName = $data->userfullname;
+		$this->view->id=$data->id;
 		$this->view->leaveTypes = $leaveTypes;
 		$this->view->status = $status;
 		$this->view->approver = $approver;

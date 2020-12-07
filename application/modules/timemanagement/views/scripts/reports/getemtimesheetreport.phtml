@@ -1115,15 +1115,6 @@ tags will be replaced.-->
 <!----------------------------->
 <!--START OF OUTPUT FROM EXCEL PUBLISH AS WEB PAGE WIZARD -->
 <!----------------------------->
-<div class="export-links">
-  <div class="fltright">
-    <div class="sprite export-pdf" id="pdf">Export to PDF</div>
-  </div>
-</div>
-
-<input type="hidden" id="is_pdf" name="is_pdf" value="0"/>
-<input type="hidden" id="is_excel" name="is_excel" value="0"/>
-<input type="hidden" id="emp_id" name="emp_id" value="<?php echo($this->id); ?>"/>
 
 <div id="1.10. 2020 Timesheet October 2020_7473" align=center
 x:publishsource="Excel">
@@ -2997,52 +2988,6 @@ x:publishsource="Excel">
 </div>
 <script type="text/javascript" language="javascript">
 $(document).ready(function(){
-
-  $('#pdf').on('click', function() {
-      $("#is_pdf").val('1');
-      var empid = $('#emp_id').val();
-      var start_date = $('#start_date').val();
-      var end_date = $('#end_date').val();
-      var selected_period_hidden = $("#selected_period_hidden").attr('value');
-      var is_pdf = $('#is_pdf').val();
-      var is_excel = $('#is_excel').val();
-
-      if(is_pdf == 1 || is_excel == 1)
-      {
-        var sort_order = $('#sort_order').val(); 
-        var sort_by = $('#sort_by').val(); 
-        var page_no = $('#page_no').val(); 
-        var per_page = $('#per_page').val();
-        var search_data_pdf = $('#search_data_pdf').val();
-        var datefrom = $('#fromdatepicker').val();
-        var dateto = $('#todatepicker').val();
-        datefrom = "-"+new Date(datefrom).getDay()+"-"+new Date(datefrom).getDate();
-        dateto = "-"+new Date(dateto).getDay()+"-"+new Date(dateto).getDate();
-        // alert(datefrom);
-        // alert(start_date);
-        $('#is_pdf').val('0');
-        $('#is_excel').val('0');
-        $('#sort_order').val('');
-        $('#sort_by').val('');
-        $('#page_no').val('');
-        $('#per_page').val('');
-        window.location.href = base_url+"/timemanagement/reports/emptimesheetreports/"+'is_pdf/'+is_pdf+'/is_excel/'+is_excel+'/empid/'+empid;
-      }
-      else
-      {
-        $.ajax({
-            url: base_url+"/timemanagement/reports/employeereports/format/html",   
-              type : 'POST',  
-              dataType:'html',
-              data :'projectId='+projid+'&start_date='+start_date+'&end_date='+end_date+'&selected_period_hidden='+selected_period_hidden+'&is_pdf='+is_pdf,
-              success : function(response){
-                $("#idacc_content").html(response);
-                $(".export_links").show(); 
-              }
-          });   
-      }
-  });
-
 	$('.breadcrumbs').append("<span class='arrows'>&rsaquo;</span><a href='<?php echo BASE_URL; ?>timemanagement/timesheetreport'>Time Sheet Report</a>");
 });
 </script>

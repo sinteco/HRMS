@@ -407,6 +407,72 @@ class Timemanagement_ReportsController extends Zend_Controller_Action
 		}
 	}
 
+	public function emptimesheetreportsAction(){
+
+		$is_pdf = ($this->_getParam('is_pdf')!='' && $this->_getParam('is_pdf')!='undefined')? $this->_getParam('is_pdf'):"";
+		$is_excel = ($this->_getParam('is_excel')!='' && $this->_getParam('is_excel')!='undefined')? $this->_getParam('is_excel'):"";
+		$user_id = $this->_request->getParam('empid');
+
+		var_dump($user_id);
+		die();
+		$selectedDateArray = $now->format('Y-m');
+		$selectedDateArray = explode('-',$selYrMon);
+		$month = $selectedDateArray[1];
+		$year = $selectedDateArray[0];
+
+		$tmsmodel = new Timemanagement_Model_Timesheetstatus();
+		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
+		$tmsheetstatusmodel = new Timemanagement_Model_MyTimesheetedited();
+		$usersModel = new Timemanagement_Model_Users();
+
+		$tsconfig = $tmsmodel->gettsconfigrationbymonth($month,$year);
+		$tsstatus = $tmsmodel->gettsstatusbyemp($user_id,$tsconfig[0]['id']);
+
+		$where = "j.month=".$month." and j.year=".$year;
+		$TMSCData = $tmsheetconfigrationsmodel->getTMSCWhere($where);
+		$leaveTypes = $tmsheetconfigrationsmodel->getUserLeavesData($user_id);
+		$empMonthTSData = $tmsheetstatusmodel->getTimesheetData($user_id, $year,$month);
+		$sentTimesSheets = $this->group_by('project_task_id',$empMonthTSData);
+		$month111 = date("m",strtotime($TMSCData[0]['form']));
+		$year111 = date("Y",strtotime($TMSCData[0]['form']));
+		$month0111 = date("m",strtotime($TMSCData[0]['to']));
+		$year0111 = date("Y",strtotime($TMSCData[0]['to']));
+
+		$empHolidaysWeekendsData111 = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year111,$month111);
+		$empHolidays111 = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year0111,$month0111);
+		$empHolidaysWeekendsData = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year,$month);
+		$userfullname = $usersModel->getEmployeeDetailByEmpId($user_id);
+		if($tsstatus[0]['status']=="Approved"){$approver = $usersModel->getEmployeeDetail($tsstatus[0]['approved_by']);}else {$approver = null;}
+
+		if(!empty($is_pdf))
+		{
+			$view = $this->getHelper('ViewRenderer')->view;
+            $this->view->status = $tsstatus;
+			$this->view->month = $month;
+			$this->view->year = $year;
+			$this->view->sentTimesSheets = $sentTimesSheets;
+			$this->view->TMSCData = $TMSCData;
+			$this->view->leaveTypes = $leaveTypes;
+			$this->view->empHolidaysWeekends = $empHolidaysWeekendsData[0];
+			$this->view->holidays = $empHolidaysWeekends111;
+			$this->view->holidays0 = $empHolidays111;
+			$this->view->fullName = $userfullname['userfullname'];
+			$this->view->approver = $approver;
+            $text = $view->render('reports/getemtimesheetreport.phtml');
+            require_once 'application/modules/default/library/MPDF57/mpdf.php';
+            $mpdf=new mPDF('', 'A4-L', 12, 'Arial', 10, 10, 12, 12, 6, 6);
+            $mpdf->SetDisplayMode('fullpage');
+            $mpdf->list_indent_first_level = 0;
+            $mpdf->SetDisplayMode('fullpage');
+            $mpdf->pagenumSuffix = '';
+            $mpdf->nbpgPrefix = ' of ';
+            $mpdf->nbpgSuffix = '';
+            $mpdf->AddPage();
+            $mpdf->WriteHTML($text);
+            $mpdf->Output('empTimesheetReport'.'.pdf','D');
+		}
+	}
+
 	public function projectsreportsAction(){
 
 		$reportsmodel = new Timemanagement_Model_Reports();

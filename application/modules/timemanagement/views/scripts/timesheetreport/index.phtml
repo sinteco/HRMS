@@ -256,7 +256,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
 
           $leave_signal = false;
           $leave_signal_half = false;
-          foreach ($leaves as $key => $value) {
+          foreach ($leaveTypes as $key => $value) {
                if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved'&&$value['appliedleavescount']=='0.5')
                {
                     $leave_signal_half=true;
@@ -615,20 +615,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
 
           $leave_signal = false;
           $leave_signal_half = false;
-          foreach ($leaves as $key => $value) {
-               if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved'&&$value['appliedleavescount']=='0.5')
-               {
-                    $leave_signal_half=true;
-                    break;
-               }elseif (($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved') {
-                    $leave_signal=true;
-                    break;
-               }
-          }
-
-          $leave_signal = false;
-          $leave_signal_half = false;
-          foreach ($leaves as $key => $value) {
+          foreach ($leaveTypes as $key => $value) {
                if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved'&&$value['appliedleavescount']=='0.5')
                {
                     $leave_signal_half=true;

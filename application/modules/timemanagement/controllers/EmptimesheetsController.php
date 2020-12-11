@@ -74,7 +74,10 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 	 * This method will display all the client details in grid format.
 	 */
 	public function indexAction()
-	{
+	{	
+		$auth = Zend_Auth::getInstance();
+		$loginuserRole = $auth->getStorage()->read()->emprole;
+		$superAdmin = SUPERADMIN==$loginuserRole;
 		$usersModel = new Timemanagement_Model_Users();
 		$storage = new Zend_Auth_Storage_Session();
 		$data = $storage->read();
@@ -90,6 +93,7 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		$this->view->endday_m=$endday;
 		$this->view->min_year=$min_year;
 		$this->view->users=$users;
+		$this->view->superAdmin=$superAdmin;
 
 	}
 

@@ -176,7 +176,7 @@ $(function() {
 			<?php if($this->tm_role == "Manager") { ?>
         		<option value="<?php echo $data->id;?>">Reporting to me</option>
 				
-        		<option value="project">Associated with project</option>
+        		<!-- <option value="project">Associated with project</option> -->
         		
         			<option value="all">All</option>
         		<?php } ?>
@@ -235,7 +235,9 @@ $(function() {
 			<input type="hidden" id="selected_period_hidden" value="<?php echo $this->selected_period_hidden;?>"/>
          	<div style="float:left">
 				<div class="fltright">
+				<?php if($this->superAdmin){?>
 					<div class="sprite export-xls" id="excel">TimeSheet Status in Excel</div>
+				<?php } ?>
 					<!-- <div class="sprite export-pdf" id="pdf">Export to PDF</div> -->
 				</div>
 			</div>

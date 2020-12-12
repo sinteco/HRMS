@@ -1170,13 +1170,20 @@ $(document).ready(function(){
             </div -->
             <div class="row_info">
             	<label>Status</label>
-                <span class="no_entry" id=""> <?php echo $this->status[0]['status']; ?> </span>
+                <span class="no_entry" id=""> <?php
+                 $key = end(array_keys($this->status));
+                 echo $this->status[$key]['status']; ?> </span>
             </div>
             <div class="row_info">
             	<label>Manager</label>
                 <span id="emp_manager_name"></span>
             </div>
-            <div class="right-btn-block" id="emp_buttons_display"></div>
+            <div class="right-btn-block" id="">
+            	<?php if($this->status[$key]['status']=="For Approval"){ ?>
+	            	<a class="approve-btn action_btn" href="javascript:void(0);" onclick="approveEmpTimesheet('<?php echo $selYrMon;?>','<?php echo $user_id;?>','<?php echo $type;?>','<?php echo $hidweek;?>','<?php echo $manager_id;?>','monthly','<?php echo $emplistflag;?>');"><i class="fa fa-check" style=""></i> Approve</a>
+	            	<a class="reject-btn action_btn" href="javascript:void(0);" onclick="rejectEmpTimesheet('<?php echo $selYrMon;?>','<?php echo $user_id;?>','<?php echo $type;?>','<?php echo $hidweek;?>','<?php echo $manager_id;?>','monthly','<?php echo $emplistflag;?>');"><i class="fa fa-ban" style=""></i> Reject</a>
+            	<?php } ?>
+            </div>
         </div>
     </div>
 	<div class="right_content">
@@ -1229,7 +1236,7 @@ tags will be replaced.-->
 <!--START OF OUTPUT FROM EXCEL PUBLISH AS WEB PAGE WIZARD -->
 <!----------------------------->
 
-<div id="1.10. 2020 Timesheet October 2020_7473" align=center
+<div style="overflow: auto;" id="1.10. 2020 Timesheet October 2020_7473" align=center
 x:publishsource="Excel">
 
 <table border=0 cellpadding=0 cellspacing=0 width=1724 class=xl727473
@@ -1781,8 +1788,9 @@ x:publishsource="Excel">
   <td colspan=18 height=26 class=xl2677473 style='height:19.5pt'><span
   style='mso-spacerun:yes'>                                                                                        
   </span>Employee</td>
-  <td colspan=25 class=xl2587473><?php if($this->status[0]['status']=="Approved"){echo "Approved";} ?> <span
-  style='mso-spacerun:yes'> </span></td>
+  <td colspan=25 class=xl2587473><?php if($this->status[0]['status']=="Approved"){
+    echo '<img width="100" height="60" src="'.DOMAIN.'/../public/uploads/organisation/green-approved-stamp.png">';
+  } ?></td>
   <td class=xl727473></td>
   <td class=xl727473></td>
   <td class=xl727473></td>
@@ -1791,7 +1799,7 @@ x:publishsource="Excel">
   <td class=xl727473></td>
  </tr>
  <tr class=xl655357473 height=32 style='mso-height-source:userset;height:24.0pt'>
-  <td height=32 class=xl2567473 colspan=3 style='height:24.0pt'>Signature: <u><?php echo $this->fullName; ?></u></td>
+  <td height=32 class=xl2567473 colspan=3 style='height:24.0pt'>Signature:- <u><?php echo $this->fullName; ?></u></td>
   <td class=xl655357473></td>
   <td class=xl655357473></td>
   <td class=xl655357473></td>

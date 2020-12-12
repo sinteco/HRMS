@@ -58,13 +58,13 @@ if('<?php echo $this->page;?>'==1 && '<?php echo sizeof($emplist); ?>' == '0')
 					<?php if($tmpEmp['time_status'] !== "No Entry"){?>
 						<?php if($tmpEmp['ts_as_fail']!=null){ ?>
 							<div class="view_time_link">
-								<?php if($tmpEmp['ts_as_fail']==null){ echo "<i class='fa fa-eye'></i>View Time";}else{ echo "<a href='".APPLICATION_PATH."/../public/tmp/upload".$tmpEmp['ts_as_fail']."' target='_blank'>Download</a>";} ?>
+								<?php if($tmpEmp['ts_as_fail']==null&&($tmpEmp['time_status'] == "For Approval"||$tmpEmp['time_status'] == "Approved")){ echo "<i class='fa fa-eye'></i>View Time";}else if($tmpEmp['ts_as_fail']!=null){ echo "<a href='".APPLICATION_PATH."/../public/tmp/upload".$tmpEmp['ts_as_fail']."' target='_blank'>Download</a>";}else{} ?>
 							</div>
 						<?php }else{ ?>
 							<div class="view_time_link" 
 								onclick="javascript:viewEmployeeTimesheet('<?php echo $selmn;?>',
 								'<?php echo $tmpEmp['emp_id'];?>','<?php echo $manager_id;?>','<?php echo $type;?>','<?php echo $hidweek;?>','<?php echo $emp_list_flag; ?>','<?php echo $tmpEmp['proj_ids']?>');">
-								<?php if($tmpEmp['ts_as_fail']==null){ echo "<i class='fa fa-eye'></i>View Time";}else{ echo "<a href='".APPLICATION_PATH."/../public/tmp/upload".$tmpEmp['ts_as_fail']."' target='_blank'>Download</a>";} ?>
+								<?php if($tmpEmp['ts_as_fail']==null&&($tmpEmp['time_status'] == "For Approval"||$tmpEmp['time_status'] == "Approved")){ echo "<i class='fa fa-eye'></i>View Time";}else if($tmpEmp['ts_as_fail']!=null){ echo "<a href='".APPLICATION_PATH."/../public/tmp/upload".$tmpEmp['ts_as_fail']."' target='_blank'>Download</a>";}else{} ?>
 							</div>
 						<?php } ?>
 					<?php } ?>

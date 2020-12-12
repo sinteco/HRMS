@@ -2491,7 +2491,8 @@ function approveEmpTimesheet(selmn,emp_id,type,hideweek,manager_id,flag,emp_list
     		    	emp_display_weeks_monthly(selmn,manager_id,'');
     		    }else{
     		    	$('#idweeks_display').html('');
-    		    	displayEmpTimesheetMonthly(selmn,emp_list_flag);
+					displayEmpTimesheetMonthly(selmn,emp_list_flag);
+					viewEmployeeTimesheet(selmn,emp_id,manager_id,'month','','admin','');
     		    }
         	}
         	 
@@ -2552,7 +2553,8 @@ function rejectEmpTimesheet(selmn,emp_id,type,hideweek,manager_id,flag,emp_list_
             	        		    	emp_display_weeks_monthly(selmn,manager_id,'');
             	        		    }else{
             	        		    	$('#idweeks_display').html('');
-            	        		    	displayEmpTimesheetMonthly(selmn,emp_list_flag);
+										displayEmpTimesheetMonthly(selmn,emp_list_flag);
+										viewEmployeeTimesheet(selmn,emp_id,manager_id,'month','','admin','');
             	        		    }
             	            	}
             	            	 

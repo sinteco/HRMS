@@ -330,7 +330,7 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		$usersModel = new Timemanagement_Model_Users();
 
 		$tsconfig = $tmsmodel->gettsconfigrationbymonth($month,$year);
-		$tsstatus = $tmsmodel->gettsstatusbyemp($user_id,$tsconfig[0]['id']);
+		$tsstatus = $tmsheetstatusmodel->getTimeSheetstatus($user_id,$tsconfig[0]['id']);
 
 		$min_year=$empTimesheets_model->getMinYear();
 		$date1 = new DateTime(date('Y-m-01'));
@@ -352,7 +352,7 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		$empHolidays111 = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year0111,$month0111);
 		$empHolidaysWeekendsData = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year,$month);
 		$userfullname = $usersModel->getEmployeeDetailByEmpId($user_id);
-		if($tsstatus[0]['status']=="Approved"){$approver = $usersModel->getEmployeeDetailByEmpId($tsstatus[0]['approved_by']);}else {$approver = null;}
+		if($tsstatus[0]['status']=="Approved"){$approver = $usersModel->getEmployeeDetail($tsstatus[0]['approved_by']);}else {$approver = null;}
 
 		$this->view->tm_role = Zend_Registry::get('tm_role');
 		$this->view->data=$data;

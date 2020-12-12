@@ -1,4 +1,16 @@
 <?php 
+function clockalize($in){
+
+    $h = intval($in);
+    $m = round((((($in - $h) / 100.0) * 60.0) * 100), 0);
+    if ($m == 60)
+    {
+        $h++;
+        $m = 0;
+    }
+    $retval = sprintf("%02d:%02d", $h, $m);
+    return $retval;
+}
 function decimalSum($val0,$val1){
   return $val0+$val1;
 }
@@ -256,7 +268,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
 
           $leave_signal = false;
           $leave_signal_half = false;
-          foreach ($leaves as $key => $value) {
+          foreach ($leaveTypes as $key => $value) {
                if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved'&&$value['appliedleavescount']=='0.5')
                {
                     $leave_signal_half=true;
@@ -330,7 +342,8 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
                 break;
               }
             else if($holiday_signal){
-              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
+              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'>".clockalize(${'totalTimeColumn'.$ke})."</td>";
+              $calendarSubTotalTimeSum += ${'totalTimeColumn'.$ke};
               break;
             }
             else if($leave_signal){
@@ -341,7 +354,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
                 foreach ($value as $ke => $val) {
                   if($val['date']==$date." 00:00:00")
                   {
-                    $calendarSubTotalTime .= "<td class=xl987473 width=37 style='width:28pt'>${'totalTimeColumn'.$ke}</td>";
+                    $calendarSubTotalTime .= "<td class=xl987473 width=37 style='width:28pt'>".clockalize(${'totalTimeColumn'.$ke})."</td>";
                     $calendarSubTotalTimeSum += ${'totalTimeColumn'.$ke};
                     break;
                   }
@@ -469,7 +482,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	}
           }
           foreach ($leaveTypes as $key => $value) {
-          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==9&&$value['leavestatus']=='Approved')
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']!=8&&$value['leavetypeid']!=15&&$value['leavetypeid']!=6&&$value['leavetypeid']!=5&&$value['leavetypeid']!=12&&$value['leavetypeid']!=13&&$value['leavetypeid']!=10&&$value['leavetypeid']!=1&&$value['leavestatus']=='Approved')
           	{
           		$Othertime="08:30";
               ${'totalLeaveColumn'.$currentDayL} += decimalHours("08:30");
@@ -543,14 +556,14 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
               break;
             }
             else if($leave_signal){
-              $calendarSubTotalLeave .= "<td class=xl987473 style='border-top:none'> </td>";
+              $calendarSubTotalLeave .= "<td class=xl987473 style='border-top:none'>".clockalize(${'totalLeaveColumn'.$currentDayL})."</td>";
               break;
             }
             else{
                 foreach ($value as $ke => $val) {
                   if($val['date']==$date." 00:00:00")
                   {
-                    $calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>${'totalLeaveColumn'.$currentDayL}</td>";
+                    $calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>".clockalize(${'totalLeaveColumn'.$currentDayL})."</td>";
                     break;
                   }
                 }
@@ -564,18 +577,18 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
               break;
             }
             else if($holiday_signal){
-              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'> </td>";
+              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'>".clockalize(decimalSum(0,${'totalTimeColumn'.$ke}))."</td>";
               break;
             }
             else if($leave_signal){
-              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'> </td>";
+              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'>".clockalize(decimalSum(${'totalLeaveColumn'.$currentDay},0))."</td>";
               break;
             }
             else{
                 foreach ($value as $ke => $val) {
                   if($val['date']==$date." 00:00:00")
                   {
-                    $caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>".decimalSum(${'totalLeaveColumn'.$currentDay},${'totalTimeColumn'.$ke})."</td>";
+                    $caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>".clockalize(decimalSum(${'totalLeaveColumn'.$currentDay},${'totalTimeColumn'.$ke}))."</td>";
                     break;
                   }
                 }
@@ -615,20 +628,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
 
           $leave_signal = false;
           $leave_signal_half = false;
-          foreach ($leaves as $key => $value) {
-               if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved'&&$value['appliedleavescount']=='0.5')
-               {
-                    $leave_signal_half=true;
-                    break;
-               }elseif (($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved') {
-                    $leave_signal=true;
-                    break;
-               }
-          }
-
-          $leave_signal = false;
-          $leave_signal_half = false;
-          foreach ($leaves as $key => $value) {
+          foreach ($leaveTypes as $key => $value) {
                if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavestatus']=='Approved'&&$value['appliedleavescount']=='0.5')
                {
                     $leave_signal_half=true;
@@ -669,7 +669,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
             else if($holiday_signal)
               ${'calendar'.$key} .= "<td class=xl987473 style='border-top:none'> </td>";
             else if($leave_signal)
-              ${'calendar'.$key} .= "<td class=xl987473 style='border-top:none'> </td>";
+              ${'calendar'.$key} .= "<td class=xl1127473 style='border-top:none'> </td>";
             else{
                 foreach ($value as $ke => $val) {
                   if($val['date']==$date." 00:00:00")
@@ -696,7 +696,8 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
                 break;
               }
             else if($holiday_signal){
-              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'> </td>";
+              $calendarSubTotalTime .= "<td class=xl987473 style='border-top:none'>".clockalize(${'totalTimeColumn'.$ke})."</td>";
+              $calendarSubTotalTimeSum += ${'totalTimeColumn'.$ke};
               break;
             }
             else if($leave_signal){
@@ -707,7 +708,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
                 foreach ($value as $ke => $val) {
                   if($val['date']==$date." 00:00:00")
                   {
-                    $calendarSubTotalTime .= "<td class=xl987473 width=37 style='width:28pt'>${'totalTimeColumn'.$ke}</td>";
+                    $calendarSubTotalTime .= "<td class=xl987473 width=37 style='width:28pt'>".clockalize(${'totalTimeColumn'.$ke})."</td>";
                     $calendarSubTotalTimeSum += ${'totalTimeColumn'.$ke};
                     break;
                   }
@@ -843,7 +844,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	}
           }
           foreach ($leaveTypes as $key => $value) {
-          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==9&&$value['leavestatus']=='Approved')
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']!=8&&$value['leavetypeid']!=15&&$value['leavetypeid']!=6&&$value['leavetypeid']!=5&&$value['leavetypeid']!=12&&$value['leavetypeid']!=13&&$value['leavetypeid']!=10&&$value['leavetypeid']!=1&&$value['leavestatus']=='Approved')
           	{
           		$Othertime="08:30";
               ${'totalLeaveColumn'.$currentDay} += decimalHours("08:30");
@@ -938,14 +939,14 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
               break;
             }
             else if($leave_signal){
-              $calendarSubTotalLeave .= "<td class=xl987473 style='border-top:none'> </td>";
+              $calendarSubTotalLeave .= "<td class=xl987473 style='border-top:none'>".clockalize(${'totalLeaveColumn'.$currentDay})."</td>";
               break;
             }
             else{
                 foreach ($value as $ke => $val) {
                   if($val['date']==$date." 00:00:00")
                   {
-                    $calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>${'totalLeaveColumn'.$currentDay}</td>";
+                    $calendarSubTotalLeave .= "<td class=xl1877473 width=37 style='width:28pt'>".clockalize(${'totalLeaveColumn'.$currentDay})."</td>";
                     break;
                   }
                 }
@@ -959,18 +960,18 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
               break;
             }
             else if($holiday_signal){
-              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'> </td>";
+              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'>".clockalize(decimalSum(0,${'totalTimeColumn'.$ke}))."</td>";
               break;
             }
             else if($leave_signal){
-              $caledarGrandTotal .= "<td class=xl987473 style='border-top:none'> </td>";
+              $caledarGrandTotal .= "<td class=xl987473 width=37 style='border-top:none'>".clockalize(decimalSum(${'totalLeaveColumn'.$currentDay},0))."</td>";
               break;
             }
             else{
                 foreach ($value as $ke => $val) {
                   if($val['date']==$date." 00:00:00")
                   {
-                    $caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>".decimalSum(${'totalLeaveColumn'.$currentDay},${'totalTimeColumn'.$ke})."</td>";
+                    $caledarGrandTotal .= "<td class=xl1877473 width=37 style='width:28pt'>".clockalize(decimalSum(${'totalLeaveColumn'.$currentDay},${'totalTimeColumn'.$ke}))."</td>";
                     break;
                   }
                 }
@@ -984,24 +985,24 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           // $calendarL .= "<td class='day $day_name' rel='$date'>$currentDay</td>";
           if ($currentDay==$numberDays) {
             foreach ($sentTimesSheets as $key => $value) {
-              ${'calendar'.$key} .= "<td class=xl1127473 style='border-top:none'>".${'totalTimeRow'.$key}."</td>";
+              ${'calendar'.$key} .= "<td class=xl1127473 style='border-top:none'>".clockalize(${'totalTimeRow'.$key})."</td>";
             }
-          	$calendarL .= "<td class=xl1127473 style='border-top:none'>$totalTime</td>";
-          	$calendarS .= "<td class=xl1127473 style='border-top:none'>$totalTime</td>";
+          	$calendarL .= "<td class=xl1127473 style='border-top:none'>".clockalize($totalTime)."</td>";
+          	$calendarS .= "<td class=xl1127473 style='border-top:none'>".clockalize($totalTime)."</td>";
           	$calendarSpace .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
-          	$calendarSickleave .= "<td class=xl1127473 style='border-top:none'>$calendarSickleaveRow</td>";
-          	$calendarMaternityLeave .= "<td class=xl1127473 style='border-top:none'>$calendarMaternityLeaveRow</td>";
-          	$calendarPaternityLeave .= "<td class=xl1127473 style='border-top:none'>$calendarPaternityLeaveRow</td>";
-          	$calendarFamilyLeave .= "<td class=xl1127473 style='border-top:none'>$calendarFamilyLeaveRow</td>";
-          	$calendarPublicHoliday .= "<td class=xl1127473 style='border-top:none'>$calendarPublicHolidayRow</td>";
-          	$calendarStudyleave .= "<td class=xl1127473 style='border-top:none'>$calendarStudyleaveRow</td>";
-          	$calendarAnnualLeave .= "<td class=xl1127473 style='border-top:none'>$calendarAnnualLeaveRow</td>";
-          	$calendarFloatingHoliday .= "<td class=xl1127473 style='border-top:none'>$calendarFloatingHolidayRow</td>";
-          	$calendarOther .= "<td class=xl1127473 style='border-top:none'>$calendarOtherRow</td>";
+          	$calendarSickleave .= "<td class=xl1127473 style='border-top:none'>".clockalize($calendarSickleaveRow)."</td>";
+          	$calendarMaternityLeave .= "<td class=xl1127473 style='border-top:none'>".clockalize($calendarMaternityLeaveRow)."</td>";
+          	$calendarPaternityLeave .= "<td class=xl1127473 style='border-top:none'>".clockalize($calendarPaternityLeaveRow)."</td>";
+          	$calendarFamilyLeave .= "<td class=xl1127473 style='border-top:none'>".clockalize($calendarFamilyLeaveRow)."</td>";
+          	$calendarPublicHoliday .= "<td class=xl1127473 style='border-top:none'>".clockalize($calendarPublicHolidayRow)."</td>";
+          	$calendarStudyleave .= "<td class=xl1127473 style='border-top:none'>".clockalize($calendarStudyleaveRow)."</td>";
+          	$calendarAnnualLeave .= "<td class=xl1127473 style='border-top:none'>".clockalize($calendarAnnualLeaveRow)."</td>";
+          	$calendarFloatingHoliday .= "<td class=xl1127473 style='border-top:none'>".clockalize($calendarFloatingHolidayRow)."</td>";
+          	$calendarOther .= "<td class=xl1127473 style='border-top:none'>".clockalize($calendarOtherRow)."</td>";
           	$calendarLeaveHeader .= "<td class=xl1127473 style='border-top:none'>&nbsp;</td>";
-          	$calendarSubTotalLeave .= "<td class=xl987473 width=37 style='width:28pt'>$calendarSubTotalLeaveSum</td>";
-            $calendarSubTotalTime .= "<td class=xl987473 width=37 style='width:28pt'>$calendarSubTotalTimeSum</td>";
-          	$caledarGrandTotal .= "<td class=xl987473 width=37 style='width:28pt'>".decimalSum($calendarSubTotalTimeSum,$calendarSubTotalLeaveSum)."</td>";
+          	$calendarSubTotalLeave .= "<td class=xl987473 width=37 style='width:28pt'>".clockalize($calendarSubTotalLeaveSum)."</td>";
+            $calendarSubTotalTime .= "<td class=xl987473 width=37 style='width:28pt'>".clockalize($calendarSubTotalTimeSum)."</td>";
+          	$caledarGrandTotal .= "<td class=xl987473 width=37 style='width:28pt'>".clockalize(decimalSum($calendarSubTotalTimeSum,$calendarSubTotalLeaveSum))."</td>";
           }
           // Increment counters
  
@@ -1725,6 +1726,10 @@ x:publishsource="Excel">
   <td class=xl727473></td>
  </tr>
  <?php echo $holidaycal; ?>
+ <tr>
+    <td class=xl1857473>Comment: </td>
+    <td class=xl1857473><?php echo $this->status[0]['comment']; ?></td>
+  </tr>
  <tr class=xl727473 height=21 style='height:15.75pt'>
   <td height=21 class=xl2557473 colspan=6 style='height:15.75pt'>I CERTIFY THAT
   ABOVE IS TRUE AND CORRECT<span style='mso-spacerun:yes'> </span></td>

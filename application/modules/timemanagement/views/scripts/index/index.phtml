@@ -586,10 +586,49 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
              }
          }
          // var vals = $(".dateclass").map(function(){ return this.value}).get();
-         // console.log(c);
+         // console.log(p);
+         var validation = true;
+          var halftime = "04:30";
+          var fulltime = "08:30";
+          var halfDay = new Date("01/01/2000 "+halftime);
+          var fullDay = new Date("01/01/2000 "+fulltime);
+         for (var i = p.length - 1; i >= 0; i--) {
+              if(p[i]['value']==""){
+               alert("Please select a project for Your Timesheet");
+               validation = false;
+              }
+         }
+         var lastdateArray = 0;
+         var timeArry = [];
+
+         for (var i = 0; i<p.length;i++) {
+               // var maketime = new Date("01/01/2000 "+t[i]['value']);
+               // if(t[i]['value']!=''&&maketime>fullDay){
+               //      alert('Your Timesheet is more than a day total in '+d[i]['value']);
+               // }
+               const counter = parseInt(wd)*(i+1);
+               if (t.length>wd) {
+                    var index = 0;
+                    for (var j=lastdateArray; j < counter; j++) {
+                         lastdateArray=j+1;
+                         var maketime = 0;
+                         if (t[j]['value']!='') {
+                              maketime = new Date("01/01/2000 "+t[i]['value']);
+                         }else{
+                              maketime = new Date("01/01/2000 "+'00:00');
+                         }
+                         var date = d[j]['value'];
+                         timeArry[index]=timeArry[index]!=null?new Date(Date.parse(timeArry[index])+Date.parse(maketime)):maketime;
+                         index++;
+                    }
+               }
+               console.log(timeArry);
+         }
          // alert(c);
+         // if (true) {}
          var data = {project: p, location: l, time: t, date: d, workingDays: wd, comment: c};
-         $.post('<?php echo $this->baseUrl("index.php/timemanagement/index/week");?>', data, function(returnedData) {
+         if (validation) {
+          $.post('<?php echo $this->baseUrl("index.php/timemanagement/index/week");?>', data, function(returnedData) {
               console.log(returnedData);
               if(returnedData!=null){
                     window.location.reload(true);
@@ -597,7 +636,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
                     // alert(returnedData);
               }
             });
-              // console.log(v);
+         }
        });
      $('.breadcrumbs').append("<span class='arrows'>&rsaquo;</span><a href='<?php echo BASE_URL; ?>timemanagement'>Time Sheet</a>");
      $('.timeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 8, 30, 0)});
@@ -614,7 +653,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
           $("input[name=time]").val("");
           var data = {project: project, location: location, time: time, date: date};
           $.post('<?php echo $this->baseUrl("index.php/timemanagement/index/week");?>', data, function(returnedData) {
-              console.log(returnedData);
+              // console.log(returnedData);
               if(returnedData!=null){
                     window.location.reload(true);
               }

@@ -155,7 +155,7 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 		$date_diff = date_diff(date_create($TMSCData[0]['form']),date_create($TMSCData[0]['to']));
 		$lastDateOfMonth = date("Y-m-t", strtotime($TMSCData[0]['form']));
 		$status = $tmsheetstatusmodel->getTimeSheetstatus($data->id,$TMSCData[0]['id']);
-		if($status[0]['status']=="Approved"){$approver = $usermodel->getEmployeeDetail($status[0]['approved_by']);}else {$approver = null;}
+		if($status[0]['status']=="Approved"){$approver = $usermodel->getEmployeeDetailByEmpId($status[0]['approved_by']);}else {$approver = null;}
 		$this->view->TMSCData = $TMSCData;
 		$this->view->sentTimesSheets = $sentTimesSheets;
 		$this->view->fullName = $data->userfullname;

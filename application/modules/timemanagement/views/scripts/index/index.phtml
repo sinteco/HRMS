@@ -587,7 +587,13 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
          }
          // var vals = $(".dateclass").map(function(){ return this.value}).get();
          // console.log(p);
-         var validation = true;
+         
+          function timeToDecimal(t) {
+              var arr = t.split(':');
+              var dec = parseInt((arr[1]/6)*10, 10);
+              return parseFloat(parseInt(arr[0], 10) + '.' + (dec<10?'0':'') + dec);
+          }
+          var validation = true;
           var halftime = "04:30";
           var fulltime = "08:30";
           var halfDay = new Date("01/01/2000 "+halftime);
@@ -613,16 +619,29 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
                          lastdateArray=j+1;
                          var maketime = 0;
                          if (t[j]['value']!='') {
-                              maketime = new Date("01/01/2000 "+t[i]['value']);
+                              maketime = t[j]['value'];
                          }else{
-                              maketime = new Date("01/01/2000 "+'00:00');
+                              maketime = '00:00';
                          }
                          var date = d[j]['value'];
-                         timeArry[index]=timeArry[index]!=null?new Date(Date.parse(timeArry[index])+Date.parse(maketime)):maketime;
+                         timeArry[index]=timeArry[index]!=null?(timeArry[index])+timeToDecimal(maketime):timeToDecimal(maketime);
                          index++;
                     }
                }
-               console.log(timeArry);
+               // console.log(timeArry);
+         }
+         for (var i = 0; i < timeArry.length; i++) {
+          var da = new Date(d[i]['value']);
+          var dayName = da.toString().split(' ')[0];
+              if (dayName=='Fri') {
+               if (timeArry[i]>4.5) {
+                    alert('Please review Your time in '+d[i]["value"]+' its more than a day allowed !');
+                    validation = false;
+               }
+              }else if(timeArry[i]>8.5) {
+                    alert('Please review Your time in '+d[i]["value"]+' its more than a day allowed !');
+                    validation = false;
+              }
          }
          // alert(c);
          // if (true) {}

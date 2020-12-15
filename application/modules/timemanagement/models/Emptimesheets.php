@@ -246,6 +246,13 @@ IF(FIND_IN_SET('enabled',GROUP_CONCAT(sun_project_status,',',mon_project_status,
 		}elseif ($type=="rejected") {
 			$selectEmpTimesheetsQuery .= " and tmes.status = 'Rejected";
 		}
+		if($emp_list_flag != "admin"){
+			if($emp_list_flag != "all"){
+				$selectEmpTimesheetsQuery .= " AND (mes.reporting_manager = ".$manager_id.")";
+			}else{
+				//
+			}
+		}
 		if(trim($search) != "")
 		{
 			$selectEmpTimesheetsQuery .= "and mes.userfullname like '%".$search."%'";

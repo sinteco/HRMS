@@ -626,7 +626,7 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
         $options['toEmail'] = $employeeDetail['emailaddress'];  
         $options['toName'] = $employeeDetail['userfullname'];
         $options['message'] = 'Dear '.$employeeDetail['userfullname'].', <br/> Your Timesheet have been Approved for the month of '.$month.' and year '.$year.'.';
-        $options['cron'] = 'yes';
+        // $options['cron'] = 'yes';
         if(!empty($loginUserId)){
             sapp_Global::_sendEmail($options);
         }
@@ -679,7 +679,7 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
         $options['toEmail'] = $employeeDetail['emailaddress'];  
         $options['toName'] = $employeeDetail['userfullname'];
         $options['message'] = 'Dear '.$employeeDetail['userfullname'].', <br/> Your Timesheet have been Rejected for the month of '.$month.' and year '.$year.' and with Reason '.$rejnote;
-        $options['cron'] = 'yes';
+        // $options['cron'] = 'yes';
         if(!empty($loginUserId)){
             sapp_Global::_sendEmail($options);
         }

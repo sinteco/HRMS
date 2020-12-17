@@ -413,10 +413,9 @@ class Timemanagement_ReportsController extends Zend_Controller_Action
 		$is_excel = ($this->_getParam('is_excel')!='' && $this->_getParam('is_excel')!='undefined')? $this->_getParam('is_excel'):"";
 		$user_id = $this->_request->getParam('empid');
 
-		var_dump($user_id);
-		die();
+		$now = new DateTime();
 		$selectedDateArray = $now->format('Y-m');
-		$selectedDateArray = explode('-',$selYrMon);
+		$selectedDateArray = explode('-',$selectedDateArray);
 		$month = $selectedDateArray[1];
 		$year = $selectedDateArray[0];
 
@@ -442,7 +441,7 @@ class Timemanagement_ReportsController extends Zend_Controller_Action
 		$empHolidays111 = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year0111,$month0111);
 		$empHolidaysWeekendsData = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year,$month);
 		$userfullname = $usersModel->getEmployeeDetailByEmpId($user_id);
-		if($tsstatus[0]['status']=="Approved"){$approver = $usersModel->getEmployeeDetail($tsstatus[0]['approved_by']);}else {$approver = null;}
+		if($tsstatus[0]['status']=="Approved"){$approver = $usersModel->getEmployeeDetailByEmpId($tsstatus[0]['approved_by']);}else {$approver = null;}
 
 		if(!empty($is_pdf))
 		{
@@ -471,6 +470,19 @@ class Timemanagement_ReportsController extends Zend_Controller_Action
             $mpdf->WriteHTML($text);
             $mpdf->Output('empTimesheetReport'.'.pdf','D');
 		}
+	}
+	function group_by($key, $data) {
+	    $result = array();
+
+	    foreach($data as $val) {
+	        if(array_key_exists($key, $val)){
+	            $result[$val[$key]][] = $val;
+	        }else{
+	            $result[""][] = $val;
+	        }
+	    }
+
+	    return $result;
 	}
 
 	public function projectsreportsAction(){

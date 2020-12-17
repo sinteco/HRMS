@@ -516,7 +516,7 @@ class Timemanagement_IndexController extends Zend_Controller_Action
         $options['toEmail'] = $reportingmanager['emailaddress'];  
         $options['toName'] = $reportingmanager['userfullname'];
         $options['message'] = 'Dear '.$reportingmanager['userfullname'].', <br/> '.$userfullname.' have sumbitted timesheet for approval.';
-        $options['cron'] = 'yes';
+        // $options['cron'] = 'yes';
         if(!empty($loginUserId)){
             sapp_Global::_sendEmail($options);
         }
@@ -526,7 +526,7 @@ class Timemanagement_IndexController extends Zend_Controller_Action
         $options['toEmail'] = $employeeDetail['emailaddress'];  
         $options['toName'] = $employeeDetail['userfullname'];
         $options['message'] = 'Dear '.$employeeDetail['userfullname'].', <br/> your Timesheet have been sumbitted for approval.';
-        $options['cron'] = 'yes';
+        // $options['cron'] = 'yes';
         if(!empty($loginUserId)){
             sapp_Global::_sendEmail($options);
         }

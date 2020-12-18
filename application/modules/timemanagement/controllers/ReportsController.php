@@ -458,8 +458,15 @@ class Timemanagement_ReportsController extends Zend_Controller_Action
 			$this->view->fullName = $userfullname['userfullname'];
 			$this->view->approver = $approver;
             $text = $view->render('reports/getemtimesheetreport.phtml');
-            require_once 'application/modules/default/library/MPDF57/mpdf.php';
-            $mpdf=new mPDF('', 'A4-L', 12, 'Arial', 10, 10, 12, 12, 6, 6);
+            // require_once 'application/modules/default/library/MPDF57/mpdf.php';
+            require_once 'application/modules/default/library/compo/vendor/autoload.php';
+            // $mpdf=new mPDF('', 'A4-L', 12, 'Arial', 10, 10, 12, 12, 6, 6);
+            $mpdf = new \Mpdf\Mpdf([
+    'mode' => 'utf-8',
+    'format' => 'A4-L',
+    'orientation' => 'L'
+]);
+            $mpdf->showImageErrors = true;
             $mpdf->SetDisplayMode('fullpage');
             $mpdf->list_indent_first_level = 0;
             $mpdf->SetDisplayMode('fullpage');
@@ -468,8 +475,9 @@ class Timemanagement_ReportsController extends Zend_Controller_Action
             $mpdf->nbpgSuffix = '';
             $mpdf->AddPage();
             $mpdf->WriteHTML($text);
-            $mpdf->Output('empTimesheetReport'.'.pdf','D');
+            $mpdf->Output('emplTimesheetReport'.'.pdf','D');
 		}
+		exit;
 	}
 	function group_by($key, $data) {
 	    $result = array();

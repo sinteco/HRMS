@@ -93,6 +93,32 @@ class Timemanagement_Model_Reports extends Zend_Db_Table_Abstract
 		$res = $jobTitleData->fetchAll();
 		return $res;
 	}
+
+	public function gettsReport($month,$year){
+		$db = Zend_Db_Table::getDefaultAdapter();
+		// $sql = "SET @row_number = 0; ";
+		$sql .= "SELECT	
+				(@row_number:=@row_number + 1) AS num,
+				es.userfullname,
+				es.position_name,
+                ts.location,
+				p.project_name,
+				t.task,
+                sum(ts.duration) as duration
+				FROM tm_ts_edited_status tms
+				JOIN main_tmsheetconfigrations tsc on tsc.id=tms.main_tmsheetconfigrations_id
+				join main_employees_summary es on es.user_id=tms.emp_id
+				left join tm_emp_timesheets_edited ts on ts.date BETWEEN tsc.form and tsc.to and tsc.to and es.user_id=ts.emp_id
+				left join tm_project_tasks pt on pt.id=ts.project_task_id
+				left join tm_projects p on p.id=pt.project_id
+				left join tm_tasks t on t.id=pt.task_id
+				where tsc.month='".$month."' and tsc.year='".$year."' 
+                and tms.asfile is null and tms.status='Approved'
+				GROUP by tms.id";
+		$jobTitleData = $db->query($sql);
+		$res = $jobTitleData->fetchAll();
+		return $res;
+	}
         
 	public function getEmployeeReportsbyProjectId($sort, $by, $perPage, $pageNo, $searchData, $call, $dashboardcall, 
 			$start_date, $end_date, $projid,$org_start_date,$org_end_date,$param=''){
@@ -718,6 +744,20 @@ $select = $this->select()
   		'project_name'=>'Project',
   		'task'=>'Task',
   		'status'=>'Status',
+  	);
+  	return $cols_param_arr;
+  }
+  public function tmsheetReportHeader()
+  {
+  	$cols_param_arr = array(
+  		'num'=>'No',
+  		'userfullname'=>'Employee Name',
+  		'project_name'=>'Project',
+  		'location'=>'Location',
+  		'position_name'=>'Position',
+  		'task'=>'Task',
+  		'status'=>'Status',
+  		'duration'=>'Time'
   	);
   	return $cols_param_arr;
   }

@@ -178,7 +178,7 @@ $(function() {
 				
         		<!-- <option value="project">Associated with project</option> -->
         		
-        			<option value="all">All</option>
+        			<!-- <option value="all">All</option> -->
         		<?php } ?>
 				
         		<?php if($this->tm_role == "Admin") { ?>
@@ -237,6 +237,8 @@ $(function() {
 				<div class="fltright">
 				<?php if($this->superAdmin){?>
 					<div class="sprite export-xls" id="excel">TimeSheet Status in Excel</div>
+					<br>
+					<div class="sprite export-xls" id="tsinexcel">TimeSheet Report in Excel</div>
 				<?php } ?>
 					<!-- <div class="sprite export-pdf" id="pdf">Export to PDF</div> -->
 				</div>
@@ -503,6 +505,50 @@ $(document).ready(function(){
 	});
 	$('#pdf').on('click', function() {
 		alert('onprogess');
+	});
+	$('#tsinexcel').on('click', function() {
+		$("#is_excel").val('1');
+		var selmn = $('#idhidselmn').val();
+		var start_date = $('#start_date').val();
+		var end_date = $('#end_date').val();
+		var selected_period_hidden = $("#selected_period_hidden").attr('value');
+		var is_pdf = $('#is_pdf').val();
+		var is_excel = $('#is_excel').val();
+
+		if(is_pdf == 1 || is_excel == 1)
+		{
+			var sort_order = $('#sort_order').val(); 
+			var sort_by = $('#sort_by').val(); 
+			var page_no = $('#page_no').val(); 
+			var per_page = $('#per_page').val();
+			var search_data_pdf = $('#search_data_pdf').val();
+			var datefrom = $('#fromdatepicker').val();
+			var dateto = $('#todatepicker').val();
+			datefrom = "-"+new Date(datefrom).getDay()+"-"+new Date(datefrom).getDate();
+			dateto = "-"+new Date(dateto).getDay()+"-"+new Date(dateto).getDate();
+			// alert(datefrom);
+			// alert(start_date);
+			$('#is_pdf').val('0');
+			$('#is_excel').val('0');
+			$('#sort_order').val('');
+			$('#sort_by').val('');
+			$('#page_no').val('');
+			$('#per_page').val('');
+			window.location.href = base_url+"/timemanagement/reports/timesheetreports/"+'is_pdf/'+is_pdf+'/is_excel/'+is_excel+'/selmn/'+selmn;
+		}
+		else
+		{
+			$.ajax({
+		    	url: base_url+"/timemanagement/reports/employeereports/format/html",   
+		        type : 'POST',	
+		        dataType:'html',
+		        data :'projectId='+projid+'&start_date='+start_date+'&end_date='+end_date+'&selected_period_hidden='+selected_period_hidden+'&is_pdf='+is_pdf,
+		        success : function(response){
+		        	$("#idacc_content").html(response);
+		        	$(".export_links").show(); 
+		        }
+		    });		
+		}
 	});
 });
 </script>

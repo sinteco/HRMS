@@ -273,7 +273,7 @@ class Timemanagement_Model_Projects extends Zend_Db_Table_Abstract
 		->from(array('p'=>$this->_name),array('project_name'))
 		->join(array('pt' => 'tm_project_tasks'),'p.id = pt.project_id',array('id'))
 		->join(array('t' => 'tm_tasks'),'pt.task_id = t.id',array('task'))
-		//->where('p.is_active = 1 ')
+		->where('p.is_active = 1 && p.project_status != "completed"')
 		->order('p.project_name')
 		->group(array('p.id'));
 		return $this->fetchAll($select)->toArray();

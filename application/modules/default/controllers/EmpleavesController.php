@@ -488,6 +488,8 @@ class Default_EmpleavesController extends Zend_Controller_Action
 							$this->view->messages = $this->_helper->flashMessenger->getMessages();
 							if(!empty($employeeData))
 							$this->view->employeedata = $employeeData[0];
+						var_dump($this->_helper->flashMessenger->getMessages());
+						die();
 						}
 						$this->view->empdata = $empdata;
 					}else

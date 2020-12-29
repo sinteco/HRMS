@@ -218,6 +218,9 @@ function saveDetails(url,dialogMsg,toggleDivId,jsFunction){
 						
 					if(response['controller'] == 'pendingleaves' )	
 					  window.location.href = base_url+'/pendingleaves';
+
+					if(response['controller'] == 'leaveplan' )	
+					  window.location.href = base_url+'/leaveplan';
 					  
 					if(response['nomessage'] != 'yes') 
 						{

@@ -771,7 +771,7 @@ class Default_LeaveplanController extends Zend_Controller_Action
 					$result = sapp_Global::logManager($menuID,$actionflag,$loginUserId,$tableid);
                     $this->_helper->json(array('result'=>'saved',
 												'message'=>'Leave plan applied successfully.',
-												'controller'=>'pendingleaves'
+												'controller'=>'leaveplan'
 										));						
 			}
 			else

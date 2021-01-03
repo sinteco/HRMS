@@ -149,7 +149,7 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 		// var_dump($empMonthTSData);
 		// die();
 		$month = date("m");
-		$year = date("yy");
+		$year = date("Y");
 		$where = "j.month=".$month." and j.year=".$year;
 		$TMSCData = $tmsheetconfigrationsmodel->getTMSCWhere($where);
 		$date_diff = date_diff(date_create($TMSCData[0]['form']),date_create($TMSCData[0]['to']));

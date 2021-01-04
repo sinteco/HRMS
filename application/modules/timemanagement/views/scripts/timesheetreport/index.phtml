@@ -1336,6 +1336,9 @@ x:publishsource="Excel">
 
      $month = $dateComponents['mon'];                  
      $year = $dateComponents['year'];
+     if(!$this->status[0]['status']){
+        $this->sentTimesSheets = null;
+     }
 
      echo build_calendar($month,$year,$dateArray,$this->TMSCData,$this->sentTimesSheets,$this->leaveTypes,$this->empHolidaysWeekends);
   ?>

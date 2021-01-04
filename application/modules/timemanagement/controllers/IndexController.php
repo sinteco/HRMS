@@ -63,7 +63,7 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
 		$myTsModel = new Timemanagement_Model_MyTimesheetedited();
 		$month = date("m");
-		$year = date("yy");
+		$year = date("Y");
 		$where = "j.month=".$month." and j.year=".$year;
 		$TMSCData = $tmsheetconfigrationsmodel->getTMSCWhere($where);
 		$date_diff = date_diff(date_create($TMSCData[0]['form']),date_create($TMSCData[0]['to']));

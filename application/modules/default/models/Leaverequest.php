@@ -184,7 +184,7 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
 	public function getEmployeeLeaveRequest($sort, $by, $pageNo, $perPage,$searchQuery,$loginUserId)
 	{	
 		//$where = "l.isactive = 1 AND l.leavestatus IN(1,2) AND u.isactive=1 AND l.rep_mang_id=".$loginUserId." ";
-        $where = "l.isactive = 1 AND l.leavestatus IN(1,2) AND u.isactive=1 AND (l.rep_mang_id=".$loginUserId." OR l.hr_id=".$loginUserId." ) and l.user_id!=".$loginUserId." and IF(l.leavestatus = 'Pending For Approval',MONTH(l.from_date) = MONTH(CURRENT_DATE()),DATE(l.from_date) >= DATE(NOW()) OR DATE(l.from_date) <= DATE(NOW()))";
+        $where = "l.isactive = 1 AND l.leavestatus IN(1,2) AND u.isactive=1 AND s.reporting_manager='".$loginUserId."' and l.user_id!=".$loginUserId." and IF(l.leavestatus = 'Pending For Approval',MONTH(l.from_date) = MONTH(CURRENT_DATE()),DATE(l.from_date) >= DATE(NOW()) OR DATE(l.from_date) <= DATE(NOW()))";
 		
 		if($searchQuery)
 			$where .= " AND ".$searchQuery;
@@ -199,11 +199,12 @@ class Default_Model_Leaverequest extends Zend_Db_Table_Abstract
                                          'leaveday'=>'if(l.leaveday = 1,"Full Day","Half Day")', 										 
 								       ))
 						   ->joinLeft(array('et'=>'main_employeeleavetypes'), 'et.id=l.leavetypeid',array('leavetype'=>'et.leavetype'))	
-						   ->joinLeft(array('u'=>'main_users'), 'u.id=l.user_id',array('userfullname'=>'u.userfullname'))						   						 		   						   
+						   ->joinLeft(array('u'=>'main_users'), 'u.id=l.user_id',array('userfullname'=>'u.userfullname'))
+						   ->joinLeft(array('s'=>'main_employees_summary'), 's.user_id=l.user_id',array('userfullname'=>'u.userfullname'))						   						 		   						   
 						   ->where($where)
     					   ->order("$by $sort") 
 						   ->limitPage($pageNo, $perPage);
-						//    die($employeeleaveData);
+						   // die($employeeleaveData);
 		
 		return $employeeleaveData;       		
 	}

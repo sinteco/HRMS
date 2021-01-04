@@ -458,14 +458,21 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	}
           }
           foreach ($leaveTypes as $key => $value) {
-          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==7&&$value['leavestatus']=='Approved')
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==7&&$value['leavestatus']=='Approved'&&$value['appliedleavescount']=='0.5')
           	{
-          		$AnnualLeavetime="08:30";
+          		$AnnualLeavetime="04:30";
+              ${'totalLeaveColumn'.$currentDayL} += decimalHours("04:30");
+              $calendarSubTotalLeaveSum += decimalHours("04:30");
+              $calendarAnnualLeaveRow += decimalHours("04:30");
+          		break;
+          	}else if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==7&&$value['leavestatus']=='Approved')
+            {
+              $AnnualLeavetime="08:30";
               ${'totalLeaveColumn'.$currentDayL} += decimalHours("08:30");
               $calendarSubTotalLeaveSum += decimalHours("08:30");
               $calendarAnnualLeaveRow += decimalHours("08:30");
-          		break;
-          	}else{
+              break;
+            }else{
           		$AnnualLeavetime = '';
           	}
           }
@@ -820,14 +827,21 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           	}
           }
           foreach ($leaveTypes as $key => $value) {
-          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==15&&$value['leavestatus']=='Approved')
+          	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==15&&$value['leavestatus']=='Approved'&&$value['appliedleavescount']=='0.5')
           	{
-          		$AnnualLeavetime="08:30";
+          		$AnnualLeavetime="04:30";
+              ${'totalLeaveColumn'.$currentDay} += decimalHours("04:30");
+              $calendarSubTotalLeaveSum += decimalHours("04:30");
+              $calendarAnnualLeaveRow += decimalHours("04:30");
+          		break;
+          	}elseif(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==15&&$value['leavestatus']=='Approved')
+            {
+              $AnnualLeavetime="08:30";
               ${'totalLeaveColumn'.$currentDay} += decimalHours("08:30");
               $calendarSubTotalLeaveSum += decimalHours("08:30");
               $calendarAnnualLeaveRow += decimalHours("08:30");
-          		break;
-          	}else{
+              break;
+            }else{
           		$AnnualLeavetime = '';
           	}
           }

@@ -460,6 +460,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$sentTimesSheets,$leav
           foreach ($leaveTypes as $key => $value) {
           	if(($date>=$value['from_date'])&&($date<=$value['to_date'])&&$value['leavetypeid']==15&&$value['leavestatus']=='Approved'&&$value['appliedleavescount']=='0.5')
             {
+              //half day leave
               $AnnualLeavetime="04:30";
               ${'totalLeaveColumn'.$currentDay} += decimalHours("04:30");
               $calendarSubTotalLeaveSum += decimalHours("04:30");

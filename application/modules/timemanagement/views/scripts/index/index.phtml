@@ -682,16 +682,16 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
           }else{
                document.getElementById("loader").style.display = "block";
                document.getElementById("submit").disabled = true;
-               // $.post('<?php echo $this->baseUrl("index.php/timemanagement/index/week");?>', data, function(returnedData) {
-               //     console.log(returnedData);
-               //     if(returnedData!=null){
-               //           // console.log(returnedData);
-               //           // alert(returnedData);
-               //           window.location.reload(true);
-               //           // console.log(returnedData);
-               //           // alert(returnedData);
-               //     }
-               //   });
+               $.post('<?php echo $this->baseUrl("index.php/timemanagement/index/week");?>', data, function(returnedData) {
+                   console.log(returnedData);
+                   if(returnedData!=null){
+                         // console.log(returnedData);
+                         // alert(returnedData);
+                         window.location.reload(true);
+                         // console.log(returnedData);
+                         // alert(returnedData);
+                   }
+                 });
           }
          }
        });

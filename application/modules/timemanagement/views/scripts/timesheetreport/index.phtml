@@ -1132,11 +1132,26 @@ tags will be replaced.-->
 <!----------------------------->
 <!--START OF OUTPUT FROM EXCEL PUBLISH AS WEB PAGE WIZARD -->
 <!----------------------------->
+<?php if($this->status[0]['status']=="Pending"){?>
+<button style="background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  float: right;
+  font-size: 16px;">Send for Approval</button>
+<?php
+}else{
+  ?>
 <div class="export-links">
   <div class="fltright">
     <div class="sprite export-pdf" id="pdf">Export to PDF</div>
   </div>
 </div>
+<?php
+} ?>
 
 <input type="hidden" id="is_pdf" name="is_pdf" value="0"/>
 <input type="hidden" id="is_excel" name="is_excel" value="0"/>

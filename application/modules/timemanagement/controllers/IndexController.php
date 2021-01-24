@@ -457,7 +457,7 @@ class Timemanagement_IndexController extends Zend_Controller_Action
 		// var_dump($duration);
 		// var_dump($date);
 		$month = date("m");
-		$year = date("yy");
+		$year = date("Y");
 		$where = "j.month=".$month." and j.year=".$year;
 		$TMSCData = $tmsheetconfigrationsmodel->getTMSCWhere($where);
 

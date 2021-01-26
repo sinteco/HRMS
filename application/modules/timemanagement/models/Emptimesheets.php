@@ -430,6 +430,24 @@ IF(FIND_IN_SET('enabled',GROUP_CONCAT(sun_project_status,',',mon_project_status,
 		// $result = $stmt->execute();
 		return true;
 	}
+	public function updateETStatus($id,$status){
+		$db = Zend_Db_Table::getDefaultAdapter();
+		// $sql = "UPDATE tm_ts_edited_status set status='"+$status+"' WHERE id="+$id+"";
+		$db->query("UPDATE tm_ts_edited_status set status='".$status."' WHERE id=".$id."");
+		return true;
+	}
+	public function deleteETStatus($id){
+		$db = Zend_Db_Table::getDefaultAdapter();
+		$db->delete('tm_ts_edited_status',"id='".$id."'");
+	}
+	public function getTMSC($id)
+	{
+		$select = $this->select()
+						->setIntegrityCheck(false)
+						->from(array('tses' => 'tm_ts_edited_status'))
+						->where("tses.id=".$id);
+		return $this->fetchAll($select)->toArray();
+	}
 	public function getsingleTMSC($month,$year,$emp_id)
 	{
 		$select = $this->select()
@@ -437,6 +455,15 @@ IF(FIND_IN_SET('enabled',GROUP_CONCAT(sun_project_status,',',mon_project_status,
 						->from(array('tses' => 'tm_ts_edited_status'))
 						->join(array('tsc' => 'main_tmsheetconfigrations'),'tsc.id=tses.main_tmsheetconfigrations_id')
 						->where("tsc.month=".$month." and tsc.year=".$year." and tses.emp_id=".$emp_id." and  tses.status='For Approval'");
+		return $this->fetchAll($select)->toArray();
+	}
+	public function singleTMSC($month,$year,$emp_id)
+	{
+		$select = $this->select()
+						->setIntegrityCheck(false)
+						->from(array('tses' => 'tm_ts_edited_status'))
+						->join(array('tsc' => 'main_tmsheetconfigrations'),'tsc.id=tses.main_tmsheetconfigrations_id')
+						->where("tsc.month=".$month." and tsc.year=".$year." and tses.emp_id=".$emp_id." and  tses.status='Pending'");
 		return $this->fetchAll($select)->toArray();
 	}
 	public function deleteEMPTimesheetEdited($emp_id,$from,$to)

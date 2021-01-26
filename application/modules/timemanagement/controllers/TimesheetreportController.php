@@ -443,6 +443,25 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 		//END code to show pending weeks for submit in current month
 
 	}
+	public function declineAction(){
+		$statusid = $this->_getParam('statusid');
+		$empTSModel = new Timemanagement_Model_Emptimesheets();
+		$res0 = $empTSModel->getTMSC($statusid);
+		$month = date('m');
+		$year = date('Y');
+		$res = $empTSModel->singleTMSC($month,$year,$res0[0]['emp_id']);
+		$empTSModel->deleteEMPTimesheetEdited($res[0]['emp_id'],$res[0]['form'],date("Y-m-t", strtotime($res[0]['to'])));
+		$empTSModel->deleteETStatus($statusid);
+		var_dump($res);
+		die();
+	}
+	public function approveAction(){
+		$statusid = $this->_getParam('statusid');
+		$empTSModel = new Timemanagement_Model_Emptimesheets();
+		$result = $empTSModel->updateETStatus($statusid,"For Approval");
+		var_dump($statusid);
+		die();
+	}
 	function group_by($key, $data) {
 	    $result = array();
 

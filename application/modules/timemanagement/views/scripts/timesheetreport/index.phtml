@@ -1132,8 +1132,9 @@ tags will be replaced.-->
 <!----------------------------->
 <!--START OF OUTPUT FROM EXCEL PUBLISH AS WEB PAGE WIZARD -->
 <!----------------------------->
+<input type="hidden" name="statusid" id="statusid" value=<?php echo $this->status[0]['id']; ?>>
 <?php if($this->status[0]['status']=="Pending"){?>
-<button style="background-color: #4CAF50; /* Green */
+<button id="approval" style="background-color: #4CAF50; /* Green */
   border: none;
   color: white;
   padding: 15px 32px;
@@ -1142,6 +1143,15 @@ tags will be replaced.-->
   display: inline-block;
   float: right;
   font-size: 16px;">Send for Approval</button>
+  <button id="reject" style="background-color: tomato; /* Green */
+  border: none;
+  color: yellow;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  float: right;
+  font-size: 16px;">Decline</button>
 <?php
 }else{
   ?>
@@ -3037,6 +3047,28 @@ x:publishsource="Excel">
 </div>
 <script type="text/javascript" language="javascript">
 $(document).ready(function(){
+  var statusid = $('#statusid').val();
+
+  $('#approval').on('click', function() {
+    alert("Are you sure to send your time sheet for approval ?");
+    if (true) {
+      var url = base_url+"/timemanagement/timesheetreport/approve";//+'statusid/'+statusid;
+      var param = { statusid: statusid };
+      $.post(url,param, function(data, response,status){
+          location.reload();
+      });
+    }
+  });
+  $('#reject').on('click', function() {
+    alert("Are you sure to Decline your Timesheet and start over ?");
+    if (true) {
+      var url = base_url+"/timemanagement/timesheetreport/decline";//+'statusid/'+statusid;
+      var param = { statusid: statusid };
+      $.post(url,param, function(data, response,status){
+          location.reload();
+      });
+    }
+  });
 
   $('#pdf').on('click', function() {
       $("#is_pdf").val('1');

@@ -74,7 +74,11 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 	 * This method will display all the client details in grid format.
 	 */
 	public function indexAction()
-	{
+	{	
+		$auth = Zend_Auth::getInstance();
+		$loginuserRole = $auth->getStorage()->read()->emprole;
+		$superAdmin = SUPERADMIN==$loginuserRole;
+		$usersModel = new Timemanagement_Model_Users();
 		$storage = new Zend_Auth_Storage_Session();
 		$data = $storage->read();
 		$empTimesheets_model=new Timemanagement_Model_Emptimesheets();
@@ -82,11 +86,14 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		$date1 = new DateTime(date('Y-m-01'));
 		$startday=$date1->format('Y-m-d');
 		$endday=date('Y-m')."-".cal_days_in_month(CAL_GREGORIAN, $date1->format('m'), $date1->format('Y')); //ending date of month
+		$users = $usersModel->getAllEmployee();
 		$this->view->tm_role = Zend_Registry::get('tm_role');
 		$this->view->data=$data;
 		$this->view->startday_m=$startday;
 		$this->view->endday_m=$endday;
 		$this->view->min_year=$min_year;
+		$this->view->users=$users;
+		$this->view->superAdmin=$superAdmin;
 
 	}
 
@@ -95,6 +102,49 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 	 */
 
 	public function empdisplayweeksAction(){
+
+		$month = $this->_getParam('month');
+		$year = $this->_getParam('year');
+		$employee = $this->_getParam('employee');
+		$file = $this->_getParam('file');
+		$comment = $this->_getParam('comment');
+		$temp = explode(".", $_FILES["file"]["name"]);
+		$fileName = round(microtime(true)) . '.' . end($temp);
+
+		$auth = Zend_Auth::getInstance();
+		if($auth->hasIdentity()){
+			$loginUserId = $auth->getStorage()->read()->id;
+		}
+
+		$tmsmodel = new Timemanagement_Model_Timesheetstatus();
+		$tsconfig = $tmsmodel->gettsconfigrationbymonth($month,$year);
+		$tsstatus = $tmsmodel->gettsstatusbyemp($employee,$tsconfig[0]['id']);
+		if ($tsconfig==null) {
+			echo "config not found";
+			die();
+		}
+		if($tsstatus!=null){
+			echo "found recode";
+			die();
+		}
+		$file = new Zend_Form_Element_File('file');
+		$target_dir = APPLICATION_PATH ."/../public/tmp/upload";
+		$data = array( 'emp_id'=>trim($employee),
+		               'main_tmsheetconfigrations_id'=>trim($tsconfig[0]['id']),
+		               'comment'=>trim($comment),
+		               'asfile'=>trim($fileName),
+		   			   'status'=>'Approved',
+		   			   'approved_by'=>$loginUserId,
+		   			   'modified_by'=>$loginUserId,
+		   			   'created_by'=>$loginUserId,
+					   'created'=>gmdate("Y-m-d H:i:s"),
+					   'modified'=>gmdate("Y-m-d H:i:s")	
+				);
+		$insertid = $tmsmodel->insertEmployeeTimesheetStatus($data);
+		if(move_uploaded_file($_FILES["file"]["tmp_name"], $target_dir.$fileName))
+			echo "successful";
+		die();
+		return true;
 
 		$selmn=$this->_getParam('selmn');
 		$hidweek=$this->_getParam('hidweek',null);
@@ -262,12 +312,47 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		$emplistflag = $this->_getParam('emplistflag');
 		$project_ids = $this->_getParam('project_ids');
 
+		$selectedDateArray = explode('-',$selYrMon);
+		$month = $selectedDateArray[1];
+		$year = $selectedDateArray[0];
+
+		// var_dump($month);
+		// var_dump($year);
+		// var_dump($user_id);
+		// var_dump($manager_id);
+		// die();
+
 
 		$empTimesheets_model=new Timemanagement_Model_Emptimesheets();
+		$tmsmodel = new Timemanagement_Model_Timesheetstatus();
+		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
+		$tmsheetstatusmodel = new Timemanagement_Model_MyTimesheetedited();
+		$usersModel = new Timemanagement_Model_Users();
+
+		$tsconfig = $tmsmodel->gettsconfigrationbymonth($month,$year);
+		$tsstatus = $tmsheetstatusmodel->getTimeSheetstatus($user_id,$tsconfig[0]['id']);
+
 		$min_year=$empTimesheets_model->getMinYear();
 		$date1 = new DateTime(date('Y-m-01'));
 		$startday=$date1->format('Y-m-d');
 		$endday=date('Y-m')."-".cal_days_in_month(CAL_GREGORIAN, $date1->format('m'), $date1->format('Y')); //ending date of month
+
+		//get data from database
+		$where = "j.month=".$month." and j.year=".$year;
+		$TMSCData = $tmsheetconfigrationsmodel->getTMSCWhere($where);
+		$leaveTypes = $tmsheetconfigrationsmodel->getUserLeavesData($user_id);
+		$empMonthTSData = $tmsheetstatusmodel->getTimesheetData($user_id, $year,$month);
+		$sentTimesSheets = $this->group_by('project_task_id',$empMonthTSData);
+		$month111 = date("m",strtotime($TMSCData[0]['form']));
+		$year111 = date("Y",strtotime($TMSCData[0]['form']));
+		$month0111 = date("m",strtotime($TMSCData[0]['to']));
+		$year0111 = date("Y",strtotime($TMSCData[0]['to']));
+
+		$empHolidaysWeekendsData111 = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year111,$month111);
+		$empHolidays111 = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year0111,$month0111);
+		$empHolidaysWeekendsData = $usersModel->getEmployeeHolidaysNWeekends($user_id, $year,$month);
+		$userfullname = $usersModel->getEmployeeDetailByEmpId($user_id);
+		if($tsstatus[0]['status']=="Approved"){$approver = $usersModel->getEmployeeDetailByEmpId($tsstatus[0]['approved_by']);}else {$approver = null;}
 
 		$this->view->tm_role = Zend_Registry::get('tm_role');
 		$this->view->data=$data;
@@ -281,7 +366,32 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		$this->view->hidweek = $hidweek;
 		$this->view->emplistflag = $emplistflag;
 		$this->view->project_ids = $project_ids;
+		//my data to sent to view
+		$this->view->status = $tsstatus;
+		$this->view->month = $month;
+		$this->view->year = $year;
+		$this->view->sentTimesSheets = $sentTimesSheets;
+		$this->view->TMSCData = $TMSCData;
+		$this->view->leaveTypes = $leaveTypes;
+		$this->view->empHolidaysWeekends = $empHolidaysWeekendsData[0];
+		$this->view->holidays = $empHolidaysWeekends111;
+		$this->view->holidays0 = $empHolidays111;
+		$this->view->fullName = $userfullname['userfullname'];
+		$this->view->approver = $approver;
 
+	}
+	function group_by($key, $data) {
+	    $result = array();
+
+	    foreach($data as $val) {
+	        if(array_key_exists($key, $val)){
+	            $result[$val[$key]][] = $val;
+	        }else{
+	            $result[""][] = $val;
+	        }
+	    }
+
+	    return $result;
 	}
 	/**
 	 * This action will display employee timesheet in month format.
@@ -507,6 +617,19 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 			$calenderWeek[0] = $calenderWeeksArray[$week-1];
 		}
 		$result = $empTSModel-> updateEmployeeTimesheet($emp_id,$year,$month,$lastday,$calenderWeek,"Approved","",$emplistflag,$loginUserId);
+		//send email to employee for rejection.
+		$usersmodel = new Timemanagement_Model_Users();
+		$employeeDetail = $usersmodel->getEmployeeDetailByEmpId($emp_id);
+		// Send email to reporting manager when timesheet is sumbitted.
+		$options['subject'] = APPLICATION_NAME.': Time Sheet Status';
+        $options['header'] = 'Employee Time Sheet Approved';
+        $options['toEmail'] = $employeeDetail['emailaddress'];  
+        $options['toName'] = $employeeDetail['userfullname'];
+        $options['message'] = 'Dear '.$employeeDetail['userfullname'].', <br/> Your Timesheet have been Approved for the month of '.$month.' and year '.$year.'.';
+        // $options['cron'] = 'yes';
+        if(!empty($loginUserId)){
+            sapp_Global::_sendEmail($options);
+        }
 		$this->_helper->json(array('saved'=>$result));
 	}
 
@@ -547,6 +670,19 @@ class Timemanagement_EmptimesheetsController extends Zend_Controller_Action
 		$res = $empTSModel->getsingleTMSC($month,$year,$emp_id);
 		$result = $empTSModel-> updateEmployeeTimesheet($emp_id,$year,$month,$lastday,$calenderWeek,"Rejected",$rejnote,$emplistflag,$loginUserId);
 		$empTSModel->deleteEMPTimesheetEdited($emp_id,$res[0]['form'],date("Y-m-t", strtotime($res[0]['to'])));
+		//send email to employee for rejection.
+		$usersmodel = new Timemanagement_Model_Users();
+		$employeeDetail = $usersmodel->getEmployeeDetailByEmpId($emp_id);
+		// Send email to reporting manager when timesheet is sumbitted.
+		$options['subject'] = APPLICATION_NAME.': Time Sheet Status';
+        $options['header'] = 'Employee Time Sheet Rejected';
+        $options['toEmail'] = $employeeDetail['emailaddress'];  
+        $options['toName'] = $employeeDetail['userfullname'];
+        $options['message'] = 'Dear '.$employeeDetail['userfullname'].', <br/> Your Timesheet have been Rejected for the month of '.$month.' and year '.$year.' and with Reason '.$rejnote;
+        // $options['cron'] = 'yes';
+        if(!empty($loginUserId)){
+            sapp_Global::_sendEmail($options);
+        }
 		$this->_helper->json(array('saved'=>$result));
 	}
 

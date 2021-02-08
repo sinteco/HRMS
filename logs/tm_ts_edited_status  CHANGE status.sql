@@ -1,0 +1,1 @@
+ALTER TABLE `tm_ts_edited_status` CHANGE `status` `status` ENUM('For Approval','Rejected','Approved','Pending') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Pending';

@@ -133,38 +133,39 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 		//ksort($YrMonths);
 			
 		$yrMon = explode('-', $selYrMon);
-		$empTSModel = new Timemanagement_Model_MyTimesheet();
+		// $empTSModel = new Timemanagement_Model_MyTimesheet();
+		// $empMonthTSData = $empTSModel->getTimesheetData($data->id, $yrMon[0],$yrMon[1]);
+		$empTSModel = new Timemanagement_Model_MyTimesheetedited();
 		$empMonthTSData = $empTSModel->getTimesheetData($data->id, $yrMon[0],$yrMon[1]);
-		// var_dump($empMonthTSData);
-		$sentTimesSheets = [];
-		for ($x = 0; $x <= count($empMonthTSData); $x++) {
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['sun_date']=>$empMonthTSData[$x]['sun_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['mon_date']=>$empMonthTSData[$x]['mon_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['tue_date']=>$empMonthTSData[$x]['tue_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['wed_date']=>$empMonthTSData[$x]['wed_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['thu_date']=>$empMonthTSData[$x]['thu_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['fri_date']=>$empMonthTSData[$x]['fri_duration']));
-			array_push($sentTimesSheets,array($empMonthTSData[$x]['sat_date']=>$empMonthTSData[$x]['sat_duration']));
-			array_push($sentTimesSheets,array('project_name'=>$empMonthTSData[$x]['project_name']));
-			array_push($sentTimesSheets,array('task'=>$empMonthTSData[$x]['task']));
-		}
+		
+		$sentTimesSheets = $this->group_by('project_task_id',$empMonthTSData);
+		// var_dump($sentTimesSheets);
+		// die();
 
 		$tmsheetconfigrationsmodel = new Timemanagement_Model_Tmsheetconfigration();
+		$tmsheetstatusmodel = new Timemanagement_Model_MyTimesheetedited();
+		$usermodel = new Timemanagement_Model_Users();
 		$leaveTypes = $tmsheetconfigrationsmodel->getUserLeavesData($data->id);
 		// var_dump($empMonthTSData);
 		// die();
 		$month = date("m");
-		$year = date("yy");
+		$year = date("Y");
 		$where = "j.month=".$month." and j.year=".$year;
 		$TMSCData = $tmsheetconfigrationsmodel->getTMSCWhere($where);
 		$date_diff = date_diff(date_create($TMSCData[0]['form']),date_create($TMSCData[0]['to']));
 		$lastDateOfMonth = date("Y-m-t", strtotime($TMSCData[0]['form']));
+		$status = $tmsheetstatusmodel->getTimeSheetstatus($data->id,$TMSCData[0]['id']);
+		if($status[0]['status']=="Approved"){$approver = $usermodel->getEmployeeDetailByEmpId($status[0]['approved_by']);}else {$approver = null;}
 		$this->view->TMSCData = $TMSCData;
 		$this->view->sentTimesSheets = $sentTimesSheets;
 		$this->view->fullName = $data->userfullname;
+		$this->view->id=$data->id;
 		$this->view->leaveTypes = $leaveTypes;
+		$this->view->status = $status;
+		$this->view->approver = $approver;
 		// var_dump($sentTimesSheets);
-		// var_dump($empMonthTSData);
+		// var_dump($TMSCData);
+		// var_dump($status);
 		// die();
 		$empHolidaysWeekendsData = $usersModel->getEmployeeHolidaysNWeekends($data->id, $yrMon[0],$yrMon[1]);
 		// var_dump($empHolidaysWeekendsData);
@@ -207,8 +208,18 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 
 		}
 
+		$month111 = date("m",strtotime($TMSCData[0]['form']));
+		$year111 = date("Y",strtotime($TMSCData[0]['form']));
+		$month0111 = date("m",strtotime($TMSCData[0]['to']));
+		$year0111 = date("Y",strtotime($TMSCData[0]['to']));
+
+		$empHolidaysWeekendsData111 = $usersModel->getEmployeeHolidaysNWeekends($data->id, $year111,$month111);
+		$empHolidays111 = $usersModel->getEmployeeHolidaysNWeekends($data->id, $year0111,$month0111);
+
 		$this->view->empMonthTSData = $empMonthTSData;
 		$this->view->empHolidaysWeekends = $empHolidaysWeekendsData[0];
+		$this->view->holidays = $empHolidaysWeekends111;
+		$this->view->holidays0 = $empHolidays111;
 		//	$this->view->month = $month;
 		//	$this->view->year = $year;
 		//$this->view->YrMonths = $YrMonths;
@@ -431,6 +442,38 @@ class Timemanagement_TimesheetreportController extends Zend_Controller_Action
 		}	   
 		//END code to show pending weeks for submit in current month
 
+	}
+	public function declineAction(){
+		$statusid = $this->_getParam('statusid');
+		$empTSModel = new Timemanagement_Model_Emptimesheets();
+		$res0 = $empTSModel->getTMSC($statusid);
+		$month = date('m');
+		$year = date('Y');
+		$res = $empTSModel->singleTMSC($month,$year,$res0[0]['emp_id']);
+		$empTSModel->deleteEMPTimesheetEdited($res[0]['emp_id'],$res[0]['form'],date("Y-m-t", strtotime($res[0]['to'])));
+		$empTSModel->deleteETStatus($statusid);
+		var_dump($res);
+		die();
+	}
+	public function approveAction(){
+		$statusid = $this->_getParam('statusid');
+		$empTSModel = new Timemanagement_Model_Emptimesheets();
+		$result = $empTSModel->updateETStatus($statusid,"For Approval");
+		var_dump($statusid);
+		die();
+	}
+	function group_by($key, $data) {
+	    $result = array();
+
+	    foreach($data as $val) {
+	        if(array_key_exists($key, $val)){
+	            $result[$val[$key]][] = $val;
+	        }else{
+	            $result[""][] = $val;
+	        }
+	    }
+
+	    return $result;
 	}
 
 	public function weekAction()

@@ -571,7 +571,7 @@ class Default_LeaveplanController extends Zend_Controller_Action
 								 'to_date'=>  ($to_date !='')?$to_date:$from_date,
 								 'leavestatus'=>1,
 								 'rep_mang_id'=>$rep_mang_id,
-								'hr_id'=>$hr_id,
+								 'hr_id'=>$hr_id,
 				      			 'no_of_days'=>($availableleaves>=0)?$availableleaves:0,
 								 'appliedleavescount'=>$appliedleavescount,
 								 'modifiedby'=>$loginUserId,
@@ -608,7 +608,7 @@ class Default_LeaveplanController extends Zend_Controller_Action
 										'modifieddate'=> gmdate("Y-m-d H:i:s"),
 									);
 					     $where = '';
-						$leavehistory = $leaverequesthistory_model->saveOrUpdateLeaveRequestHistory($leave_history,$where); 
+						$leavehistory = $leaverequesthistory_model->saveOrUpdateLeaveplanHistory($leave_history,$where); 
 					}
 					if($Id == 'update')
 					{

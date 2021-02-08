@@ -58,6 +58,27 @@ class Timemanagement_Model_Users extends Zend_Db_Table_Abstract
 		$data=$db->query($select)->fetch();
 		return $data;
 	}
+	public function getEmployeeDetail($empid){
+		$db = Zend_Db_Table::getDefaultAdapter();
+		$select = "select * from main_employees_summary where id = ".$empid;
+
+		$data=$db->query($select)->fetch();
+		return $data;
+	}
+	public function getEmployeeDetailByEmpId($empid){
+		$db = Zend_Db_Table::getDefaultAdapter();
+		$select = "select * from main_employees_summary where user_id = ".$empid;
+
+		$data=$db->query($select)->fetch();
+		return $data;
+	}
+	public function getAllEmployee(){
+		$db = Zend_Db_Table::getDefaultAdapter();
+		$select = "select * from main_employees_summary";
+
+		$data=$db->query($select)->fetchAll();
+		return $data;
+	}
 	public function getEmployeeHolidaysNWeekends($empId,$year,$month,$calWeek="") {
 		$where = "";
 		if($calWeek != "") {

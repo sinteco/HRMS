@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TIMESHEET STATUS REPORT PDF</title>
+</head>
+
+<body>
+<table  cellspacing="0" cellpadding="0" style="width: 100%; font-family: Arial">
+	<tr>
+		<td style="width: 50%; font-size: 22px;"><?php echo (!empty($this->flag) && $this->flag == 1)?'Project Reports':'Leave Reports'; ?></td>
+		<td style="width: 50%; font-size: 14px; text-align: right;;"><?php echo date('F jS, Y')?></td>
+	</tr>
+</table>
+<table cellspacing="0" cellpadding="12" border="0" style="margin-top: 16px; border: 1px solid #cfcfcf; font-family: Arial; font-size: 12px; border-collapse: collapse;">
+<?php
+	if(!empty($this->reportsdata))
+	{
+		if(!empty($this->flag) && $this->flag == 1)
+		{
+		?>
+			<tr style="font-weight: bold;">
+				<th style="border-right: 1px solid #cfcfcf; text-align: left;padding-top: 6px; padding-bottom: 6px; letter-spacing: .5px;">PROJECT</th>
+				<th style="border-right: 1px solid #cfcfcf; text-align: left;padding-top: 6px; padding-bottom: 6px; letter-spacing: .5px;">PROJECTTYPE</th>
+				<th>HOURS</th>
+			</tr>
+			<?php $i = 1; foreach($this->reportsdata as $data) { ?>
+			    <tr <?php echo ($i%2 != 0)?'style="background: #f8f8f8;"':'';?> >
+			        <td style="border-right: 1px solid #cfcfcf; border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['project_name'])?$data['project_name']:'';?></td>
+			        <td style="border-right: 1px solid #cfcfcf; border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['project_type'])?$data['project_type']:'';?></td>
+			        <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['duration'])?$data['duration']:'';?></td>
+			    </tr>
+			<?php $i++; } 
+		}
+		else
+		{
+		?>
+			<tr style="font-weight: bold;">
+				<th style="border-right: 1px solid #cfcfcf; text-align: left;padding-top: 6px; padding-bottom: 6px;letter-spacing: .5px;">EMPLOYEE FIRST NAME</th>
+                <th style="border-right: 1px solid #cfcfcf; text-align: left;padding-top: 6px; padding-bottom: 6px;letter-spacing: .5px;">EMPLOYEE LAST NAME</th>
+                <th style="border-right: 1px solid #cfcfcf; text-align: left;padding-top: 6px; padding-bottom: 6px;letter-spacing: .5px;">EMPLOYEE ID</th>
+				<th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Leave Entitlement Per Year</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Service Year</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Accrued Leave As Of Today</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">BBF (Balance Brought Forward)</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Balance as of today</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Leave Balance</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Used Leaves</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Date of Joining</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Annual paid leave / Vaccation</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Unpaid Annual leave</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Sick Leave</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Maternity leave</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Compensatory leave</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Accident leave</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Miscarriage leave</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Miscarriage Paternity leave</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Paternity leave</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Child Nursing leave</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Per Natal related leave</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Compassionate leave NIR</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Compassionate leave IR</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Variable Leave Family</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Examination and Study Leave</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Court Leave</th>
+                <th style="text-align: left;padding-top: 6px;  padding-bottom: 6px;letter-spacing: .5px;">Emergency Unpaid Leave</th>
+			</tr>
+			<?php $i = 1; foreach($this->reportsdata as $data) { ?>
+			    <tr <?php echo ($i%2 != 0)?'style="background: #f8f8f8;"':'';?> >
+			        <td style="border-right: 1px solid #cfcfcf; border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['firstname'])?$data['firstname']:'';?></td>
+                    <td style="border-right: 1px solid #cfcfcf; border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['lastname'])?$data['lastname']:'';?></td>
+                    <td style="border-right: 1px solid #cfcfcf; border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['employeeId'])?$data['employeeId']:'';?></td>
+			        <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['emp_leave_limit'])?$data['emp_leave_limit']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['serviceyear'])?$data['serviceyear']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['leaveX'])?$data['leaveX']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['transfer'])?$data['transfer']:'0';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['totalavailableleave'])?$data['totalavailableleave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['remainingleaves'])?$data['remainingleaves']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['used_leaves'])?$data['used_leaves']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['alloted_year'])?$data['alloted_year']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['annual_paid_leave'])?$data['annual_paid_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['unpaid_annual_leave'])?$data['unpaid_annual_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['sick_leave'])?$data['sick_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['maternity_leave'])?$data['maternity_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['compensatory_leave'])?$data['compensatory_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['accident_leave'])?$data['accident_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['miscarriage_leave'])?$data['miscarriage_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['miscarriagepaternity_leave'])?$data['miscarriagepaternity_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['paternity_leave'])?$data['paternity_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['childnursing_leave'])?$data['childnursing_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['pernatalrelated_leave'])?$data['pernatalrelated_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['compassionateNIR_leave'])?$data['compassionateNIR_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['CompassionateIR_leave'])?$data['CompassionateIR_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['variableleavefamily'])?$data['variableleavefamily']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['examinationandstudy_leave'])?$data['examinationandstudy_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['court_leave'])?$data['court_leave']:'';?></td>
+                    <td style="border-top: 1px solid #cfcfcf;padding-top: 6px; padding-bottom: 6px;"><?php echo !empty($data['emergencyunpaid_leave'])?$data['emergencyunpaid_leave']:'';?></td>
+			    </tr>
+			<?php  $i++; } ?>			
+	<?php
+		}
+	}
+	else
+	{
+
+	}
+?>
+</table>
+</body>
+</html>

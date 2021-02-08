@@ -176,9 +176,9 @@ $(function() {
 			<?php if($this->tm_role == "Manager") { ?>
         		<option value="<?php echo $data->id;?>">Reporting to me</option>
 				
-        		<option value="project">Associated with project</option>
+        		<!-- <option value="project">Associated with project</option> -->
         		
-        			<option value="all">All</option>
+        			<!-- <option value="all">All</option> -->
         		<?php } ?>
 				
         		<?php if($this->tm_role == "Admin") { ?>
@@ -186,6 +186,30 @@ $(function() {
         		<?php } ?>
         	</select>
          </div>
+         <div id="dialog" title="TimeSheet Status Dialog">
+         	<form>
+         		<div class="container">
+	         	<label for="cars">Month:</label>
+	         	<input type="text" class="date-picker-month" placeholder="Time Sheet Month" name="month">
+	         	<label for="cars">Year:</label>
+	         	<input type="text" class="date-picker-year" placeholder="Time Sheet Year" name="year">
+	         	<label for="cars">Choose Employee:</label>
+			    <select name="employee" id='selUser'>
+				  <option value=""></option>
+				  <?php foreach ($this->users as $key => $value) {
+				  	echo "<option value=".$value['user_id'].">".$value['userfullname']."</option>";
+				  } ?>
+				</select>
+				<label for="cars">Choose File:</label>
+				<input id="file" type="file" name="file" accept="application/pdf,application/vnd.ms-excel" />
+				<label for="cars">Comment:</label>
+				<textarea placeholder="Comment" name="comment" rows="2" >
+				</textarea>
+				<button id="save" type="button" class="registerbtn">Save</button>
+				</div>
+			</form>
+
+		</div>
          <div style="float:right">
          	<button class="addtmshs" type="button" style="    float: right;
     background-color: #4CAF50;
@@ -196,8 +220,31 @@ $(function() {
     cursor: pointer;">
          		Add TimeSheet Status
          	</button>
+         	<br><br><br>
+         	<input type="hidden" id="reportsView" name="reportsView" value="leave" />
+			<input type="hidden" id="start_hidden" name="start_hidden"  maxlength="30" size="20" value="<?php echo $this->start_date;?>">  
+			<input type="hidden" id="end_hidden" name="end_hidden"  maxlength="30" size="20" value="<?php echo $this->end_date;?>"> 
+			<input type="hidden" id="period_flag" name="period_flag" value="projreports"/>
+			<input type="hidden" id="is_pdf" name="is_pdf" value="0"/>
+			<input type="hidden" id="is_excel" name="is_excel" value="0"/>
+			<input type="hidden" id="sort_order" name="sort_order" value="" />
+			<input type="hidden" id="sort_by" name="sort_by" value="" />
+			<input type="hidden" id="page_no" name="page_no" value="" />
+			<input type="hidden" id="per_page" name="per_page" value="" />
+			<input type="hidden" id="search_data_pdf" name="search_data_pdf" value="" />
+			<input type="hidden" id="selected_period_hidden" value="<?php echo $this->selected_period_hidden;?>"/>
+         	<div style="float:left">
+				<div class="fltright">
+				<?php if($this->superAdmin){?>
+					<div class="sprite export-xls" id="excel">TimeSheet Status in Excel</div>
+					<br>
+					<div class="sprite export-xls" id="tsinexcel">TimeSheet Report in Excel</div>
+				<?php } ?>
+					<!-- <div class="sprite export-pdf" id="pdf">Export to PDF</div> -->
+				</div>
+			</div>
          </div>
-         <br><br><br>
+         
 	     <ul id="mainmenuTabs" class="tabs_ul_all">
             <li id="all" class="menu_filter_clicked">All</li>
             <li id="submitted">For Approval</li>            
@@ -220,7 +267,7 @@ $(function() {
     <span class="textarea_bg">
         <textarea id="idtxtrejectnote" class="textarea_re textarea_two_appri"  maxlength="200"></textarea>
     </span>
-</div>  
+</div>
 <script type="text/javascript" language="javascript" >
 $(document).ready(function(){
 	$('.breadcrumbs').append("<span class='arrows'>&rsaquo;</span><span>Employee TimeSheets</span>");
@@ -339,11 +386,198 @@ function clearSearchData()
 }
 $(document).ready(function(){
 	$('.addtmshs').click(function() {
-	  alert( "Handler is in progress thank you !" );
+	  	$( "#dialog" ).dialog({
+	  		modal: true,
+	  		open: function () {
+		        if ($.ui && $.ui.dialog && !$.ui.dialog.prototype._allowInteractionRemapped && $(this).closest(".ui-dialog").length) {
+		            if ($.ui.dialog.prototype._allowInteraction) {
+		                $.ui.dialog.prototype._allowInteraction = function (e) {
+		                    if ($(e.target).closest('.select2-drop').length) return true;
+		                    return ui_dialog_interaction.apply(this, arguments);
+		                };
+		                $.ui.dialog.prototype._allowInteractionRemapped = true;
+		            }
+		            else {
+		                $.error("You must upgrade jQuery UI or else.");
+		            }
+		        }
+		    },
+		    _allowInteraction: function (event) {
+		        return !!$(event.target).is(".select2-input") || this._super(event);
+		    }
+		});
+	});
+	$('#save').on('click', function() {
+	  var month = $("[name='month']").val();
+	  var year = $("[name='year']").val();
+	  var employee = $("[name='employee']").val();
+	  var file = $("[name='file']").prop('files');
+	  var comment = $("[name='comment']").val();
+	  // $('#dialog').dialog('close')
+	  
+      	var fd = new FormData(); 
+        var files = $('#file')[0].files[0];
+        fd.append('file', files);
+        fd.append('month',$("[name='month']").val());
+        fd.append('year',$("[name='year']").val());
+        fd.append('employee',$("[name='employee']").val());
+        fd.append('comment',$("[name='comment']").val());
+        var fullurl = '<?php echo $this->baseUrl("index.php/timemanagement/emptimesheets/empdisplayweeks");?>';
+
+        $.ajax({ 
+            url: fullurl, 
+            type: 'POST',
+            data: fd, 
+            contentType: false, 
+            cache:false,
+            processData: false, 
+            success: function(response){
+            	// alert(response);
+                if(response == "successful"){ 
+                   alert('file uploaded Thanks');
+                   window.location.reload(true);
+                } 
+                else if(response=="config not found"){ 
+                    alert("timesheet config not found");
+                }else if(response=="found recode"){
+                	alert("time sheet status have already submited !");
+                }else{
+                	alert('file not uploaded');
+                	window.location.reload(true);
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+		        alert("Status: " + textStatus); alert("Error: " + errorThrown);
+		        // alert("more: "+XMLHttpRequest.responseText);
+		        console.log(XMLHttpRequest.responseText);
+		    }
+        });
+    });
+
+ 	$("#selUser").select2();
+ 	var d = new Date();
+	$('.date-picker-month').val(d.getMonth()+1);
+	$('.date-picker-year').val(d.getFullYear());
+
+	$('#excel').on('click', function() {
+		$("#is_excel").val('1');
+		var selmn = $('#idhidselmn').val();
+		var start_date = $('#start_date').val();
+		var end_date = $('#end_date').val();
+		var selected_period_hidden = $("#selected_period_hidden").attr('value');
+		var is_pdf = $('#is_pdf').val();
+		var is_excel = $('#is_excel').val();
+
+		if(is_pdf == 1 || is_excel == 1)
+		{
+			var sort_order = $('#sort_order').val(); 
+			var sort_by = $('#sort_by').val(); 
+			var page_no = $('#page_no').val(); 
+			var per_page = $('#per_page').val();
+			var search_data_pdf = $('#search_data_pdf').val();
+			var datefrom = $('#fromdatepicker').val();
+			var dateto = $('#todatepicker').val();
+			datefrom = "-"+new Date(datefrom).getDay()+"-"+new Date(datefrom).getDate();
+			dateto = "-"+new Date(dateto).getDay()+"-"+new Date(dateto).getDate();
+			// alert(datefrom);
+			// alert(start_date);
+			$('#is_pdf').val('0');
+			$('#is_excel').val('0');
+			$('#sort_order').val('');
+			$('#sort_by').val('');
+			$('#page_no').val('');
+			$('#per_page').val('');
+			window.location.href = base_url+"/timemanagement/reports/timesheetstatusreports/"+'is_pdf/'+is_pdf+'/is_excel/'+is_excel+'/selmn/'+selmn;
+		}
+		else
+		{
+			$.ajax({
+		    	url: base_url+"/timemanagement/reports/employeereports/format/html",   
+		        type : 'POST',	
+		        dataType:'html',
+		        data :'projectId='+projid+'&start_date='+start_date+'&end_date='+end_date+'&selected_period_hidden='+selected_period_hidden+'&is_pdf='+is_pdf,
+		        success : function(response){
+		        	$("#idacc_content").html(response);
+		        	$(".export_links").show(); 
+		        }
+		    });		
+		}
+	});
+	$('#pdf').on('click', function() {
+		alert('onprogess');
+	});
+	$('#tsinexcel').on('click', function() {
+		$("#is_excel").val('1');
+		var selmn = $('#idhidselmn').val();
+		var start_date = $('#start_date').val();
+		var end_date = $('#end_date').val();
+		var selected_period_hidden = $("#selected_period_hidden").attr('value');
+		var is_pdf = $('#is_pdf').val();
+		var is_excel = $('#is_excel').val();
+
+		if(is_pdf == 1 || is_excel == 1)
+		{
+			var sort_order = $('#sort_order').val(); 
+			var sort_by = $('#sort_by').val(); 
+			var page_no = $('#page_no').val(); 
+			var per_page = $('#per_page').val();
+			var search_data_pdf = $('#search_data_pdf').val();
+			var datefrom = $('#fromdatepicker').val();
+			var dateto = $('#todatepicker').val();
+			datefrom = "-"+new Date(datefrom).getDay()+"-"+new Date(datefrom).getDate();
+			dateto = "-"+new Date(dateto).getDay()+"-"+new Date(dateto).getDate();
+			// alert(datefrom);
+			// alert(start_date);
+			$('#is_pdf').val('0');
+			$('#is_excel').val('0');
+			$('#sort_order').val('');
+			$('#sort_by').val('');
+			$('#page_no').val('');
+			$('#per_page').val('');
+			window.location.href = base_url+"/timemanagement/reports/timesheetreports/"+'is_pdf/'+is_pdf+'/is_excel/'+is_excel+'/selmn/'+selmn;
+		}
+		else
+		{
+			$.ajax({
+		    	url: base_url+"/timemanagement/reports/employeereports/format/html",   
+		        type : 'POST',	
+		        dataType:'html',
+		        data :'projectId='+projid+'&start_date='+start_date+'&end_date='+end_date+'&selected_period_hidden='+selected_period_hidden+'&is_pdf='+is_pdf,
+		        success : function(response){
+		        	$("#idacc_content").html(response);
+		        	$(".export_links").show(); 
+		        }
+		    });		
+		}
 	});
 });
 </script>
 
 <style>
 	.emp_time_sheet input.btn_search_clear[type="button"] {top: 6px; right: 8px;}
+	#dialog {
+	    display:none;
+	}
+	input[type=text], input[type=password],textarea,select,input[type=file],div#s2id_selUser {
+	  width: 100%;
+	  padding: 10px;
+	  margin: 5px 0 22px 0;
+	  display: inline-block;
+	  border: none;
+	  background: #f1f1f1;
+	}
+	.registerbtn {
+	  background-color: #4CAF50;
+	  color: white;
+	  padding: 10px 25px;
+	  margin: 8px 0;
+	  border: none;
+	  cursor: pointer;
+	  /*width: 100%;*/
+	  opacity: 0.9;
+	}
+	select.mtz-monthpicker.mtz-monthpicker-year{
+		padding: 0px;
+	}
+
 </style>

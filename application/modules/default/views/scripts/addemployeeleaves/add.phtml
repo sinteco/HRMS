@@ -76,42 +76,42 @@ function enableLeaves(userid) {
 }
 function validateEmployeLeaves() {
 	var errorcount = 0;
-	var enabledcount = 0;
-	var re = /^[0-9]+$/;
-	$('.emp_leave_cls').each(function(i){                            
-        var ele= $(this).find('.add_emp_leaves');                            
-        var elementid = $(ele).attr('id');
+	var enabledcount = 1;
+	// var re = /^[0-9]+$/;
+	// $('.emp_leave_cls').each(function(i){                            
+    //     var ele= $(this).find('.add_emp_leaves');                            
+    //     var elementid = $(ele).attr('id');
 
-        var reqValue = $(ele).val();
-        $('#errors-'+elementid).remove();
-        $(ele).removeClass('borderclass');
-        if($(ele).val() == '')
-        {
-            $(ele).parent().append("<span class='errors' id='errors-"+elementid+"'>Please enter leaves.</span>");
-            $(ele).addClass('borderclass');
-            errorcount++;
-        }
-        else if(!re.test(reqValue))
-        {
-            $(ele).parent().append("<span class='errors' id='errors-"+elementid+"'>Please enter only number.</span>");
-            $(ele).addClass('borderclass');
-            errorcount++;
-        }else if(!$(ele).is(':disabled'))
-        {
-            enabledcount++;
-        }    
-        else
-        {
-        	$('#errors-'+elementid).remove();
-        	$(ele).removeClass('borderclass');
-        }
+    //     var reqValue = $(ele).val();
+    //     $('#errors-'+elementid).remove();
+    //     $(ele).removeClass('borderclass');
+    //     if($(ele).val() == '')
+    //     {
+    //         $(ele).parent().append("<span class='errors' id='errors-"+elementid+"'>Please enter leaves.</span>");
+    //         $(ele).addClass('borderclass');
+    //         errorcount++;
+    //     }
+    //     else if(!re.test(reqValue))
+    //     {
+    //         $(ele).parent().append("<span class='errors' id='errors-"+elementid+"'>Please enter only number.</span>");
+    //         $(ele).addClass('borderclass');
+    //         errorcount++;
+    //     }else if(!$(ele).is(':disabled'))
+    //     {
+    //         enabledcount++;
+    //     }    
+    //     else
+    //     {
+    //     	$('#errors-'+elementid).remove();
+    //     	$(ele).removeClass('borderclass');
+    //     }
         
-    });
+    // });
 
-    if(enabledcount == 0) {
-        jAlert('Please edit all the fields to proceed');
-        return false;
-    }
+    // if(enabledcount == 0) {
+    //     jAlert('Please edit all the fields to proceed');
+    //     return false;
+    // }
 	if(errorcount==0 && enabledcount > 0) {
 		$.blockUI({ width:'50px',message: $("#spinner").html() });
 		document.getElementById("formid").submit();

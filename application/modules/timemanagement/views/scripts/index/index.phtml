@@ -25,7 +25,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      $dayOfWeek = $dateComponents['wday'];
 
      // Create the table tag opener and day headers
-     $calendar = "<form method='POST' id='tmsheetform'><table id='calendar'>";
+     $calendar = "<form method='POST' id='tmsheetform' style='overflow: auto;'><table id='calendar'>";
      $calendar .= "<caption class='month'>$monthNameL $yearNameL Actual Time, ";
      $calendar .= "$monthName $year Actual Time, ";
      $calendar .= "$monthName $year Estimated Time</caption>";
@@ -354,7 +354,9 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      $month = $dateComponents['mon'];                  
      $year = $dateComponents['year'];
 
-     if($this->TMstatus[0]['status']=="For Approval"){
+     if($this->TMstatus[0]['status']=="Pending"){
+        echo "<br><div>Your timesheet is sent and now on Pending Status for Review by you on Report view</div>";
+     }else if($this->TMstatus[0]['status']=="For Approval"){
         echo "<br><div>Your timesheet is already sent !</div>";
      }else if($this->TMstatus[0]['status']=="Approved"){
           echo "<br><div>Your timesheet is already approved !</div>";
@@ -363,13 +365,16 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      }
 ?>
 <?php 
-     if($this->TMstatus[0]['status']=="For Approval"){
+     if($this->TMstatus[0]['status']=="Pending"){
+        
+     }else if($this->TMstatus[0]['status']=="For Approval"){
         
      }else if($this->TMstatus[0]['status']=="Approved"){
           
      }else {
           ?>
           <table id="calendar"><div style="padding-bottom: 50px"></div><caption>
+          <div id="loader" class="loader" style="display: none; position: absolute; top: 50%; left: 50%;transform: translate(-50%, -50%);"></div>
          <label>Comment:</label>
           <textarea name="comment" rows="4" cols="50">
        </textarea>
@@ -385,6 +390,26 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
      }
  ?>
 <style type="text/css">
+     .loader {
+       border: 16px solid #f3f3f3;
+       border-radius: 50%;
+       border-top: 16px solid #3498db;
+       width: 120px;
+       height: 120px;
+       -webkit-animation: spin 2s linear infinite; /* Safari */
+       animation: spin 2s linear infinite;
+     }
+
+     /* Safari */
+     @-webkit-keyframes spin {
+       0% { -webkit-transform: rotate(0deg); }
+       100% { -webkit-transform: rotate(360deg); }
+     }
+
+     @keyframes spin {
+       0% { transform: rotate(0deg); }
+       100% { transform: rotate(360deg); }
+     }
      input[type=button] {
          background-color: #4CAF50;
          color: white;
@@ -521,9 +546,12 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
                }
                str+="<td><input type='button' value='DELETE' onclick=delete_row('row"+$rowno+"')></td></tr>";
                $("#calendar tr:last").after(str);
-               $('.timeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 8, 30, 0)});
-               $('.friTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
-               $('.halfleaveTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
+               $('.timeEntry').val('00:00');
+               $('.friTimeEntry').val('00:00');
+               $('.halfleaveTimeEntry').val('00:00');
+               $('.timeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 8, 30, 0)});
+               $('.friTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
+               $('.halfleaveTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
      }
      function delete_row(rowno)
      {
@@ -586,21 +614,98 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
              }
          }
          // var vals = $(".dateclass").map(function(){ return this.value}).get();
-         // console.log(c);
-         // alert(c);
-         var data = {project: p, location: l, time: t, date: d, workingDays: wd, comment: c};
-         $.post('<?php echo $this->baseUrl("index.php/timemanagement/index/week");?>', data, function(returnedData) {
-              console.log(returnedData);
-              if(returnedData!=null){
-                    window.location.reload(true);
+         // console.log(p);
+         
+          function timeToDecimal(t) {
+              var arr = t.split(':');
+              var dec = parseInt((arr[1]/6)*10, 10);
+              return parseFloat(parseInt(arr[0], 10) + '.' + (dec<10?'0':'') + dec);
+          }
+          var validation = true;
+          var halftime = "04:30";
+          var fulltime = "08:30";
+          var halfDay = new Date("01/01/2000 "+halftime);
+          var fullDay = new Date("01/01/2000 "+fulltime);
+         for (var i = p.length - 1; i >= 0; i--) {
+              if(p[i]['value']==""){
+               alert("Please select a project for Your Timesheet");
+               validation = false;
               }
-            });
-              // console.log(v);
+         }
+         var lastdateArray = 0;
+         var timeArry = [];
+
+         for (var i = 0; i<p.length;i++) {
+               // var maketime = new Date("01/01/2000 "+t[i]['value']);
+               // if(t[i]['value']!=''&&maketime>fullDay){
+               //      alert('Your Timesheet is more than a day total in '+d[i]['value']);
+               // }
+               const counter = parseInt(wd)*(i+1);
+               if (t.length>wd) {
+                    var index = 0;
+                    for (var j=lastdateArray; j < counter; j++) {
+                         lastdateArray=j+1;
+                         var maketime = 0;
+                         if (t[j]['value']!='') {
+                              maketime = t[j]['value'];
+                         }else{
+                              maketime = '00:00';
+                         }
+                         var date = d[j]['value'];
+                         timeArry[index]=timeArry[index]!=null?(timeArry[index])+timeToDecimal(maketime):timeToDecimal(maketime);
+                         index++;
+                    }
+               }
+               // console.log(timeArry);
+         }
+         for (var i = 0; i < timeArry.length; i++) {
+          var da = new Date(d[i]['value']);
+          var dayName = da.toString().split(' ')[0];
+              if (dayName=='Fri') {
+               if (timeArry[i]>4.5) {
+                    alert('Please review Your time in '+d[i]["value"]+' its more than a day allowed !');
+                    validation = false;
+               }else if(timeArry[i]==0){
+                    alert('Please review Your time in '+d[i]["value"]+' its less than a day allowed !');
+                    validation = false;
+               }
+              }else if(timeArry[i]>8.5) {
+                    alert('Please review Your time in '+d[i]["value"]+' its more than a day allowed !');
+                    validation = false;
+              }else if(timeArry[i]==0){
+                    alert('Please review Your time in '+d[i]["value"]+' its less than a day allowed !');
+                    validation = false;
+               }
+         }
+         // alert(c);
+         // if (true) {}
+         var data = {project: p, location: l, time: t, date: d, workingDays: wd, comment: c};
+         if (validation) {
+          if (! confirm("Are You Sure ?")) {
+               //
+          }else{
+               document.getElementById("loader").style.display = "block";
+               document.getElementById("submit").disabled = true;
+               $.post('<?php echo $this->baseUrl("index.php/timemanagement/index/week");?>', data, function(returnedData) {
+                        console.log(returnedData);
+                        if(returnedData!=null){
+                              // console.log(returnedData);
+                              // alert(returnedData);
+                              window.location.reload(true);
+                              // console.log(returnedData);
+                              // alert(returnedData);
+                        }
+                 });
+          }
+         }
        });
      $('.breadcrumbs').append("<span class='arrows'>&rsaquo;</span><a href='<?php echo BASE_URL; ?>timemanagement'>Time Sheet</a>");
-     $('.timeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 8, 30, 0)});
-     $('.friTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
-     $('.halfleaveTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 4, 30, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
+     $('.timeEntry').val('00:00');
+     $('.friTimeEntry').val('00:00');
+     $('.halfleaveTimeEntry').val('00:00');
+     $('.timeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 8, 30, 0)});
+     $('.friTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
+     $('.halfleaveTimeEntry').timeEntry({show24Hours:true,minTime: new Date(0, 0, 0, 0, 0, 0),maxTime: new Date(0, 0, 0, 4, 30, 0)});
       $('#saveTimeSheet').click(function(){
           $.modal.close();
           var project = $("#project option:selected").val();
@@ -612,7 +717,7 @@ function build_calendar($month,$year,$dateArray,$TMSCData,$TimesheetData,$holida
           $("input[name=time]").val("");
           var data = {project: project, location: location, time: time, date: date};
           $.post('<?php echo $this->baseUrl("index.php/timemanagement/index/week");?>', data, function(returnedData) {
-              console.log(returnedData);
+              // console.log(returnedData);
               if(returnedData!=null){
                     window.location.reload(true);
               }

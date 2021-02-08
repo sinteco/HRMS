@@ -292,15 +292,17 @@
 	            var selectyear1 = date1.getFullYear();
 				var selectyear2 = date2.getFullYear();
 				
-				if(selectyear1 > y && selectyear2 > y)
-				{
-					 jAlert('Leave cannot be applied for future year.') ; 
-				}
-				 else if(selectyear2 > y)
-				{
-					jAlert('Leave cannot be applied for future year.') ; 
-				} 
-				else
+				// if(selectyear1 > y && selectyear2 > y)
+				// {
+				// 	 jAlert('Leave cannot be applied for future year.') ; 
+				// }
+				//  else 
+				//  if(selectyear2 > y)
+				// {
+				// 	jAlert('Leave cannot be applied for future year.') ; 
+				// } 
+				// else
+				if(true)
 				{
 					// If timestamp of startdate is before date of joing then the employee should not be able to apply for leave
 					if(dojtime !='')
@@ -617,7 +619,7 @@ Click on a date to apply for 1 day of leave. Click and drag on the desired dates
 			</div>
 			
 			<div class="new-form-ui textareaheight">
-			  <label class="required">Reason</label>
+			  <label>Reason</label>
 			<div class="division"><?php echo $this->form->reason; ?></div>
 			<?php if(isset($this->msgarray['reason'])){?>
 			   <span class="errors" id="errors-<?php echo $this->form->reason->getId(); ?>"><?php echo $this->msgarray['reason'];?></span>

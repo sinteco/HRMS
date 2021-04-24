@@ -1,4 +1,4 @@
-Sentrifugo - Open Source HRMS
+Sentrifugo - Open Source HRMS - Customization
 =============================
 [sentrifugo.com](http://www.sentrifugo.com/)
 
